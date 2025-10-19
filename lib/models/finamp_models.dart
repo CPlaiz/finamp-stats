@@ -3611,3 +3611,51 @@ class RawThemeResult {
   final int _backgroundInt;
   Color get background => Color(_backgroundInt);
 }
+
+enum StatsTabContentType {
+  all("Gesamt");
+
+  const StatsTabContentType(this.name);
+
+  final String name;
+
+}
+
+class PlaybackEntry {
+  const PlaybackEntry(this.mediaItem, this.dateTime, this.duration);
+
+  final MediaItem mediaItem;
+  final DateTime dateTime;
+  final Duration duration;
+}
+
+extension MediaItemDescriptor on MediaItem {
+  String descriptor() => "${artist ?? "Unknown Artist"} - $title";
+}
+
+extension BaseItemDtoDescriptor on BaseItemDto {
+  String descriptor() => "${nullsafeArtistsString()} - $name";
+  String? artistsString() => artists?.join(", ");
+  String nullsafeArtistsString() => artistsString() ?? "Unknown Artist";
+}
+
+class Stats {
+  static List<PlaybackEntry> playbackEntries = [];
+  static MediaItem? lastMediaItem;
+  static Duration? playbackSegmentStart;
+  static Duration? lastPlaybackSegment;
+
+  static void addEntry(PlaybackEntry playbackEntry) {
+    playbackEntries.add(playbackEntry);
+  }
+
+  static Map<String, int> calculatePlaycountRanking() {
+    final Map<String, int> countsById = {};
+
+    for (final play in playbackEntries) {
+      final id = play.mediaItem.descriptor();
+      countsById[id] = (countsById[id] ?? 0) + 1;
+    }
+    return countsById;
+  }
+}

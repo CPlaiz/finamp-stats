@@ -11,6 +11,7 @@ import 'package:flutter_tabler_icons/flutter_tabler_icons.dart';
 import 'package:get_it/get_it.dart';
 import 'package:finamp/l10n/app_localizations.dart';
 
+import '../../models/finamp_models.dart';
 import '../../services/media_state_stream.dart';
 import '../../services/music_player_background_task.dart';
 
@@ -34,6 +35,31 @@ class PlayerButtons extends StatelessWidget {
         final mediaState = snapshot.data!;
         final playbackState = mediaState.playbackState;
         final fadeState = mediaState.fadeState;
+        final mediaItem = mediaState.mediaItem;
+        final lastMediaItem = Stats.lastMediaItem;
+        final lastPlaybackSegment = Stats.lastPlaybackSegment;
+        final playbackSegmentStart = Stats.playbackSegmentStart;
+
+        if (mediaItem != null) {
+          if (lastMediaItem?.id == mediaItem.id) {
+            if (playbackState.playing) {
+              Stats.lastPlaybackSegment = playbackState.position;
+            }
+          } else {
+            if (lastMediaItem != null && lastPlaybackSegment != null) {
+              Stats.addEntry(
+                PlaybackEntry(
+                    lastMediaItem,
+                    DateTime.timestamp(),
+                    lastPlaybackSegment - playbackSegmentStart!
+                ),
+              );
+            }
+
+            Stats.lastMediaItem = mediaItem;
+            Stats.playbackSegmentStart = playbackState.position;
+          }
+        }
 
         return Row(
           mainAxisSize: MainAxisSize.max,

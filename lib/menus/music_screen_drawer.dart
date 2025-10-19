@@ -6,6 +6,7 @@ import 'package:finamp/components/MusicScreen/offline_mode_status_label.dart';
 import 'package:finamp/screens/playback_history_screen.dart';
 import 'package:finamp/screens/queue_restore_screen.dart';
 import 'package:finamp/screens/settings_screen.dart';
+import 'package:finamp/screens/stats_screen.dart';
 import 'package:finamp/services/finamp_user_helper.dart';
 import 'package:flutter/material.dart';
 import 'package:finamp/l10n/app_localizations.dart';
@@ -54,6 +55,11 @@ class MusicScreenDrawer extends StatelessWidget {
                   leading: const Padding(padding: EdgeInsets.only(right: 16), child: Icon(Icons.file_download)),
                   title: Text(AppLocalizations.of(context)!.downloads),
                   onTap: () => Navigator.of(context).pushNamed(DownloadsScreen.routeName),
+                ),
+                ListTile(
+                  leading: const Padding(padding: EdgeInsets.only(right: 16), child: Icon(Icons.query_stats)),
+                  title: Text("Stats"),
+                  onTap: () => Navigator.of(context).pushNamed(StatsScreen.routeName),
                 ),
                 ListTile(
                   leading: const Padding(padding: EdgeInsets.only(right: 16), child: Icon(TablerIcons.clock)),
