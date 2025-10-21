@@ -32,7 +32,6 @@ class StatsScreenTabView extends ConsumerStatefulWidget {
     required this.statsTabContentType,
     required this.view,
     this.refresh,
-    this.genreFilter,
     this.tabBarFiltered = false,
     this.sortByOverride,
     this.sortOrderOverride,
@@ -42,9 +41,8 @@ class StatsScreenTabView extends ConsumerStatefulWidget {
   final StatsTabContentType statsTabContentType;
   final BaseItemDto? view;
   final StatsRefreshCallback? refresh;
-  final BaseItemDto? genreFilter;
   final bool tabBarFiltered;
-  final SortBy? sortByOverride;
+  final StatsSortBy? sortByOverride;
   final SortOrder? sortOrderOverride;
   final bool? isFavoriteOverride;
 
@@ -81,7 +79,8 @@ class _StatsScreenTabViewState extends ConsumerState<StatsScreenTabView>
   int refreshCount = 0;
   int fullyLoadedRefresh = -1;
 
-  Map<String, int> ranking = Stats.calculatePlaycountRanking();
+  Map<String, int> rankingPlaycount = Stats.calculatePlaycountRanking();
+  Map<String, Duration> rankingPlaytime = Stats.calculatePlaytimeRanking();
 
   // This function just lets us easily set stuff to the getItems call we want.
   Future<void> _getPage(int pageKey) async {
@@ -97,17 +96,24 @@ class _StatsScreenTabViewState extends ConsumerState<StatsScreenTabView>
     }
     int localRefreshCount = refreshCount;
     try {
-      final newItems = (await _jellyfinApiHelper.getItems(
-        sortBy: null,
-        sortOrder: null,
-        startIndex: pageKey,
-        includeItemTypes: "Audio",
-        limit: _pageSize,
-      ))?.sortedBy((a) => (ranking[a.descriptor()] ?? 0)).reversed.toList();
+      final items =
+          (await _jellyfinApiHelper.getItems(
+            sortBy: null,
+            sortOrder: null,
+            startIndex: pageKey,
+            includeItemTypes: "Audio",
+            limit: _pageSize,
+          )) ??
+          [];
+
+      var sortBy = widget.sortByOverride ?? settings.statsTabSortBy[widget.statsTabContentType];
+      final sortOrder = widget.sortOrderOverride ?? settings.statsTabSortOrder[widget.statsTabContentType];
+
+      final newItems = sortItems(items, sortBy, sortOrder, rankingPlaycount, rankingPlaytime);
 
       // Skip appending page if a refresh triggered while processing
       if (localRefreshCount == refreshCount && mounted) {
-        if (newItems!.length < _pageSize) {
+        if (newItems.length < _pageSize) {
           _pagingController.appendLastPage(newItems);
           fullyLoadedRefresh = localRefreshCount;
         } else {
@@ -138,7 +144,7 @@ class _StatsScreenTabViewState extends ConsumerState<StatsScreenTabView>
       onlyFavorites:
           (widget.isFavoriteOverride == true || (widget.isFavoriteOverride == null && settings.onlyShowFavorites)) &&
           settings.trackOfflineFavorites,
-      genreFilter: widget.genreFilter,
+      genreFilter: null,
     );
 
     var items = offlineItems.map((e) => e.baseItem).nonNulls.toList();
@@ -227,7 +233,6 @@ class _StatsScreenTabViewState extends ConsumerState<StatsScreenTabView>
       settings.isOffline,
       settings.tabOrder,
       settings.trackOfflineFavorites,
-      widget.genreFilter?.id,
     );
     if (refreshHash == null) {
       refreshHash = newRefreshHash;
@@ -281,6 +286,9 @@ class _StatsScreenTabViewState extends ConsumerState<StatsScreenTabView>
           // Use right padding inherited from fast scroller minus
           // built-in icon padding
           String descriptor = item.descriptor();
+          print(descriptor);
+          print(rankingPlaytime);
+          print(rankingPlaytime[descriptor]);
           return Padding(
             padding: EdgeInsets.only(right: max(0, MediaQuery.paddingOf(context).right - 20)),
             child: CachedBuilder(
@@ -294,7 +302,9 @@ class _StatsScreenTabViewState extends ConsumerState<StatsScreenTabView>
                   child: ListTile(
                     leading: AlbumImage(item: item, borderRadius: BorderRadius.circular(8.0)),
                     title: Text(item.name ?? "NULL"),
-                    subtitle: Text("${ranking[descriptor] ?? 0} plays • ${item.nullsafeArtistsString()}"),
+                    subtitle: Text(
+                      "${rankingPlaycount[descriptor] ?? 0} plays • ${rankingPlaytime[descriptor]?.inMinutes ?? 0} Minutes • ${item.nullsafeArtistsString()}",
+                    ),
                   ),
                 );
               },
@@ -308,10 +318,7 @@ class _StatsScreenTabViewState extends ConsumerState<StatsScreenTabView>
       separatorBuilder: (context, index) => const SizedBox.shrink(),
     );
 
-    return RefreshIndicator(
-      onRefresh: () async => _refresh(),
-      child: tabContent
-    );
+    return RefreshIndicator(onRefresh: () async => _refresh(), child: tabContent);
   }
 }
 
@@ -364,92 +371,23 @@ class _DeferredLoadingAlwaysScrollableScrollPhysics extends AlwaysScrollableScro
   }
 }
 
-List<BaseItemDto> sortItems(List<BaseItemDto> itemsToSort, SortBy? sortBy, SortOrder? sortOrder) {
-  if (sortBy == SortBy.random) {
-    itemsToSort.shuffle();
-  } else {
-    itemsToSort.sort((a, b) {
-      switch (sortBy ?? SortBy.sortName) {
-        case SortBy.sortName:
-          if (a.nameForSorting == null || b.nameForSorting == null) {
-            // Returning 0 is the same as both being the same
-            return 0;
-          } else {
-            return a.nameForSorting!.compareTo(b.nameForSorting!);
-          }
-        case SortBy.album:
-          if (a.album == null || b.album == null) {
-            return 0;
-          } else {
-            return a.album!.compareTo(b.album!);
-          }
-        case SortBy.albumArtist:
-          if (a.albumArtist == null || b.albumArtist == null) {
-            return 0;
-          } else {
-            return a.albumArtist!.compareTo(b.albumArtist!);
-          }
-        case SortBy.artist:
-          if (a.artists == null || b.artists == null) {
-            return 0;
-          } else {
-            return a.artists!.join(', ').compareTo(b.artists!.join(', '));
-          }
-        case SortBy.communityRating:
-          if (a.communityRating == null || b.communityRating == null) {
-            return 0;
-          } else {
-            return a.communityRating!.compareTo(b.communityRating!);
-          }
-        case SortBy.criticRating:
-          if (a.criticRating == null || b.criticRating == null) {
-            return 0;
-          } else {
-            return a.criticRating!.compareTo(b.criticRating!);
-          }
-        case SortBy.datePlayed:
-          final dateA = a.userData?.lastPlayedDate == null
-              ? null
-              : DateTime.tryParse(a.userData!.lastPlayedDate!.trim());
-          final dateB = b.userData?.lastPlayedDate == null
-              ? null
-              : DateTime.tryParse(b.userData!.lastPlayedDate!.trim());
-          if (dateA == null && dateB == null) return 0;
-          if (dateA == null) return -1;
-          if (dateB == null) return 1;
-          return dateA.compareTo(dateB);
-        case SortBy.dateCreated:
-          final dateA = a.dateCreated == null ? null : DateTime.tryParse(a.dateCreated!.trim());
-          final dateB = b.dateCreated == null ? null : DateTime.tryParse(b.dateCreated!.trim());
-          if (dateA == null && dateB == null) return 0;
-          if (dateA == null) return -1;
-          if (dateB == null) return 1;
-          return dateA.compareTo(dateB);
-        case SortBy.premiereDate:
-          final dateA = a.premiereDate == null ? null : DateTime.tryParse(a.premiereDate!.trim());
-          final dateB = b.premiereDate == null ? null : DateTime.tryParse(b.premiereDate!.trim());
-          if (dateA == null && dateB == null) return 0;
-          if (dateA == null) return -1;
-          if (dateB == null) return 1;
-          return dateA.compareTo(dateB);
-        case SortBy.playCount:
-          if (a.userData?.playCount == null || b.userData?.playCount == null) {
-            return 0;
-          } else {
-            return a.userData!.playCount.compareTo(b.userData!.playCount);
-          }
-        case SortBy.runtime:
-          if (a.runTimeTicks == null || b.runTimeTicks == null) {
-            return 0;
-          } else {
-            return a.runTimeTicks!.compareTo(b.runTimeTicks!);
-          }
-        // SortBy.random is handled outside this switch as per-comparison logic does not produce a good shuffle
-        default:
-          throw UnimplementedError("Unimplemented offline sort mode $sortBy");
-      }
-    });
-  }
+List<BaseItemDto> sortItems(
+  List<BaseItemDto> itemsToSort,
+  StatsSortBy? sortBy,
+  SortOrder? sortOrder,
+  Map<String, int> rankingPlaycount,
+  Map<String, Duration> rankingPlaytime,
+) {
+  itemsToSort.sortBy((a) {
+    switch (sortBy ?? StatsSortBy.count) {
+      case StatsSortBy.count:
+        return rankingPlaycount[a.descriptor()] ?? 0;
+      case StatsSortBy.time:
+        return rankingPlaytime[a.descriptor()]?.inSeconds ?? 0;
+      default:
+        throw UnimplementedError("Unimplemented offline sort mode $sortBy");
+    }
+  });
 
   return sortOrder == SortOrder.descending ? itemsToSort.reversed.toList() : itemsToSort;
 }

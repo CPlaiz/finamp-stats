@@ -10,14 +10,19 @@ import 'package:collection/collection.dart';
 import 'package:finamp/components/global_snackbar.dart';
 import 'package:finamp/l10n/app_localizations.dart';
 import 'package:finamp/services/finamp_user_helper.dart';
+import 'package:finamp/services/media_state_stream.dart';
+import 'package:finamp/services/music_player_background_task.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_tabler_icons/flutter_tabler_icons.dart';
 import 'package:get_it/get_it.dart';
 import 'package:hive_ce/hive.dart';
 import 'package:isar/isar.dart';
 import 'package:json_annotation/json_annotation.dart';
+import 'package:just_audio/just_audio.dart';
 import 'package:logging/logging.dart';
 import 'package:path/path.dart' as path_helper;
 import 'package:path_provider/path_provider.dart';
+import 'package:rxdart/rxdart.dart';
 import 'package:uuid/uuid.dart';
 
 import '../builders/annotations.dart';
@@ -59,8 +64,10 @@ class FinampUser {
   @HiveField(4)
   @ignore
   BaseItemId? currentViewId;
+
   @Name("currentViewId")
   String? get isarCurrentViewId => currentViewId?.raw;
+
   set isarCurrentViewId(String? id) => currentViewId = id == null ? null : BaseItemId(id);
   @ignore
   @HiveField(5)
@@ -77,7 +84,9 @@ class FinampUser {
 
   // We only need 1 user, the current user
   final Id isarId = 0;
+
   String get isarViews => jsonEncode(views);
+
   set isarViews(String json) => views = (jsonDecode(json) as Map<BaseItemId, dynamic>).map(
     (k, v) => MapEntry(k, BaseItemDto.fromJson(v as Map<String, dynamic>)),
   );
@@ -107,6 +116,7 @@ class DefaultSettings {
   static const onlyShowFavorites = false;
   static const trackShuffleItemCount = 250;
   static const volumeNormalizationActive = true;
+
   // Set the base gain to 6.0 dB, which will work against any tracks that have a normalization gain of -6.0 dB or lower. For higher gains this will cause the actual volume to be lower than it should be, since we can't compensate the volume upwards beyond 100%
   // Ideally the maximum gain in each library should be fetched from the server, and this volume should be adjusted accordingly to be the exact inverse, so that the quietest track in the library plays at 100% volume, and only louder tracks get their volume reduced
   static const volumeNormalizationIOSBaseGain = 6.0;
@@ -369,6 +379,8 @@ class FinampSettings {
     this.locale = DefaultSettings.locale,
     // !!! Don't touch this default value, it's supposed to be hard coded to run the migration only once
     this.hasCompletedThemeModeLocaleMigration = true,
+    required this.statsTabSortBy,
+    required this.statsTabSortOrder,
   });
 
   @HiveField(0, defaultValue: DefaultSettings.isOffline)
@@ -793,6 +805,14 @@ class FinampSettings {
   @HiveField(135, defaultValue: false)
   bool hasCompletedThemeModeLocaleMigration;
 
+  @HiveField(136, defaultValue: <StatsTabContentType, StatsSortBy>{})
+  @SettingsHelperMap("tabContentType", "sortBy")
+  Map<StatsTabContentType, StatsSortBy> statsTabSortBy;
+
+  @HiveField(137, defaultValue: <StatsTabContentType, SortOrder>{})
+  @SettingsHelperMap("tabContentType", "sortOrder")
+  Map<StatsTabContentType, SortOrder> statsTabSortOrder;
+
   static Future<FinampSettings> create() async {
     final downloadLocation = await DownloadLocation.create(
       name: DownloadLocation.internalStorageName,
@@ -807,6 +827,8 @@ class FinampSettings {
       tabSortBy: {},
       tabSortOrder: {},
       useFixedSizeGridTiles: !(Platform.isIOS || Platform.isAndroid),
+      statsTabSortBy: {},
+      statsTabSortOrder: {},
     );
   }
 
@@ -1380,6 +1402,7 @@ class DownloadStub {
   }
 
   factory DownloadStub.fromJson(Map<String, dynamic> json) => _$DownloadStubFromJson(json);
+
   Map<String, dynamic> toJson() => _$DownloadStubToJson(this);
 }
 
@@ -1438,7 +1461,9 @@ class DownloadItem extends DownloadStub {
   /// and child elements with no non-playlist parents.
   @ignore
   BaseItemId? get viewId => isarViewId == null ? null : BaseItemId(isarViewId!);
+
   set viewId(BaseItemId? id) => isarViewId = id?.raw;
+
   // Use viewId name to match older database entries
   @Name("viewId")
   String? isarViewId;
@@ -1635,6 +1660,7 @@ enum DeleteType {
   notDownloaded("notDownloaded");
 
   const DeleteType(this.textForm);
+
   final String textForm;
 }
 
@@ -2118,8 +2144,11 @@ class FinampQueueInfo {
   String id;
 
   int get currentTrackIndex => previousTracks.length + (currentTrack == null ? 0 : 1);
+
   int get remainingTrackCount => nextUp.length + queue.length;
+
   int get trackCount => currentTrackIndex + remainingTrackCount;
+
   List<FinampQueueItem> get fullQueue => CombinedIterableView([
     previousTracks,
     currentTrack != null ? [currentTrack!] : <FinampQueueItem>[],
@@ -2284,7 +2313,6 @@ enum VolumeNormalizationMode {
   /// Only normalize if playing albums
   @HiveField(2)
   albumOnly,
-
   @HiveField(3)
   albumBased,
 }
@@ -2529,6 +2557,7 @@ class FinampCollection {
   };
 
   factory FinampCollection.fromJson(Map<String, dynamic> json) => _$FinampCollectionFromJson(json);
+
   Map<String, dynamic> toJson() => _$FinampCollectionToJson(this);
 }
 
@@ -3000,6 +3029,7 @@ class FinampOutputRoute {
   final Object? extras;
   @HiveField(12)
   final String? iconUri;
+
   // @HiveField(13)
   // final List<Object>? controlFilters;
 
@@ -3398,7 +3428,6 @@ class SleepTimer {
 enum SleepTimerType {
   @HiveField(0)
   duration,
-
   @HiveField(1)
   tracks,
 }
@@ -3600,32 +3629,38 @@ enum PlaybackActionRowPage {
 @HiveType(typeId: 108)
 class RawThemeResult {
   RawThemeResult(this._highlightInt, this._backgroundInt);
+
   RawThemeResult.fromColors(Color highlight, Color background)
     : _highlightInt = highlight.toARGB32(),
       _backgroundInt = background.toARGB32();
 
   @HiveField(0)
   final int _highlightInt;
+
   Color get highlight => Color(_highlightInt);
   @HiveField(1)
   final int _backgroundInt;
+
   Color get background => Color(_backgroundInt);
 }
 
+@HiveType(typeId: 109)
 enum StatsTabContentType {
-  all("Gesamt");
+  @HiveField(0)
+  track("Track"),
+  @HiveField(1)
+  artist("Künstler");
 
   const StatsTabContentType(this.name);
 
   final String name;
-
 }
 
 class PlaybackEntry {
-  const PlaybackEntry(this.mediaItem, this.dateTime, this.duration);
+  const PlaybackEntry(this.mediaItem, this.startTime, this.duration);
 
   final MediaItem mediaItem;
-  final DateTime dateTime;
+  final DateTime startTime;
   final Duration duration;
 }
 
@@ -3635,18 +3670,111 @@ extension MediaItemDescriptor on MediaItem {
 
 extension BaseItemDtoDescriptor on BaseItemDto {
   String descriptor() => "${nullsafeArtistsString()} - $name";
+
   String? artistsString() => artists?.join(", ");
+
   String nullsafeArtistsString() => artistsString() ?? "Unknown Artist";
 }
 
 class Stats {
-  static List<PlaybackEntry> playbackEntries = [];
-  static MediaItem? lastMediaItem;
-  static Duration? playbackSegmentStart;
-  static Duration? lastPlaybackSegment;
+  static List<PlaybackEntry> consolidatedPlaybackEntries = [];
+  static List<PlaybackEntry> consecutivePlaybackEntries = [];
 
-  static void addEntry(PlaybackEntry playbackEntry) {
-    playbackEntries.add(playbackEntry);
+  static List<PlaybackEntry> get playbackEntries =>
+      consolidatedPlaybackEntries + [?combinePlaybackEntries(consecutivePlaybackEntries)];
+  static MediaItem? lastMediaItem;
+  static Duration? playbackSegmentStartPosition;
+  static DateTime? playbackSegmentStartTime;
+
+  static void saveEntry(MediaItem mediaItem, Duration startPosition, Duration endPosition, DateTime startTime) {
+    Duration duration = endPosition - startPosition;
+    consecutivePlaybackEntries.add(PlaybackEntry(mediaItem, startTime, duration));
+    reset();
+  }
+
+  static void reset() {
+    playbackSegmentStartPosition = null;
+    playbackSegmentStartTime = null;
+  }
+
+  static void startEntry(DateTime startTime, Duration startPosition) {
+    playbackSegmentStartTime ??= startTime;
+    playbackSegmentStartPosition ??= startPosition;
+  }
+
+  static void consolidateEntries() {
+    consolidatedPlaybackEntries += [?combinePlaybackEntries(consecutivePlaybackEntries)];
+    consecutivePlaybackEntries.clear();
+  }
+
+  static PlaybackEntry? combinePlaybackEntries(List<PlaybackEntry> entries) {
+    if (entries.isEmpty) return null;
+    final PlaybackEntry firstEntry = entries.first;
+    return PlaybackEntry(
+      firstEntry.mediaItem,
+      firstEntry.startTime,
+      entries.fold(Duration.zero, (sum, entry) => sum + entry.duration),
+    );
+  }
+
+  static void listen() {
+    final audioHandler = GetIt.instance<MusicPlayerBackgroundTask>();
+    Rx.combineLatest2<MediaItem?, PlaybackState, (MediaItem?, PlaybackState)>(
+      audioHandler.mediaItem,
+      audioHandler.playbackState,
+      (mediaItem, state) => (mediaItem, state),
+    ).pairwise().listen((eventPair) {
+      final (previousMediaItem, previousPlaybackState) = eventPair[0];
+      final (currentMediaItem, currentPlaybackState) = eventPair[1];
+      final timestamp = DateTime.now();
+
+      if (currentMediaItem == null) return;
+
+      if (previousMediaItem != null) {
+        if (currentMediaItem == previousMediaItem) {
+          final Duration timeBetweenCycles = currentPlaybackState.position - previousPlaybackState.position;
+          if (timeBetweenCycles.inSeconds != 0 && playbackSegmentStartTime != null && playbackSegmentStartPosition != null) {
+            saveEntry(
+              previousMediaItem,
+              playbackSegmentStartPosition!,
+              previousPlaybackState.position,
+              playbackSegmentStartTime!,
+            );
+            if (currentPlaybackState.playing) {
+              startEntry(timestamp, currentPlaybackState.position);
+            }
+          }
+        } else {
+          if (playbackSegmentStartTime != null && playbackSegmentStartPosition != null) {
+            saveEntry(
+              previousMediaItem,
+              playbackSegmentStartPosition!,
+              previousPlaybackState.position,
+              playbackSegmentStartTime!,
+            );
+          }
+          consolidateEntries();
+          if (currentPlaybackState.playing) {
+            startEntry(timestamp, currentPlaybackState.position);
+          }
+        }
+      }
+
+      if (previousPlaybackState.playing) {
+        if (!currentPlaybackState.playing) {
+          saveEntry(
+            currentMediaItem,
+            playbackSegmentStartPosition!,
+            previousPlaybackState.position,
+            playbackSegmentStartTime!,
+          );
+        }
+      } else {
+        if (currentPlaybackState.playing) {
+          startEntry(timestamp, currentPlaybackState.position);
+        }
+      }
+    });
   }
 
   static Map<String, int> calculatePlaycountRanking() {
@@ -3657,5 +3785,128 @@ class Stats {
       countsById[id] = (countsById[id] ?? 0) + 1;
     }
     return countsById;
+  }
+
+  static Map<String, Duration> calculatePlaytimeRanking() {
+    final Map<String, Duration> timeById = {};
+
+    for (final play in playbackEntries) {
+      final id = play.mediaItem.descriptor();
+      timeById[id] = (timeById[id] ?? Duration.zero) + play.duration;
+    }
+    print(timeById);
+    return timeById;
+  }
+}
+
+@HiveType(typeId: 110)
+enum StatsSortBy {
+  @HiveField(0)
+  time,
+  @HiveField(1)
+  count,
+  @HiveField(2)
+  defaultOrder;
+
+  static List<StatsSortBy> defaultsFor({required StatsTabContentType type, bool includeDefaultOrder = false}) {
+    List<StatsSortBy> options;
+
+    switch (type) {
+      case StatsTabContentType.track:
+        options = [StatsSortBy.count, StatsSortBy.time];
+      case StatsTabContentType.artist:
+        options = [StatsSortBy.count, StatsSortBy.time];
+    }
+    if (includeDefaultOrder) {
+      options.insert(0, StatsSortBy.defaultOrder);
+    }
+    return options;
+  }
+
+  /// Human-readable version of the [StatsSortBy]. For example, toString() on
+  /// [StatsSortBy.album], toString() would return "StatsSortBy.album". With this
+  /// function, the same input would return "Album".
+  @override
+  @Deprecated("Use toLocalisedString when possible")
+  String toString() => _humanReadableName(this);
+
+  String toLocalisedString(BuildContext context) => _humanReadableLocalisedName(this, context);
+
+  /// Name used by Jellyfin in API requests.
+  String jellyfinName(TabContentType? contentType) {
+    switch (contentType) {
+      case TabContentType.albums:
+        return _jellyfinNameMusicAlbums(this);
+      case TabContentType.tracks:
+        return _jellyfinNameTracks(this);
+      default:
+        return _jellyfinName(this);
+    }
+  }
+
+  String _humanReadableName(StatsSortBy sortBy) {
+    switch (sortBy) {
+      case StatsSortBy.count:
+        return "Count";
+      case StatsSortBy.time:
+        return "Time";
+      case StatsSortBy.defaultOrder:
+        return "Server Order";
+    }
+  }
+
+  String _humanReadableLocalisedName(StatsSortBy sortBy, BuildContext context) {
+    switch (sortBy) {
+      case StatsSortBy.count:
+        return "Count";
+      case StatsSortBy.time:
+        return "Time";
+      case StatsSortBy.defaultOrder:
+        return AppLocalizations.of(context)!.defaultOrder;
+    }
+  }
+
+  String _jellyfinName(StatsSortBy sortBy) {
+    switch (sortBy) {
+      case StatsSortBy.count:
+        return "Count";
+      case StatsSortBy.time:
+        return "Time";
+      case StatsSortBy.defaultOrder:
+        return "";
+    }
+  }
+
+  String _jellyfinNameMusicAlbums(StatsSortBy sortBy) {
+    switch (sortBy) {
+      case StatsSortBy.count:
+        return "Count";
+      case StatsSortBy.time:
+        return "Time";
+      case StatsSortBy.defaultOrder:
+        return "";
+    }
+  }
+
+  String _jellyfinNameTracks(StatsSortBy sortBy) {
+    switch (sortBy) {
+      case StatsSortBy.count:
+        return "Count";
+      case StatsSortBy.time:
+        return "Time";
+      case StatsSortBy.defaultOrder:
+        return "";
+    }
+  }
+
+  IconData? getIcon() {
+    switch (this) {
+      case StatsSortBy.time:
+        return TablerIcons.clock;
+      case StatsSortBy.count:
+        return TablerIcons.calculator;
+      case StatsSortBy.defaultOrder:
+        return TablerIcons.server;
+    }
   }
 }

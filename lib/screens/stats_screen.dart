@@ -3,6 +3,8 @@ import 'dart:io';
 import 'dart:ui';
 
 import 'package:finamp/components/StatsScreen/stats_screen_tab_view.dart';
+import 'package:finamp/components/StatsScreen/stats_sort_by_menu_button.dart';
+import 'package:finamp/components/StatsScreen/stats_sort_order_button.dart';
 import 'package:finamp/components/global_snackbar.dart';
 import 'package:finamp/components/now_playing_bar.dart';
 import 'package:finamp/l10n/app_localizations.dart';
@@ -26,7 +28,6 @@ final _statsScreenLogger = Logger("StatsScreen");
 class StatsScreen extends ConsumerStatefulWidget {
   const StatsScreen({
     super.key,
-    this.genreFilter,
     this.tabTypeFilter,
     this.sortByOverrideInit,
     this.sortOrderOverrideInit,
@@ -36,9 +37,8 @@ class StatsScreen extends ConsumerStatefulWidget {
   static const routeName = "/stats";
 
   // Optional parameters for genre and tab filtering
-  final BaseItemDto? genreFilter;
   final StatsTabContentType? tabTypeFilter;
-  final SortBy? sortByOverrideInit;
+  final StatsSortBy? sortByOverrideInit;
   final SortOrder? sortOrderOverrideInit;
   final bool? isFavoriteOverrideInit;
 
@@ -51,7 +51,7 @@ class _StatsScreenState extends ConsumerState<StatsScreen>
   bool isSearching = false;
   TextEditingController textEditingController = TextEditingController();
   final Map<StatsTabContentType, StatsRefreshCallback> refreshMap = {};
-  SortBy? sortByOverride;
+  StatsSortBy? sortByOverride;
   SortOrder? sortOrderOverride;
   bool? isFavoriteOverride;
 
@@ -70,7 +70,7 @@ class _StatsScreenState extends ConsumerState<StatsScreen>
   void _buildTabController() {
     _tabController?.removeListener(_tabIndexCallback);
 
-    final tabs = [StatsTabContentType.all];
+    final tabs = StatsTabContentType.values;
 
     _tabController =
         TabController(length: tabs.length, vsync: this, initialIndex: 0);
@@ -92,33 +92,6 @@ class _StatsScreenState extends ConsumerState<StatsScreen>
     super.dispose();
   }
 
-  FloatingActionButton? getFloatingActionButton(
-      List<StatsTabContentType> sortedTabs) {
-    // Show the floating action button only on the albums, artists, generes and tracks tab.
-    if (_tabController!.index ==
-        sortedTabs.indexOf(StatsTabContentType.all)) {
-      return FloatingActionButton(
-        tooltip: AppLocalizations.of(context)!.shuffleAll,
-        onPressed: () async {
-          try {
-            await _audioServiceHelper.shuffleAll(
-              onlyShowFavorites:
-              (isFavoriteOverride == true ||
-                  (isFavoriteOverride == null &&
-                      ref.read(finampSettingsProvider.onlyShowFavorites))),
-              genreFilter: widget.genreFilter,
-            );
-          } catch (e) {
-            GlobalSnackbar.error(e);
-          }
-        },
-        child: const Icon(Icons.shuffle),
-      );
-    } else {
-      return null;
-    }
-  }
-
   void refreshTab(StatsTabContentType tabType) {
     refreshMap[tabType]?.call();
   }
@@ -135,7 +108,7 @@ class _StatsScreenState extends ConsumerState<StatsScreen>
         ? [widget.tabTypeFilter!]
         : ref
         .watch(finampSettingsProvider.tabOrder);*/
-    final sortedTabs = [StatsTabContentType.all];
+    final sortedTabs = StatsTabContentType.values;
     refreshMap[sortedTabs.elementAt(_tabController!.index)] =
         StatsRefreshCallback();
 
@@ -155,8 +128,7 @@ class _StatsScreenState extends ConsumerState<StatsScreen>
           titleSpacing: 0,
           // The surrounding iconButtons provide enough padding
           title: Text("Statistiken"),
-          bottom: widget.genreFilter == null
-              ? TabBar(
+          bottom:  TabBar(
             controller: _tabController,
             tabs: sortedTabs
                 .map(
@@ -171,32 +143,8 @@ class _StatsScreenState extends ConsumerState<StatsScreen>
             ).toList(),
             isScrollable: true,
             tabAlignment: TabAlignment.start,
-          )
-              : PreferredSize(
-            preferredSize: const Size.fromHeight(36),
-            child: Container(
-              alignment: Alignment.centerLeft,
-              width: double.infinity,
-              height: 36.0,
-              padding: EdgeInsets.only(left: 12, right: 12),
-              color: Theme
-                  .of(context)
-                  .colorScheme
-                  .primary,
-              child: Text(
-                widget.genreFilter?.name ?? "",
-                style: Theme.of(context)
-                    .textTheme
-                    .bodyMedium
-                    ?.copyWith(color: Theme
-                    .of(context)
-                    .colorScheme
-                    .onPrimary),
-                overflow: TextOverflow.ellipsis,
-              ),
-            ),
           ),
-          leading: (widget.genreFilter != null ? BackButton(onPressed: () => Navigator.of(context).pop()) : null),
+          //leading: (widget.genreFilter != null ? BackButton(onPressed: () => Navigator.of(context).pop()) : null),
           actions: [
             if (!Platform.isIOS && !Platform.isAndroid)
               IconButton(
@@ -205,7 +153,7 @@ class _StatsScreenState extends ConsumerState<StatsScreen>
                   refreshMap[sortedTabs.elementAt(_tabController!.index)]!();
                 },
               ),
-            /*SortOrderButton(
+            StatsSortOrderButton(
               tabType: sortedTabs.elementAt(_tabController!.index),
               sortOrderOverride: sortOrderOverride,
               onOverrideChanged: (newOrder) =>
@@ -213,17 +161,17 @@ class _StatsScreenState extends ConsumerState<StatsScreen>
                     sortOrderOverride = newOrder;
                   }),
             ),
-            SortByMenuButton(
+            StatsSortByMenuButton(
               tabType: sortedTabs.elementAt(_tabController!.index),
               sortByOverride: sortByOverride,
               onOverrideChanged: (newSortBy) =>
                   setState(() {
                     sortByOverride = newSortBy;
                   }),
-            ),*/
+            ),
             if (ref.watch(finampSettingsProvider.isOffline) &&
                 sortedTabs.elementAt(_tabController!.index) !=
-                    StatsTabContentType.all)
+                    StatsTabContentType.track)
               IconButton(
                 icon: ref.watch(finampSettingsProvider.onlyShowFullyDownloaded)
                     ? const Icon(Icons.download)
@@ -239,13 +187,6 @@ class _StatsScreenState extends ConsumerState<StatsScreen>
           ],
         ),
         bottomNavigationBar: const NowPlayingBar(),
-        floatingActionButton: Padding(
-          padding: EdgeInsets.only(
-              right: ref.watch(finampSettingsProvider.showFastScroller)
-                  ? 24.0
-                  : 8.0),
-          child: getFloatingActionButton(sortedTabs.toList()),
-        ),
         body: Builder(
           builder: (context) {
             final child = TabBarView(
@@ -271,11 +212,6 @@ class _StatsScreenState extends ConsumerState<StatsScreen>
                         statsTabContentType: tabType,
                         view: _finampUserHelper.currentUser?.currentView,
                         refresh: refreshMap[tabType],
-                        genreFilter:
-                        (widget.genreFilter != null &&
-                            (tabType == StatsTabContentType.all))
-                            ? widget.genreFilter
-                            : null,
                         tabBarFiltered: (widget.tabTypeFilter != null),
                         sortByOverride: sortByOverride,
                         sortOrderOverride: sortOrderOverride,

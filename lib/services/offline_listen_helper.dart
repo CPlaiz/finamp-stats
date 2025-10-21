@@ -55,7 +55,7 @@ class OfflineListenLogHelper {
   /// Logs a listen to a file.
   ///
   /// This is used when the user is offline or submitting live playback events fails.
-  /// The [timestamp] provided to this function should be in seconds
+  /// The [startTime] provided to this function should be in seconds
   /// and marks the time the track was stopped.
   Future<void> _logOfflineListen(OfflineListen listen) {
     _logger.info("Storing offline listen for ${listen.name}");

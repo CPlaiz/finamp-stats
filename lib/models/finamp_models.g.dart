@@ -41,8 +41,7 @@ class FinampUserAdapter extends TypeAdapter<FinampUser> {
   @override
   void write(BinaryWriter writer, FinampUser obj) {
     writer
-      ..writeByte(9)
-      ..writeByte(0)
+      ..writeByte(9)..writeByte(0)
       ..write(obj.id)
       ..writeByte(1)
       ..write(obj.publicAddress)
@@ -68,9 +67,9 @@ class FinampUserAdapter extends TypeAdapter<FinampUser> {
   @override
   bool operator ==(Object other) =>
       identical(this, other) ||
-      other is FinampUserAdapter &&
-          runtimeType == other.runtimeType &&
-          typeId == other.typeId;
+          other is FinampUserAdapter &&
+              runtimeType == other.runtimeType &&
+              typeId == other.typeId;
 }
 
 class FinampSettingsAdapter extends TypeAdapter<FinampSettings> {
@@ -84,353 +83,359 @@ class FinampSettingsAdapter extends TypeAdapter<FinampSettings> {
       for (int i = 0; i < numOfFields; i++) reader.readByte(): reader.read(),
     };
     return FinampSettings(
-        isOffline: fields[0] == null ? false : fields[0] as bool,
-        shouldTranscode: fields[1] == null ? false : fields[1] as bool,
-        transcodeBitrate: fields[2] == null
-            ? 320000
-            : (fields[2] as num).toInt(),
-        downloadLocations: (fields[3] as List).cast<DownloadLocation>(),
-        androidStopForegroundOnPause: fields[4] == null
-            ? true
-            : fields[4] as bool,
-        showTabs: (fields[5] as Map).cast<TabContentType, bool>(),
-        onlyShowFavorites: fields[6] == null ? false : fields[6] as bool,
-        sortBy: fields[7] == null ? SortBy.sortName : fields[7] as SortBy,
-        sortOrder: fields[8] == null
-            ? SortOrder.ascending
-            : fields[8] as SortOrder,
-        trackShuffleItemCount: fields[9] == null
-            ? 250
-            : (fields[9] as num).toInt(),
-        volumeNormalizationActive: fields[29] == null
-            ? true
-            : fields[29] as bool,
-        volumeNormalizationIOSBaseGain: fields[30] == null
-            ? 6.0
-            : (fields[30] as num).toDouble(),
-        volumeNormalizationMode: fields[33] == null
-            ? VolumeNormalizationMode.hybrid
-            : fields[33] as VolumeNormalizationMode,
-        contentViewType: fields[10] == null
-            ? ContentViewType.list
-            : fields[10] as ContentViewType,
-        playbackSpeedVisibility: fields[57] == null
-            ? PlaybackSpeedVisibility.automatic
-            : fields[57] as PlaybackSpeedVisibility,
-        contentGridViewCrossAxisCountPortrait: fields[11] == null
-            ? 2
-            : (fields[11] as num).toInt(),
-        contentGridViewCrossAxisCountLandscape: fields[12] == null
-            ? 3
-            : (fields[12] as num).toInt(),
-        showTextOnGridView: fields[13] == null ? false : fields[13] as bool,
-        downloadLocationsMap: fields[15] == null
-            ? {}
-            : (fields[15] as Map).cast<String, DownloadLocation>(),
-        useCoverAsBackground: fields[16] == null ? true : fields[16] as bool,
-        playerScreenCoverMinimumPadding: fields[48] == null
-            ? 1.5
-            : (fields[48] as num).toDouble(),
-        showArtistsTracksSection: fields[54] == null
-            ? true
-            : fields[54] as bool,
-        bufferDisableSizeConstraints: fields[78] == null
-            ? false
-            : fields[78] as bool,
-        bufferDurationSeconds: fields[18] == null
-            ? 600
-            : (fields[18] as num).toInt(),
-        bufferSizeMegabytes: fields[79] == null
-            ? 50
-            : (fields[79] as num).toInt(),
-        tabSortBy: fields[20] == null
-            ? {}
-            : (fields[20] as Map).cast<TabContentType, SortBy>(),
-        tabSortOrder: fields[21] == null
-            ? {}
-            : (fields[21] as Map).cast<TabContentType, SortOrder>(),
-        loopMode: fields[27] == null
-            ? FinampLoopMode.none
-            : fields[27] as FinampLoopMode,
-        playbackSpeed: fields[56] == null
-            ? 1.0
-            : (fields[56] as num).toDouble(),
-        playbackPitch: fields[118] == null
-            ? 1.0
-            : (fields[118] as num).toDouble(),
-        syncPlaybackSpeedAndPitch: fields[119] == null
-            ? false
-            : fields[119] as bool,
-        tabOrder: fields[22] == null
-            ? [
-                TabContentType.albums,
-                TabContentType.artists,
-                TabContentType.playlists,
-                TabContentType.genres,
-                TabContentType.tracks,
-              ]
-            : (fields[22] as List).cast<TabContentType>(),
-        autoloadLastQueueOnStartup: fields[28] == null
-            ? true
-            : fields[28] as bool,
-        hasCompletedDownloadsServiceMigration: fields[34] == null
-            ? false
-            : fields[34] as bool,
-        requireWifiForDownloads: fields[35] == null ? true : fields[35] as bool,
-        onlyShowFullyDownloaded: fields[36] == null
-            ? false
-            : fields[36] as bool,
-        showDownloadsWithUnknownLibrary: fields[37] == null
-            ? true
-            : fields[37] as bool,
-        maxConcurrentDownloads: fields[38] == null
-            ? 5
-            : (fields[38] as num).toInt(),
-        downloadWorkers: fields[39] == null ? 1 : (fields[39] as num).toInt(),
-        resyncOnStartup: fields[40] == null ? true : fields[40] as bool,
-        preferQuickSyncs: fields[41] == null ? true : fields[41] as bool,
-        hasCompletedIsarUserMigration: fields[42] == null
-            ? false
-            : fields[42] as bool,
-        downloadTranscodingCodec: fields[43] as FinampTranscodingCodec?,
-        downloadTranscodeBitrate: (fields[45] as num?)?.toInt(),
-        shouldTranscodeDownloads: fields[44] == null
-            ? TranscodeDownloadsSetting.ask
-            : fields[44] as TranscodeDownloadsSetting,
-        shouldRedownloadTranscodes: fields[46] == null
-            ? false
-            : fields[46] as bool,
-        itemSwipeActionLeftToRight: fields[90] == null
-            ? ItemSwipeActions.nothing
-            : fields[90] as ItemSwipeActions,
-        itemSwipeActionRightToLeft: fields[91] == null
-            ? ItemSwipeActions.addToNextUp
-            : fields[91] as ItemSwipeActions,
-        useFixedSizeGridTiles: fields[59] == null ? false : fields[59] as bool,
-        fixedGridTileSize: fields[60] == null
-            ? 150
-            : (fields[60] as num).toInt(),
-        allowSplitScreen: fields[61] == null ? true : fields[61] as bool,
-        splitScreenPlayerWidth: fields[62] == null
-            ? 400.0
-            : (fields[62] as num).toDouble(),
-        enableVibration: fields[47] == null ? true : fields[47] as bool,
-        prioritizeCoverFactor: fields[49] == null
-            ? 8.0
-            : (fields[49] as num).toDouble(),
-        suppressPlayerPadding: fields[50] == null ? false : fields[50] as bool,
-        hidePlayerBottomActions: fields[51] == null
-            ? false
-            : fields[51] as bool,
-        reportQueueToServer: fields[52] == null ? false : fields[52] as bool,
-        periodicPlaybackSessionUpdateFrequencySeconds: fields[53] == null
-            ? 150
-            : (fields[53] as num).toInt(),
-        playOnStaleDelay: fields[94] == null ? 90 : (fields[94] as num).toInt(),
-        playOnReconnectionDelay: fields[95] == null
-            ? 5
-            : (fields[95] as num).toInt(),
-        enablePlayon: fields[96] == null ? true : fields[96] as bool,
-        currentVolume: fields[93] == null
-            ? 1.0
-            : (fields[93] as num).toDouble(),
-        showArtistChipImage: fields[55] == null ? true : fields[55] as bool,
-        trackOfflineFavorites: fields[63] == null ? true : fields[63] as bool,
-        showProgressOnNowPlayingBar: fields[64] == null
-            ? true
-            : fields[64] as bool,
-        startInstantMixForIndividualTracks: fields[65] == null
-            ? true
-            : fields[65] as bool,
-        showLyricsTimestamps: fields[66] == null ? true : fields[66] as bool,
-        lyricsAlignment: fields[67] == null
-            ? LyricsAlignment.start
-            : fields[67] as LyricsAlignment,
-        lyricsFontSize: fields[70] == null
-            ? LyricsFontSize.medium
-            : fields[70] as LyricsFontSize,
-        showLyricsScreenAlbumPrelude: fields[71] == null
-            ? true
-            : fields[71] as bool,
-        showStopButtonOnMediaNotification: fields[68] == null
-            ? false
-            : fields[68] as bool,
-        showShuffleButtonOnMediaNotification: fields[98] == null
-            ? true
-            : fields[98] as bool,
-        showFavoriteButtonOnMediaNotification: fields[99] == null
-            ? true
-            : fields[99] as bool,
-        showSeekControlsOnMediaNotification: fields[69] == null
-            ? true
-            : fields[69] as bool,
-        keepScreenOnOption: fields[72] == null
-            ? KeepScreenOnOption.whileLyrics
-            : fields[72] as KeepScreenOnOption,
-        keepScreenOnWhilePluggedIn: fields[73] == null
-            ? true
-            : fields[73] as bool,
-        featureChipsConfiguration: fields[76] == null
-            ? DefaultSettings.featureChipsConfiguration
-            : fields[76] as FinampFeatureChipsConfiguration,
-        showCoversOnAlbumScreen: fields[77] == null
-            ? false
-            : fields[77] as bool,
-        hasDownloadedPlaylistInfo: fields[74] == null
-            ? false
-            : fields[74] as bool,
-        transcodingStreamingFormat: fields[75] == null
-            ? FinampTranscodingStreamingFormat.aacFragmentedMp4
-            : fields[75] as FinampTranscodingStreamingFormat,
-        downloadSizeWarningCutoff: fields[80] == null
-            ? 150
-            : (fields[80] as num).toInt(),
-        allowDeleteFromServer: fields[81] == null ? false : fields[81] as bool,
-        oneLineMarqueeTextButton: fields[82] == null
-            ? false
-            : fields[82] as bool,
-        showAlbumReleaseDateOnPlayerScreen: fields[83] == null
-            ? false
-            : fields[83] as bool,
-        releaseDateFormat: fields[84] == null
-            ? ReleaseDateFormat.year
-            : fields[84] as ReleaseDateFormat,
-        defaultArtistType: fields[92] == null
-            ? ArtistType.albumArtist
-            : fields[92] as ArtistType,
-        autoOffline: fields[88] == null
-            ? AutoOfflineOption.disconnected
-            : fields[88] as AutoOfflineOption,
-        autoOfflineListenerActive: fields[89] == null
-            ? true
-            : fields[89] as bool,
-        audioFadeOutDuration: fields[86] == null
-            ? Duration.zero
-            : fields[86] as Duration,
-        audioFadeInDuration: fields[87] == null
-            ? Duration.zero
-            : fields[87] as Duration,
-        autoReloadQueue: fields[97] == null ? false : fields[97] as bool,
-        screenSize: fields[100] as ScreenSize?,
-        genreCuratedItemSelectionTypeTracks: fields[101] == null
-            ? CuratedItemSelectionType.mostPlayed
-            : fields[101] as CuratedItemSelectionType,
-        genreCuratedItemSelectionTypeAlbums: fields[102] == null
-            ? CuratedItemSelectionType.latestReleases
-            : fields[102] as CuratedItemSelectionType,
-        genreCuratedItemSelectionTypeArtists: fields[103] == null
-            ? CuratedItemSelectionType.favorites
-            : fields[103] as CuratedItemSelectionType,
-        genreItemSectionsOrder: fields[104] == null
-            ? [
-                GenreItemSections.tracks,
-                GenreItemSections.albums,
-                GenreItemSections.artists,
-              ]
-            : (fields[104] as List).cast<GenreItemSections>(),
-        genreFilterArtistScreens: fields[105] == null
-            ? true
-            : fields[105] as bool,
-        genreListsInheritSorting: fields[106] == null
-            ? true
-            : fields[106] as bool,
-        genreItemSectionFilterChipOrder: fields[107] == null
-            ? [
-                CuratedItemSelectionType.mostPlayed,
-                CuratedItemSelectionType.favorites,
-                CuratedItemSelectionType.random,
-                CuratedItemSelectionType.latestReleases,
-                CuratedItemSelectionType.recentlyAdded,
-                CuratedItemSelectionType.recentlyPlayed,
-              ]
-            : (fields[107] as List).cast<CuratedItemSelectionType>(),
-        applyFilterOnGenreChipTap: fields[108] == null
-            ? false
-            : fields[108] as bool,
-        artistCuratedItemSelectionType: fields[109] == null
-            ? CuratedItemSelectionType.mostPlayed
-            : fields[109] as CuratedItemSelectionType,
-        artistItemSectionFilterChipOrder: fields[110] == null
-            ? [
-                CuratedItemSelectionType.mostPlayed,
-                CuratedItemSelectionType.favorites,
-                CuratedItemSelectionType.random,
-                CuratedItemSelectionType.latestReleases,
-                CuratedItemSelectionType.recentlyAdded,
-                CuratedItemSelectionType.recentlyPlayed,
-              ]
-            : (fields[110] as List).cast<CuratedItemSelectionType>(),
-        artistItemSectionsOrder: fields[111] == null
-            ? [
-                ArtistItemSections.tracks,
-                ArtistItemSections.albums,
-                ArtistItemSections.appearsOn,
-              ]
-            : (fields[111] as List).cast<ArtistItemSections>(),
-        autoSwitchItemCurationType: fields[112] == null
-            ? true
-            : fields[112] as bool,
-        playlistTracksSortBy: fields[113] == null
-            ? SortBy.defaultOrder
-            : fields[113] as SortBy,
-        playlistTracksSortOrder: fields[114] == null
-            ? SortOrder.ascending
-            : fields[114] as SortOrder,
-        genreFilterPlaylists: fields[115] == null ? false : fields[115] as bool,
-        clearQueueOnStopEvent: fields[117] == null
-            ? false
-            : fields[117] as bool,
-        useHighContrastColors: fields[120] == null
-            ? false
-            : fields[120] as bool,
-        hasCompletedDownloadsFileOwnerMigration: fields[121] == null
-            ? false
-            : fields[121] as bool,
-        tileAdditionalInfoType: fields[122] == null
-            ? {
-                TabContentType.tracks: TileAdditionalInfoType.adaptive,
-                TabContentType.albums: TileAdditionalInfoType.adaptive,
-                TabContentType.artists: TileAdditionalInfoType.adaptive,
-                TabContentType.playlists: TileAdditionalInfoType.adaptive,
-                TabContentType.genres: TileAdditionalInfoType.adaptive,
-              }
-            : (fields[122] as Map)
-                  .cast<TabContentType, TileAdditionalInfoType>(),
-        rpcEnabled: fields[123] == null ? false : fields[123] as bool,
-        rpcIcon: fields[124] == null
-            ? DiscordRpcIcon.transparent
-            : fields[124] as DiscordRpcIcon,
-        preferAddingToFavoritesOverPlaylists: fields[126] == null
-            ? false
-            : fields[126] as bool,
-        previousTracksExpaned: fields[127] == null
-            ? false
-            : fields[127] as bool,
-        autoplayRestoredQueue: fields[128] == null
-            ? false
-            : fields[128] as bool,
-        preferNextUpPrepending: fields[129] == null
-            ? true
-            : fields[129] as bool,
-        rememberLastUsedPlaybackActionRowPage: fields[130] == null
-            ? true
-            : fields[130] as bool,
-        lastUsedPlaybackActionRowPage: fields[131] == null
-            ? PlaybackActionRowPage.newQueue
-            : fields[131] as PlaybackActionRowPage,
-        accentColor: fields[132] == null
-            ? DefaultSettings.accentColor
-            : fields[132] as Color?,
-        themeMode: fields[133] == null
-            ? ThemeMode.system
-            : fields[133] as ThemeMode,
-        locale: fields[134] == null
-            ? DefaultSettings.locale
-            : fields[134] as Locale?,
-        hasCompletedThemeModeLocaleMigration: fields[135] == null
-            ? false
-            : fields[135] as bool,
-      )
+      isOffline: fields[0] == null ? false : fields[0] as bool,
+      shouldTranscode: fields[1] == null ? false : fields[1] as bool,
+      transcodeBitrate: fields[2] == null
+          ? 320000
+          : (fields[2] as num).toInt(),
+      downloadLocations: (fields[3] as List).cast<DownloadLocation>(),
+      androidStopForegroundOnPause: fields[4] == null
+          ? true
+          : fields[4] as bool,
+      showTabs: (fields[5] as Map).cast<TabContentType, bool>(),
+      onlyShowFavorites: fields[6] == null ? false : fields[6] as bool,
+      sortBy: fields[7] == null ? SortBy.sortName : fields[7] as SortBy,
+      sortOrder: fields[8] == null
+          ? SortOrder.ascending
+          : fields[8] as SortOrder,
+      trackShuffleItemCount: fields[9] == null
+          ? 250
+          : (fields[9] as num).toInt(),
+      volumeNormalizationActive: fields[29] == null
+          ? true
+          : fields[29] as bool,
+      volumeNormalizationIOSBaseGain: fields[30] == null
+          ? 6.0
+          : (fields[30] as num).toDouble(),
+      volumeNormalizationMode: fields[33] == null
+          ? VolumeNormalizationMode.hybrid
+          : fields[33] as VolumeNormalizationMode,
+      contentViewType: fields[10] == null
+          ? ContentViewType.list
+          : fields[10] as ContentViewType,
+      playbackSpeedVisibility: fields[57] == null
+          ? PlaybackSpeedVisibility.automatic
+          : fields[57] as PlaybackSpeedVisibility,
+      contentGridViewCrossAxisCountPortrait: fields[11] == null
+          ? 2
+          : (fields[11] as num).toInt(),
+      contentGridViewCrossAxisCountLandscape: fields[12] == null
+          ? 3
+          : (fields[12] as num).toInt(),
+      showTextOnGridView: fields[13] == null ? false : fields[13] as bool,
+      downloadLocationsMap: fields[15] == null
+          ? {}
+          : (fields[15] as Map).cast<String, DownloadLocation>(),
+      useCoverAsBackground: fields[16] == null ? true : fields[16] as bool,
+      playerScreenCoverMinimumPadding: fields[48] == null
+          ? 1.5
+          : (fields[48] as num).toDouble(),
+      showArtistsTracksSection: fields[54] == null
+          ? true
+          : fields[54] as bool,
+      bufferDisableSizeConstraints: fields[78] == null
+          ? false
+          : fields[78] as bool,
+      bufferDurationSeconds: fields[18] == null
+          ? 600
+          : (fields[18] as num).toInt(),
+      bufferSizeMegabytes: fields[79] == null
+          ? 50
+          : (fields[79] as num).toInt(),
+      tabSortBy: fields[20] == null
+          ? {}
+          : (fields[20] as Map).cast<TabContentType, SortBy>(),
+      tabSortOrder: fields[21] == null
+          ? {}
+          : (fields[21] as Map).cast<TabContentType, SortOrder>(),
+      loopMode: fields[27] == null
+          ? FinampLoopMode.none
+          : fields[27] as FinampLoopMode,
+      playbackSpeed: fields[56] == null
+          ? 1.0
+          : (fields[56] as num).toDouble(),
+      playbackPitch: fields[118] == null
+          ? 1.0
+          : (fields[118] as num).toDouble(),
+      syncPlaybackSpeedAndPitch: fields[119] == null
+          ? false
+          : fields[119] as bool,
+      tabOrder: fields[22] == null
+          ? [
+        TabContentType.albums,
+        TabContentType.artists,
+        TabContentType.playlists,
+        TabContentType.genres,
+        TabContentType.tracks,
+      ]
+          : (fields[22] as List).cast<TabContentType>(),
+      autoloadLastQueueOnStartup: fields[28] == null
+          ? true
+          : fields[28] as bool,
+      hasCompletedDownloadsServiceMigration: fields[34] == null
+          ? false
+          : fields[34] as bool,
+      requireWifiForDownloads: fields[35] == null ? true : fields[35] as bool,
+      onlyShowFullyDownloaded: fields[36] == null
+          ? false
+          : fields[36] as bool,
+      showDownloadsWithUnknownLibrary: fields[37] == null
+          ? true
+          : fields[37] as bool,
+      maxConcurrentDownloads: fields[38] == null
+          ? 5
+          : (fields[38] as num).toInt(),
+      downloadWorkers: fields[39] == null ? 1 : (fields[39] as num).toInt(),
+      resyncOnStartup: fields[40] == null ? true : fields[40] as bool,
+      preferQuickSyncs: fields[41] == null ? true : fields[41] as bool,
+      hasCompletedIsarUserMigration: fields[42] == null
+          ? false
+          : fields[42] as bool,
+      downloadTranscodingCodec: fields[43] as FinampTranscodingCodec?,
+      downloadTranscodeBitrate: (fields[45] as num?)?.toInt(),
+      shouldTranscodeDownloads: fields[44] == null
+          ? TranscodeDownloadsSetting.ask
+          : fields[44] as TranscodeDownloadsSetting,
+      shouldRedownloadTranscodes: fields[46] == null
+          ? false
+          : fields[46] as bool,
+      itemSwipeActionLeftToRight: fields[90] == null
+          ? ItemSwipeActions.nothing
+          : fields[90] as ItemSwipeActions,
+      itemSwipeActionRightToLeft: fields[91] == null
+          ? ItemSwipeActions.addToNextUp
+          : fields[91] as ItemSwipeActions,
+      useFixedSizeGridTiles: fields[59] == null ? false : fields[59] as bool,
+      fixedGridTileSize: fields[60] == null
+          ? 150
+          : (fields[60] as num).toInt(),
+      allowSplitScreen: fields[61] == null ? true : fields[61] as bool,
+      splitScreenPlayerWidth: fields[62] == null
+          ? 400.0
+          : (fields[62] as num).toDouble(),
+      enableVibration: fields[47] == null ? true : fields[47] as bool,
+      prioritizeCoverFactor: fields[49] == null
+          ? 8.0
+          : (fields[49] as num).toDouble(),
+      suppressPlayerPadding: fields[50] == null ? false : fields[50] as bool,
+      hidePlayerBottomActions: fields[51] == null
+          ? false
+          : fields[51] as bool,
+      reportQueueToServer: fields[52] == null ? false : fields[52] as bool,
+      periodicPlaybackSessionUpdateFrequencySeconds: fields[53] == null
+          ? 150
+          : (fields[53] as num).toInt(),
+      playOnStaleDelay: fields[94] == null ? 90 : (fields[94] as num).toInt(),
+      playOnReconnectionDelay: fields[95] == null
+          ? 5
+          : (fields[95] as num).toInt(),
+      enablePlayon: fields[96] == null ? true : fields[96] as bool,
+      currentVolume: fields[93] == null
+          ? 1.0
+          : (fields[93] as num).toDouble(),
+      showArtistChipImage: fields[55] == null ? true : fields[55] as bool,
+      trackOfflineFavorites: fields[63] == null ? true : fields[63] as bool,
+      showProgressOnNowPlayingBar: fields[64] == null
+          ? true
+          : fields[64] as bool,
+      startInstantMixForIndividualTracks: fields[65] == null
+          ? true
+          : fields[65] as bool,
+      showLyricsTimestamps: fields[66] == null ? true : fields[66] as bool,
+      lyricsAlignment: fields[67] == null
+          ? LyricsAlignment.start
+          : fields[67] as LyricsAlignment,
+      lyricsFontSize: fields[70] == null
+          ? LyricsFontSize.medium
+          : fields[70] as LyricsFontSize,
+      showLyricsScreenAlbumPrelude: fields[71] == null
+          ? true
+          : fields[71] as bool,
+      showStopButtonOnMediaNotification: fields[68] == null
+          ? false
+          : fields[68] as bool,
+      showShuffleButtonOnMediaNotification: fields[98] == null
+          ? true
+          : fields[98] as bool,
+      showFavoriteButtonOnMediaNotification: fields[99] == null
+          ? true
+          : fields[99] as bool,
+      showSeekControlsOnMediaNotification: fields[69] == null
+          ? true
+          : fields[69] as bool,
+      keepScreenOnOption: fields[72] == null
+          ? KeepScreenOnOption.whileLyrics
+          : fields[72] as KeepScreenOnOption,
+      keepScreenOnWhilePluggedIn: fields[73] == null
+          ? true
+          : fields[73] as bool,
+      featureChipsConfiguration: fields[76] == null
+          ? DefaultSettings.featureChipsConfiguration
+          : fields[76] as FinampFeatureChipsConfiguration,
+      showCoversOnAlbumScreen: fields[77] == null
+          ? false
+          : fields[77] as bool,
+      hasDownloadedPlaylistInfo: fields[74] == null
+          ? false
+          : fields[74] as bool,
+      transcodingStreamingFormat: fields[75] == null
+          ? FinampTranscodingStreamingFormat.aacFragmentedMp4
+          : fields[75] as FinampTranscodingStreamingFormat,
+      downloadSizeWarningCutoff: fields[80] == null
+          ? 150
+          : (fields[80] as num).toInt(),
+      allowDeleteFromServer: fields[81] == null ? false : fields[81] as bool,
+      oneLineMarqueeTextButton: fields[82] == null
+          ? false
+          : fields[82] as bool,
+      showAlbumReleaseDateOnPlayerScreen: fields[83] == null
+          ? false
+          : fields[83] as bool,
+      releaseDateFormat: fields[84] == null
+          ? ReleaseDateFormat.year
+          : fields[84] as ReleaseDateFormat,
+      defaultArtistType: fields[92] == null
+          ? ArtistType.albumArtist
+          : fields[92] as ArtistType,
+      autoOffline: fields[88] == null
+          ? AutoOfflineOption.disconnected
+          : fields[88] as AutoOfflineOption,
+      autoOfflineListenerActive: fields[89] == null
+          ? true
+          : fields[89] as bool,
+      audioFadeOutDuration: fields[86] == null
+          ? Duration.zero
+          : fields[86] as Duration,
+      audioFadeInDuration: fields[87] == null
+          ? Duration.zero
+          : fields[87] as Duration,
+      autoReloadQueue: fields[97] == null ? false : fields[97] as bool,
+      screenSize: fields[100] as ScreenSize?,
+      genreCuratedItemSelectionTypeTracks: fields[101] == null
+          ? CuratedItemSelectionType.mostPlayed
+          : fields[101] as CuratedItemSelectionType,
+      genreCuratedItemSelectionTypeAlbums: fields[102] == null
+          ? CuratedItemSelectionType.latestReleases
+          : fields[102] as CuratedItemSelectionType,
+      genreCuratedItemSelectionTypeArtists: fields[103] == null
+          ? CuratedItemSelectionType.favorites
+          : fields[103] as CuratedItemSelectionType,
+      genreItemSectionsOrder: fields[104] == null
+          ? [
+        GenreItemSections.tracks,
+        GenreItemSections.albums,
+        GenreItemSections.artists,
+      ]
+          : (fields[104] as List).cast<GenreItemSections>(),
+      genreFilterArtistScreens: fields[105] == null
+          ? true
+          : fields[105] as bool,
+      genreListsInheritSorting: fields[106] == null
+          ? true
+          : fields[106] as bool,
+      genreItemSectionFilterChipOrder: fields[107] == null
+          ? [
+        CuratedItemSelectionType.mostPlayed,
+        CuratedItemSelectionType.favorites,
+        CuratedItemSelectionType.random,
+        CuratedItemSelectionType.latestReleases,
+        CuratedItemSelectionType.recentlyAdded,
+        CuratedItemSelectionType.recentlyPlayed,
+      ]
+          : (fields[107] as List).cast<CuratedItemSelectionType>(),
+      applyFilterOnGenreChipTap: fields[108] == null
+          ? false
+          : fields[108] as bool,
+      artistCuratedItemSelectionType: fields[109] == null
+          ? CuratedItemSelectionType.mostPlayed
+          : fields[109] as CuratedItemSelectionType,
+      artistItemSectionFilterChipOrder: fields[110] == null
+          ? [
+        CuratedItemSelectionType.mostPlayed,
+        CuratedItemSelectionType.favorites,
+        CuratedItemSelectionType.random,
+        CuratedItemSelectionType.latestReleases,
+        CuratedItemSelectionType.recentlyAdded,
+        CuratedItemSelectionType.recentlyPlayed,
+      ]
+          : (fields[110] as List).cast<CuratedItemSelectionType>(),
+      artistItemSectionsOrder: fields[111] == null
+          ? [
+        ArtistItemSections.tracks,
+        ArtistItemSections.albums,
+        ArtistItemSections.appearsOn,
+      ]
+          : (fields[111] as List).cast<ArtistItemSections>(),
+      autoSwitchItemCurationType: fields[112] == null
+          ? true
+          : fields[112] as bool,
+      playlistTracksSortBy: fields[113] == null
+          ? SortBy.defaultOrder
+          : fields[113] as SortBy,
+      playlistTracksSortOrder: fields[114] == null
+          ? SortOrder.ascending
+          : fields[114] as SortOrder,
+      genreFilterPlaylists: fields[115] == null ? false : fields[115] as bool,
+      clearQueueOnStopEvent: fields[117] == null
+          ? false
+          : fields[117] as bool,
+      useHighContrastColors: fields[120] == null
+          ? false
+          : fields[120] as bool,
+      hasCompletedDownloadsFileOwnerMigration: fields[121] == null
+          ? false
+          : fields[121] as bool,
+      tileAdditionalInfoType: fields[122] == null
+          ? {
+        TabContentType.tracks: TileAdditionalInfoType.adaptive,
+        TabContentType.albums: TileAdditionalInfoType.adaptive,
+        TabContentType.artists: TileAdditionalInfoType.adaptive,
+        TabContentType.playlists: TileAdditionalInfoType.adaptive,
+        TabContentType.genres: TileAdditionalInfoType.adaptive,
+      }
+          : (fields[122] as Map)
+          .cast<TabContentType, TileAdditionalInfoType>(),
+      rpcEnabled: fields[123] == null ? false : fields[123] as bool,
+      rpcIcon: fields[124] == null
+          ? DiscordRpcIcon.transparent
+          : fields[124] as DiscordRpcIcon,
+      preferAddingToFavoritesOverPlaylists: fields[126] == null
+          ? false
+          : fields[126] as bool,
+      previousTracksExpaned: fields[127] == null
+          ? false
+          : fields[127] as bool,
+      autoplayRestoredQueue: fields[128] == null
+          ? false
+          : fields[128] as bool,
+      preferNextUpPrepending: fields[129] == null
+          ? true
+          : fields[129] as bool,
+      rememberLastUsedPlaybackActionRowPage: fields[130] == null
+          ? true
+          : fields[130] as bool,
+      lastUsedPlaybackActionRowPage: fields[131] == null
+          ? PlaybackActionRowPage.newQueue
+          : fields[131] as PlaybackActionRowPage,
+      accentColor: fields[132] == null
+          ? DefaultSettings.accentColor
+          : fields[132] as Color?,
+      themeMode: fields[133] == null
+          ? ThemeMode.system
+          : fields[133] as ThemeMode,
+      locale: fields[134] == null
+          ? DefaultSettings.locale
+          : fields[134] as Locale?,
+      hasCompletedThemeModeLocaleMigration: fields[135] == null
+          ? false
+          : fields[135] as bool,
+      statsTabSortBy: fields[136] == null
+          ? {}
+          : (fields[136] as Map).cast<StatsTabContentType, StatsSortBy>(),
+      statsTabSortOrder: fields[137] == null
+          ? {}
+          : (fields[137] as Map).cast<StatsTabContentType, SortOrder>(),
+    )
       ..disableGesture = fields[19] == null ? false : fields[19] as bool
       ..showFastScroller = fields[25] == null ? true : fields[25] as bool
       ..defaultDownloadLocation = fields[58] as String?
@@ -444,8 +449,7 @@ class FinampSettingsAdapter extends TypeAdapter<FinampSettings> {
   @override
   void write(BinaryWriter writer, FinampSettings obj) {
     writer
-      ..writeByte(129)
-      ..writeByte(0)
+      ..writeByte(129)..writeByte(0)
       ..write(obj.isOffline)
       ..writeByte(1)
       ..write(obj.shouldTranscode)
@@ -702,7 +706,11 @@ class FinampSettingsAdapter extends TypeAdapter<FinampSettings> {
       ..writeByte(134)
       ..write(obj.locale)
       ..writeByte(135)
-      ..write(obj.hasCompletedThemeModeLocaleMigration);
+      ..write(obj.hasCompletedThemeModeLocaleMigration)
+      ..writeByte(136)
+      ..write(obj.statsTabSortBy)
+      ..writeByte(137)
+      ..write(obj.statsTabSortOrder);
   }
 
   @override
@@ -711,9 +719,9 @@ class FinampSettingsAdapter extends TypeAdapter<FinampSettings> {
   @override
   bool operator ==(Object other) =>
       identical(this, other) ||
-      other is FinampSettingsAdapter &&
-          runtimeType == other.runtimeType &&
-          typeId == other.typeId;
+          other is FinampSettingsAdapter &&
+              runtimeType == other.runtimeType &&
+              typeId == other.typeId;
 }
 
 class DownloadLocationAdapter extends TypeAdapter<DownloadLocation> {
@@ -741,8 +749,7 @@ class DownloadLocationAdapter extends TypeAdapter<DownloadLocation> {
   @override
   void write(BinaryWriter writer, DownloadLocation obj) {
     writer
-      ..writeByte(6)
-      ..writeByte(0)
+      ..writeByte(6)..writeByte(0)
       ..write(obj.name)
       ..writeByte(1)
       ..write(obj.relativePath)
@@ -762,9 +769,9 @@ class DownloadLocationAdapter extends TypeAdapter<DownloadLocation> {
   @override
   bool operator ==(Object other) =>
       identical(this, other) ||
-      other is DownloadLocationAdapter &&
-          runtimeType == other.runtimeType &&
-          typeId == other.typeId;
+          other is DownloadLocationAdapter &&
+              runtimeType == other.runtimeType &&
+              typeId == other.typeId;
 }
 
 class DownloadedTrackAdapter extends TypeAdapter<DownloadedTrack> {
@@ -793,8 +800,7 @@ class DownloadedTrackAdapter extends TypeAdapter<DownloadedTrack> {
   @override
   void write(BinaryWriter writer, DownloadedTrack obj) {
     writer
-      ..writeByte(9)
-      ..writeByte(0)
+      ..writeByte(9)..writeByte(0)
       ..write(obj.track)
       ..writeByte(1)
       ..write(obj.mediaSourceInfo)
@@ -820,9 +826,9 @@ class DownloadedTrackAdapter extends TypeAdapter<DownloadedTrack> {
   @override
   bool operator ==(Object other) =>
       identical(this, other) ||
-      other is DownloadedTrackAdapter &&
-          runtimeType == other.runtimeType &&
-          typeId == other.typeId;
+          other is DownloadedTrackAdapter &&
+              runtimeType == other.runtimeType &&
+              typeId == other.typeId;
 }
 
 class DownloadedParentAdapter extends TypeAdapter<DownloadedParent> {
@@ -845,8 +851,7 @@ class DownloadedParentAdapter extends TypeAdapter<DownloadedParent> {
   @override
   void write(BinaryWriter writer, DownloadedParent obj) {
     writer
-      ..writeByte(3)
-      ..writeByte(0)
+      ..writeByte(3)..writeByte(0)
       ..write(obj.item)
       ..writeByte(1)
       ..write(obj.downloadedChildren)
@@ -860,9 +865,9 @@ class DownloadedParentAdapter extends TypeAdapter<DownloadedParent> {
   @override
   bool operator ==(Object other) =>
       identical(this, other) ||
-      other is DownloadedParentAdapter &&
-          runtimeType == other.runtimeType &&
-          typeId == other.typeId;
+          other is DownloadedParentAdapter &&
+              runtimeType == other.runtimeType &&
+              typeId == other.typeId;
 }
 
 class DownloadedImageAdapter extends TypeAdapter<DownloadedImage> {
@@ -887,8 +892,7 @@ class DownloadedImageAdapter extends TypeAdapter<DownloadedImage> {
   @override
   void write(BinaryWriter writer, DownloadedImage obj) {
     writer
-      ..writeByte(5)
-      ..writeByte(0)
+      ..writeByte(5)..writeByte(0)
       ..write(obj.id)
       ..writeByte(1)
       ..write(obj.downloadId)
@@ -906,9 +910,9 @@ class DownloadedImageAdapter extends TypeAdapter<DownloadedImage> {
   @override
   bool operator ==(Object other) =>
       identical(this, other) ||
-      other is DownloadedImageAdapter &&
-          runtimeType == other.runtimeType &&
-          typeId == other.typeId;
+          other is DownloadedImageAdapter &&
+              runtimeType == other.runtimeType &&
+              typeId == other.typeId;
 }
 
 class OfflineListenAdapter extends TypeAdapter<OfflineListen> {
@@ -936,8 +940,7 @@ class OfflineListenAdapter extends TypeAdapter<OfflineListen> {
   @override
   void write(BinaryWriter writer, OfflineListen obj) {
     writer
-      ..writeByte(8)
-      ..writeByte(0)
+      ..writeByte(8)..writeByte(0)
       ..write(obj.timestamp)
       ..writeByte(1)
       ..write(obj.userId)
@@ -961,9 +964,9 @@ class OfflineListenAdapter extends TypeAdapter<OfflineListen> {
   @override
   bool operator ==(Object other) =>
       identical(this, other) ||
-      other is OfflineListenAdapter &&
-          runtimeType == other.runtimeType &&
-          typeId == other.typeId;
+          other is OfflineListenAdapter &&
+              runtimeType == other.runtimeType &&
+              typeId == other.typeId;
 }
 
 class QueueItemSourceAdapter extends TypeAdapter<QueueItemSource> {
@@ -988,8 +991,7 @@ class QueueItemSourceAdapter extends TypeAdapter<QueueItemSource> {
   @override
   void write(BinaryWriter writer, QueueItemSource obj) {
     writer
-      ..writeByte(5)
-      ..writeByte(0)
+      ..writeByte(5)..writeByte(0)
       ..write(obj.type)
       ..writeByte(1)
       ..write(obj.name)
@@ -1007,9 +1009,9 @@ class QueueItemSourceAdapter extends TypeAdapter<QueueItemSource> {
   @override
   bool operator ==(Object other) =>
       identical(this, other) ||
-      other is QueueItemSourceAdapter &&
-          runtimeType == other.runtimeType &&
-          typeId == other.typeId;
+          other is QueueItemSourceAdapter &&
+              runtimeType == other.runtimeType &&
+              typeId == other.typeId;
 }
 
 class QueueItemSourceNameAdapter extends TypeAdapter<QueueItemSourceName> {
@@ -1032,8 +1034,7 @@ class QueueItemSourceNameAdapter extends TypeAdapter<QueueItemSourceName> {
   @override
   void write(BinaryWriter writer, QueueItemSourceName obj) {
     writer
-      ..writeByte(3)
-      ..writeByte(0)
+      ..writeByte(3)..writeByte(0)
       ..write(obj.type)
       ..writeByte(1)
       ..write(obj.pretranslatedName)
@@ -1047,9 +1048,9 @@ class QueueItemSourceNameAdapter extends TypeAdapter<QueueItemSourceName> {
   @override
   bool operator ==(Object other) =>
       identical(this, other) ||
-      other is QueueItemSourceNameAdapter &&
-          runtimeType == other.runtimeType &&
-          typeId == other.typeId;
+          other is QueueItemSourceNameAdapter &&
+              runtimeType == other.runtimeType &&
+              typeId == other.typeId;
 }
 
 class FinampQueueItemAdapter extends TypeAdapter<FinampQueueItem> {
@@ -1068,14 +1069,14 @@ class FinampQueueItemAdapter extends TypeAdapter<FinampQueueItem> {
       type: fields[3] == null
           ? QueueItemQueueType.queue
           : fields[3] as QueueItemQueueType,
-    )..id = fields[0] as String;
+    )
+      ..id = fields[0] as String;
   }
 
   @override
   void write(BinaryWriter writer, FinampQueueItem obj) {
     writer
-      ..writeByte(4)
-      ..writeByte(0)
+      ..writeByte(4)..writeByte(0)
       ..write(obj.id)
       ..writeByte(1)
       ..write(obj.item)
@@ -1091,9 +1092,9 @@ class FinampQueueItemAdapter extends TypeAdapter<FinampQueueItem> {
   @override
   bool operator ==(Object other) =>
       identical(this, other) ||
-      other is FinampQueueItemAdapter &&
-          runtimeType == other.runtimeType &&
-          typeId == other.typeId;
+          other is FinampQueueItemAdapter &&
+              runtimeType == other.runtimeType &&
+              typeId == other.typeId;
 }
 
 class FinampQueueOrderAdapter extends TypeAdapter<FinampQueueOrder> {
@@ -1111,14 +1112,14 @@ class FinampQueueOrderAdapter extends TypeAdapter<FinampQueueOrder> {
       originalSource: fields[1] as QueueItemSource,
       linearOrder: (fields[2] as List).cast<int>(),
       shuffledOrder: (fields[3] as List).cast<int>(),
-    )..id = fields[4] as String;
+    )
+      ..id = fields[4] as String;
   }
 
   @override
   void write(BinaryWriter writer, FinampQueueOrder obj) {
     writer
-      ..writeByte(5)
-      ..writeByte(0)
+      ..writeByte(5)..writeByte(0)
       ..write(obj.items)
       ..writeByte(1)
       ..write(obj.originalSource)
@@ -1136,9 +1137,9 @@ class FinampQueueOrderAdapter extends TypeAdapter<FinampQueueOrder> {
   @override
   bool operator ==(Object other) =>
       identical(this, other) ||
-      other is FinampQueueOrderAdapter &&
-          runtimeType == other.runtimeType &&
-          typeId == other.typeId;
+          other is FinampQueueOrderAdapter &&
+              runtimeType == other.runtimeType &&
+              typeId == other.typeId;
 }
 
 class FinampQueueInfoAdapter extends TypeAdapter<FinampQueueInfo> {
@@ -1165,8 +1166,7 @@ class FinampQueueInfoAdapter extends TypeAdapter<FinampQueueInfo> {
   @override
   void write(BinaryWriter writer, FinampQueueInfo obj) {
     writer
-      ..writeByte(7)
-      ..writeByte(0)
+      ..writeByte(7)..writeByte(0)
       ..write(obj.previousTracks)
       ..writeByte(1)
       ..write(obj.currentTrack)
@@ -1188,9 +1188,9 @@ class FinampQueueInfoAdapter extends TypeAdapter<FinampQueueInfo> {
   @override
   bool operator ==(Object other) =>
       identical(this, other) ||
-      other is FinampQueueInfoAdapter &&
-          runtimeType == other.runtimeType &&
-          typeId == other.typeId;
+          other is FinampQueueInfoAdapter &&
+              runtimeType == other.runtimeType &&
+              typeId == other.typeId;
 }
 
 class FinampHistoryItemAdapter extends TypeAdapter<FinampHistoryItem> {
@@ -1213,8 +1213,7 @@ class FinampHistoryItemAdapter extends TypeAdapter<FinampHistoryItem> {
   @override
   void write(BinaryWriter writer, FinampHistoryItem obj) {
     writer
-      ..writeByte(3)
-      ..writeByte(0)
+      ..writeByte(3)..writeByte(0)
       ..write(obj.item)
       ..writeByte(1)
       ..write(obj.startTime)
@@ -1228,9 +1227,9 @@ class FinampHistoryItemAdapter extends TypeAdapter<FinampHistoryItem> {
   @override
   bool operator ==(Object other) =>
       identical(this, other) ||
-      other is FinampHistoryItemAdapter &&
-          runtimeType == other.runtimeType &&
-          typeId == other.typeId;
+          other is FinampHistoryItemAdapter &&
+              runtimeType == other.runtimeType &&
+              typeId == other.typeId;
 }
 
 class FinampStorableQueueInfoAdapter
@@ -1259,8 +1258,7 @@ class FinampStorableQueueInfoAdapter
   @override
   void write(BinaryWriter writer, FinampStorableQueueInfo obj) {
     writer
-      ..writeByte(8)
-      ..writeByte(0)
+      ..writeByte(8)..writeByte(0)
       ..write(obj.previousTracks)
       ..writeByte(1)
       ..write(obj.currentTrack)
@@ -1284,9 +1282,9 @@ class FinampStorableQueueInfoAdapter
   @override
   bool operator ==(Object other) =>
       identical(this, other) ||
-      other is FinampStorableQueueInfoAdapter &&
-          runtimeType == other.runtimeType &&
-          typeId == other.typeId;
+          other is FinampStorableQueueInfoAdapter &&
+              runtimeType == other.runtimeType &&
+              typeId == other.typeId;
 }
 
 class MediaItemIdAdapter extends TypeAdapter<MediaItemId> {
@@ -1310,8 +1308,7 @@ class MediaItemIdAdapter extends TypeAdapter<MediaItemId> {
   @override
   void write(BinaryWriter writer, MediaItemId obj) {
     writer
-      ..writeByte(4)
-      ..writeByte(0)
+      ..writeByte(4)..writeByte(0)
       ..write(obj.contentType)
       ..writeByte(1)
       ..write(obj.parentType)
@@ -1327,9 +1324,9 @@ class MediaItemIdAdapter extends TypeAdapter<MediaItemId> {
   @override
   bool operator ==(Object other) =>
       identical(this, other) ||
-      other is MediaItemIdAdapter &&
-          runtimeType == other.runtimeType &&
-          typeId == other.typeId;
+          other is MediaItemIdAdapter &&
+              runtimeType == other.runtimeType &&
+              typeId == other.typeId;
 }
 
 class FinampFeatureChipsConfigurationAdapter
@@ -1352,8 +1349,7 @@ class FinampFeatureChipsConfigurationAdapter
   @override
   void write(BinaryWriter writer, FinampFeatureChipsConfiguration obj) {
     writer
-      ..writeByte(2)
-      ..writeByte(0)
+      ..writeByte(2)..writeByte(0)
       ..write(obj.enabled)
       ..writeByte(1)
       ..write(obj.features);
@@ -1365,9 +1361,9 @@ class FinampFeatureChipsConfigurationAdapter
   @override
   bool operator ==(Object other) =>
       identical(this, other) ||
-      other is FinampFeatureChipsConfigurationAdapter &&
-          runtimeType == other.runtimeType &&
-          typeId == other.typeId;
+          other is FinampFeatureChipsConfigurationAdapter &&
+              runtimeType == other.runtimeType &&
+              typeId == other.typeId;
 }
 
 class DeviceInfoAdapter extends TypeAdapter<DeviceInfo> {
@@ -1386,8 +1382,7 @@ class DeviceInfoAdapter extends TypeAdapter<DeviceInfo> {
   @override
   void write(BinaryWriter writer, DeviceInfo obj) {
     writer
-      ..writeByte(2)
-      ..writeByte(0)
+      ..writeByte(2)..writeByte(0)
       ..write(obj.name)
       ..writeByte(1)
       ..write(obj.id);
@@ -1399,9 +1394,9 @@ class DeviceInfoAdapter extends TypeAdapter<DeviceInfo> {
   @override
   bool operator ==(Object other) =>
       identical(this, other) ||
-      other is DeviceInfoAdapter &&
-          runtimeType == other.runtimeType &&
-          typeId == other.typeId;
+          other is DeviceInfoAdapter &&
+              runtimeType == other.runtimeType &&
+              typeId == other.typeId;
 }
 
 class ScreenSizeAdapter extends TypeAdapter<ScreenSize> {
@@ -1425,8 +1420,7 @@ class ScreenSizeAdapter extends TypeAdapter<ScreenSize> {
   @override
   void write(BinaryWriter writer, ScreenSize obj) {
     writer
-      ..writeByte(4)
-      ..writeByte(1)
+      ..writeByte(4)..writeByte(1)
       ..write(obj.sizeX)
       ..writeByte(2)
       ..write(obj.sizeY)
@@ -1442,9 +1436,9 @@ class ScreenSizeAdapter extends TypeAdapter<ScreenSize> {
   @override
   bool operator ==(Object other) =>
       identical(this, other) ||
-      other is ScreenSizeAdapter &&
-          runtimeType == other.runtimeType &&
-          typeId == other.typeId;
+          other is ScreenSizeAdapter &&
+              runtimeType == other.runtimeType &&
+              typeId == other.typeId;
 }
 
 class SleepTimerAdapter extends TypeAdapter<SleepTimer> {
@@ -1466,8 +1460,7 @@ class SleepTimerAdapter extends TypeAdapter<SleepTimer> {
   @override
   void write(BinaryWriter writer, SleepTimer obj) {
     writer
-      ..writeByte(2)
-      ..writeByte(1)
+      ..writeByte(2)..writeByte(1)
       ..write(obj.secondsLength)
       ..writeByte(4)
       ..write(obj.tracksLength);
@@ -1479,9 +1472,9 @@ class SleepTimerAdapter extends TypeAdapter<SleepTimer> {
   @override
   bool operator ==(Object other) =>
       identical(this, other) ||
-      other is SleepTimerAdapter &&
-          runtimeType == other.runtimeType &&
-          typeId == other.typeId;
+          other is SleepTimerAdapter &&
+              runtimeType == other.runtimeType &&
+              typeId == other.typeId;
 }
 
 class RawThemeResultAdapter extends TypeAdapter<RawThemeResult> {
@@ -1503,8 +1496,7 @@ class RawThemeResultAdapter extends TypeAdapter<RawThemeResult> {
   @override
   void write(BinaryWriter writer, RawThemeResult obj) {
     writer
-      ..writeByte(2)
-      ..writeByte(0)
+      ..writeByte(2)..writeByte(0)
       ..write(obj._highlightInt)
       ..writeByte(1)
       ..write(obj._backgroundInt);
@@ -1516,9 +1508,9 @@ class RawThemeResultAdapter extends TypeAdapter<RawThemeResult> {
   @override
   bool operator ==(Object other) =>
       identical(this, other) ||
-      other is RawThemeResultAdapter &&
-          runtimeType == other.runtimeType &&
-          typeId == other.typeId;
+          other is RawThemeResultAdapter &&
+              runtimeType == other.runtimeType &&
+              typeId == other.typeId;
 }
 
 class TabContentTypeAdapter extends TypeAdapter<TabContentType> {
@@ -1565,9 +1557,9 @@ class TabContentTypeAdapter extends TypeAdapter<TabContentType> {
   @override
   bool operator ==(Object other) =>
       identical(this, other) ||
-      other is TabContentTypeAdapter &&
-          runtimeType == other.runtimeType &&
-          typeId == other.typeId;
+          other is TabContentTypeAdapter &&
+              runtimeType == other.runtimeType &&
+              typeId == other.typeId;
 }
 
 class ContentViewTypeAdapter extends TypeAdapter<ContentViewType> {
@@ -1602,9 +1594,9 @@ class ContentViewTypeAdapter extends TypeAdapter<ContentViewType> {
   @override
   bool operator ==(Object other) =>
       identical(this, other) ||
-      other is ContentViewTypeAdapter &&
-          runtimeType == other.runtimeType &&
-          typeId == other.typeId;
+          other is ContentViewTypeAdapter &&
+              runtimeType == other.runtimeType &&
+              typeId == other.typeId;
 }
 
 class FinampPlaybackOrderAdapter extends TypeAdapter<FinampPlaybackOrder> {
@@ -1639,9 +1631,9 @@ class FinampPlaybackOrderAdapter extends TypeAdapter<FinampPlaybackOrder> {
   @override
   bool operator ==(Object other) =>
       identical(this, other) ||
-      other is FinampPlaybackOrderAdapter &&
-          runtimeType == other.runtimeType &&
-          typeId == other.typeId;
+          other is FinampPlaybackOrderAdapter &&
+              runtimeType == other.runtimeType &&
+              typeId == other.typeId;
 }
 
 class FinampLoopModeAdapter extends TypeAdapter<FinampLoopMode> {
@@ -1680,9 +1672,9 @@ class FinampLoopModeAdapter extends TypeAdapter<FinampLoopMode> {
   @override
   bool operator ==(Object other) =>
       identical(this, other) ||
-      other is FinampLoopModeAdapter &&
-          runtimeType == other.runtimeType &&
-          typeId == other.typeId;
+          other is FinampLoopModeAdapter &&
+              runtimeType == other.runtimeType &&
+              typeId == other.typeId;
 }
 
 class QueueItemSourceTypeAdapter extends TypeAdapter<QueueItemSourceType> {
@@ -1797,9 +1789,9 @@ class QueueItemSourceTypeAdapter extends TypeAdapter<QueueItemSourceType> {
   @override
   bool operator ==(Object other) =>
       identical(this, other) ||
-      other is QueueItemSourceTypeAdapter &&
-          runtimeType == other.runtimeType &&
-          typeId == other.typeId;
+          other is QueueItemSourceTypeAdapter &&
+              runtimeType == other.runtimeType &&
+              typeId == other.typeId;
 }
 
 class QueueItemQueueTypeAdapter extends TypeAdapter<QueueItemQueueType> {
@@ -1842,9 +1834,9 @@ class QueueItemQueueTypeAdapter extends TypeAdapter<QueueItemQueueType> {
   @override
   bool operator ==(Object other) =>
       identical(this, other) ||
-      other is QueueItemQueueTypeAdapter &&
-          runtimeType == other.runtimeType &&
-          typeId == other.typeId;
+          other is QueueItemQueueTypeAdapter &&
+              runtimeType == other.runtimeType &&
+              typeId == other.typeId;
 }
 
 class QueueItemSourceNameTypeAdapter
@@ -1912,9 +1904,9 @@ class QueueItemSourceNameTypeAdapter
   @override
   bool operator ==(Object other) =>
       identical(this, other) ||
-      other is QueueItemSourceNameTypeAdapter &&
-          runtimeType == other.runtimeType &&
-          typeId == other.typeId;
+          other is QueueItemSourceNameTypeAdapter &&
+              runtimeType == other.runtimeType &&
+              typeId == other.typeId;
 }
 
 class SavedQueueStateAdapter extends TypeAdapter<SavedQueueState> {
@@ -1965,9 +1957,9 @@ class SavedQueueStateAdapter extends TypeAdapter<SavedQueueState> {
   @override
   bool operator ==(Object other) =>
       identical(this, other) ||
-      other is SavedQueueStateAdapter &&
-          runtimeType == other.runtimeType &&
-          typeId == other.typeId;
+          other is SavedQueueStateAdapter &&
+              runtimeType == other.runtimeType &&
+              typeId == other.typeId;
 }
 
 class VolumeNormalizationModeAdapter
@@ -2011,9 +2003,9 @@ class VolumeNormalizationModeAdapter
   @override
   bool operator ==(Object other) =>
       identical(this, other) ||
-      other is VolumeNormalizationModeAdapter &&
-          runtimeType == other.runtimeType &&
-          typeId == other.typeId;
+          other is VolumeNormalizationModeAdapter &&
+              runtimeType == other.runtimeType &&
+              typeId == other.typeId;
 }
 
 class DownloadLocationTypeAdapter extends TypeAdapter<DownloadLocationType> {
@@ -2068,9 +2060,9 @@ class DownloadLocationTypeAdapter extends TypeAdapter<DownloadLocationType> {
   @override
   bool operator ==(Object other) =>
       identical(this, other) ||
-      other is DownloadLocationTypeAdapter &&
-          runtimeType == other.runtimeType &&
-          typeId == other.typeId;
+          other is DownloadLocationTypeAdapter &&
+              runtimeType == other.runtimeType &&
+              typeId == other.typeId;
 }
 
 class FinampTranscodingCodecAdapter
@@ -2114,9 +2106,9 @@ class FinampTranscodingCodecAdapter
   @override
   bool operator ==(Object other) =>
       identical(this, other) ||
-      other is FinampTranscodingCodecAdapter &&
-          runtimeType == other.runtimeType &&
-          typeId == other.typeId;
+          other is FinampTranscodingCodecAdapter &&
+              runtimeType == other.runtimeType &&
+              typeId == other.typeId;
 }
 
 class TranscodeDownloadsSettingAdapter
@@ -2156,9 +2148,9 @@ class TranscodeDownloadsSettingAdapter
   @override
   bool operator ==(Object other) =>
       identical(this, other) ||
-      other is TranscodeDownloadsSettingAdapter &&
-          runtimeType == other.runtimeType &&
-          typeId == other.typeId;
+          other is TranscodeDownloadsSettingAdapter &&
+              runtimeType == other.runtimeType &&
+              typeId == other.typeId;
 }
 
 class PlaybackSpeedVisibilityAdapter
@@ -2198,9 +2190,9 @@ class PlaybackSpeedVisibilityAdapter
   @override
   bool operator ==(Object other) =>
       identical(this, other) ||
-      other is PlaybackSpeedVisibilityAdapter &&
-          runtimeType == other.runtimeType &&
-          typeId == other.typeId;
+          other is PlaybackSpeedVisibilityAdapter &&
+              runtimeType == other.runtimeType &&
+              typeId == other.typeId;
 }
 
 class MediaItemParentTypeAdapter extends TypeAdapter<MediaItemParentType> {
@@ -2239,9 +2231,9 @@ class MediaItemParentTypeAdapter extends TypeAdapter<MediaItemParentType> {
   @override
   bool operator ==(Object other) =>
       identical(this, other) ||
-      other is MediaItemParentTypeAdapter &&
-          runtimeType == other.runtimeType &&
-          typeId == other.typeId;
+          other is MediaItemParentTypeAdapter &&
+              runtimeType == other.runtimeType &&
+              typeId == other.typeId;
 }
 
 class LyricsAlignmentAdapter extends TypeAdapter<LyricsAlignment> {
@@ -2280,9 +2272,9 @@ class LyricsAlignmentAdapter extends TypeAdapter<LyricsAlignment> {
   @override
   bool operator ==(Object other) =>
       identical(this, other) ||
-      other is LyricsAlignmentAdapter &&
-          runtimeType == other.runtimeType &&
-          typeId == other.typeId;
+          other is LyricsAlignmentAdapter &&
+              runtimeType == other.runtimeType &&
+              typeId == other.typeId;
 }
 
 class LyricsFontSizeAdapter extends TypeAdapter<LyricsFontSize> {
@@ -2321,9 +2313,9 @@ class LyricsFontSizeAdapter extends TypeAdapter<LyricsFontSize> {
   @override
   bool operator ==(Object other) =>
       identical(this, other) ||
-      other is LyricsFontSizeAdapter &&
-          runtimeType == other.runtimeType &&
-          typeId == other.typeId;
+          other is LyricsFontSizeAdapter &&
+              runtimeType == other.runtimeType &&
+              typeId == other.typeId;
 }
 
 class KeepScreenOnOptionAdapter extends TypeAdapter<KeepScreenOnOption> {
@@ -2366,9 +2358,9 @@ class KeepScreenOnOptionAdapter extends TypeAdapter<KeepScreenOnOption> {
   @override
   bool operator ==(Object other) =>
       identical(this, other) ||
-      other is KeepScreenOnOptionAdapter &&
-          runtimeType == other.runtimeType &&
-          typeId == other.typeId;
+          other is KeepScreenOnOptionAdapter &&
+              runtimeType == other.runtimeType &&
+              typeId == other.typeId;
 }
 
 class FinampTranscodingStreamingFormatAdapter
@@ -2420,9 +2412,9 @@ class FinampTranscodingStreamingFormatAdapter
   @override
   bool operator ==(Object other) =>
       identical(this, other) ||
-      other is FinampTranscodingStreamingFormatAdapter &&
-          runtimeType == other.runtimeType &&
-          typeId == other.typeId;
+          other is FinampTranscodingStreamingFormatAdapter &&
+              runtimeType == other.runtimeType &&
+              typeId == other.typeId;
 }
 
 class FinampFeatureChipTypeAdapter extends TypeAdapter<FinampFeatureChipType> {
@@ -2485,9 +2477,9 @@ class FinampFeatureChipTypeAdapter extends TypeAdapter<FinampFeatureChipType> {
   @override
   bool operator ==(Object other) =>
       identical(this, other) ||
-      other is FinampFeatureChipTypeAdapter &&
-          runtimeType == other.runtimeType &&
-          typeId == other.typeId;
+          other is FinampFeatureChipTypeAdapter &&
+              runtimeType == other.runtimeType &&
+              typeId == other.typeId;
 }
 
 class ReleaseDateFormatAdapter extends TypeAdapter<ReleaseDateFormat> {
@@ -2530,9 +2522,9 @@ class ReleaseDateFormatAdapter extends TypeAdapter<ReleaseDateFormat> {
   @override
   bool operator ==(Object other) =>
       identical(this, other) ||
-      other is ReleaseDateFormatAdapter &&
-          runtimeType == other.runtimeType &&
-          typeId == other.typeId;
+          other is ReleaseDateFormatAdapter &&
+              runtimeType == other.runtimeType &&
+              typeId == other.typeId;
 }
 
 class AutoOfflineOptionAdapter extends TypeAdapter<AutoOfflineOption> {
@@ -2575,9 +2567,9 @@ class AutoOfflineOptionAdapter extends TypeAdapter<AutoOfflineOption> {
   @override
   bool operator ==(Object other) =>
       identical(this, other) ||
-      other is AutoOfflineOptionAdapter &&
-          runtimeType == other.runtimeType &&
-          typeId == other.typeId;
+          other is AutoOfflineOptionAdapter &&
+              runtimeType == other.runtimeType &&
+              typeId == other.typeId;
 }
 
 class ItemSwipeActionsAdapter extends TypeAdapter<ItemSwipeActions> {
@@ -2620,9 +2612,9 @@ class ItemSwipeActionsAdapter extends TypeAdapter<ItemSwipeActions> {
   @override
   bool operator ==(Object other) =>
       identical(this, other) ||
-      other is ItemSwipeActionsAdapter &&
-          runtimeType == other.runtimeType &&
-          typeId == other.typeId;
+          other is ItemSwipeActionsAdapter &&
+              runtimeType == other.runtimeType &&
+              typeId == other.typeId;
 }
 
 class ArtistTypeAdapter extends TypeAdapter<ArtistType> {
@@ -2657,9 +2649,9 @@ class ArtistTypeAdapter extends TypeAdapter<ArtistType> {
   @override
   bool operator ==(Object other) =>
       identical(this, other) ||
-      other is ArtistTypeAdapter &&
-          runtimeType == other.runtimeType &&
-          typeId == other.typeId;
+          other is ArtistTypeAdapter &&
+              runtimeType == other.runtimeType &&
+              typeId == other.typeId;
 }
 
 class CuratedItemSelectionTypeAdapter
@@ -2711,9 +2703,9 @@ class CuratedItemSelectionTypeAdapter
   @override
   bool operator ==(Object other) =>
       identical(this, other) ||
-      other is CuratedItemSelectionTypeAdapter &&
-          runtimeType == other.runtimeType &&
-          typeId == other.typeId;
+          other is CuratedItemSelectionTypeAdapter &&
+              runtimeType == other.runtimeType &&
+              typeId == other.typeId;
 }
 
 class GenreItemSectionsAdapter extends TypeAdapter<GenreItemSections> {
@@ -2752,9 +2744,9 @@ class GenreItemSectionsAdapter extends TypeAdapter<GenreItemSections> {
   @override
   bool operator ==(Object other) =>
       identical(this, other) ||
-      other is GenreItemSectionsAdapter &&
-          runtimeType == other.runtimeType &&
-          typeId == other.typeId;
+          other is GenreItemSectionsAdapter &&
+              runtimeType == other.runtimeType &&
+              typeId == other.typeId;
 }
 
 class ArtistItemSectionsAdapter extends TypeAdapter<ArtistItemSections> {
@@ -2793,9 +2785,9 @@ class ArtistItemSectionsAdapter extends TypeAdapter<ArtistItemSections> {
   @override
   bool operator ==(Object other) =>
       identical(this, other) ||
-      other is ArtistItemSectionsAdapter &&
-          runtimeType == other.runtimeType &&
-          typeId == other.typeId;
+          other is ArtistItemSectionsAdapter &&
+              runtimeType == other.runtimeType &&
+              typeId == other.typeId;
 }
 
 class SleepTimerTypeAdapter extends TypeAdapter<SleepTimerType> {
@@ -2830,9 +2822,9 @@ class SleepTimerTypeAdapter extends TypeAdapter<SleepTimerType> {
   @override
   bool operator ==(Object other) =>
       identical(this, other) ||
-      other is SleepTimerTypeAdapter &&
-          runtimeType == other.runtimeType &&
-          typeId == other.typeId;
+          other is SleepTimerTypeAdapter &&
+              runtimeType == other.runtimeType &&
+              typeId == other.typeId;
 }
 
 class TileAdditionalInfoTypeAdapter
@@ -2888,9 +2880,9 @@ class TileAdditionalInfoTypeAdapter
   @override
   bool operator ==(Object other) =>
       identical(this, other) ||
-      other is TileAdditionalInfoTypeAdapter &&
-          runtimeType == other.runtimeType &&
-          typeId == other.typeId;
+          other is TileAdditionalInfoTypeAdapter &&
+              runtimeType == other.runtimeType &&
+              typeId == other.typeId;
 }
 
 class DiscordRpcIconAdapter extends TypeAdapter<DiscordRpcIcon> {
@@ -2941,9 +2933,9 @@ class DiscordRpcIconAdapter extends TypeAdapter<DiscordRpcIcon> {
   @override
   bool operator ==(Object other) =>
       identical(this, other) ||
-      other is DiscordRpcIconAdapter &&
-          runtimeType == other.runtimeType &&
-          typeId == other.typeId;
+          other is DiscordRpcIconAdapter &&
+              runtimeType == other.runtimeType &&
+              typeId == other.typeId;
 }
 
 class PlaybackActionRowPageAdapter extends TypeAdapter<PlaybackActionRowPage> {
@@ -2986,9 +2978,86 @@ class PlaybackActionRowPageAdapter extends TypeAdapter<PlaybackActionRowPage> {
   @override
   bool operator ==(Object other) =>
       identical(this, other) ||
-      other is PlaybackActionRowPageAdapter &&
-          runtimeType == other.runtimeType &&
-          typeId == other.typeId;
+          other is PlaybackActionRowPageAdapter &&
+              runtimeType == other.runtimeType &&
+              typeId == other.typeId;
+}
+
+class StatsTabContentTypeAdapter extends TypeAdapter<StatsTabContentType> {
+  @override
+  final typeId = 109;
+
+  @override
+  StatsTabContentType read(BinaryReader reader) {
+    switch (reader.readByte()) {
+      case 0:
+        return StatsTabContentType.track;
+      case 1:
+        return StatsTabContentType.artist;
+      default:
+        return StatsTabContentType.track;
+    }
+  }
+
+  @override
+  void write(BinaryWriter writer, StatsTabContentType obj) {
+    switch (obj) {
+      case StatsTabContentType.track:
+        writer.writeByte(0);
+      case StatsTabContentType.artist:
+        writer.writeByte(1);
+    }
+  }
+
+  @override
+  int get hashCode => typeId.hashCode;
+
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+          other is StatsTabContentTypeAdapter &&
+              runtimeType == other.runtimeType &&
+              typeId == other.typeId;
+}
+
+
+class StatsSortByAdapter extends TypeAdapter<StatsSortBy> {
+  @override
+  final typeId = 110;
+
+  @override
+  StatsSortBy read(BinaryReader reader) {
+    switch (reader.readByte()) {
+      case 0:
+        return StatsSortBy.count;
+      case 1:
+        return StatsSortBy.time;
+      default:
+        return StatsSortBy.count;
+    }
+  }
+
+  @override
+  void write(BinaryWriter writer, StatsSortBy obj) {
+    switch (obj) {
+      case StatsSortBy.count:
+        writer.writeByte(0);
+      case StatsSortBy.time:
+        writer.writeByte(1);
+      case StatsSortBy.defaultOrder:
+        writer.writeByte(2);
+    }
+  }
+
+  @override
+  int get hashCode => typeId.hashCode;
+
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+          other is StatsSortByAdapter &&
+              runtimeType == other.runtimeType &&
+              typeId == other.typeId;
 }
 
 // **************************************************************************
@@ -3057,11 +3126,9 @@ const FinampUserSchema = CollectionSchema(
   version: '3.1.0+1',
 );
 
-int _finampUserEstimateSize(
-  FinampUser object,
-  List<int> offsets,
-  Map<Type, List<int>> allOffsets,
-) {
+int _finampUserEstimateSize(FinampUser object,
+    List<int> offsets,
+    Map<Type, List<int>> allOffsets,) {
   var bytesCount = offsets.last;
   bytesCount += 3 + object.accessToken.length * 3;
   bytesCount += 3 + object.baseURL.length * 3;
@@ -3079,12 +3146,10 @@ int _finampUserEstimateSize(
   return bytesCount;
 }
 
-void _finampUserSerialize(
-  FinampUser object,
-  IsarWriter writer,
-  List<int> offsets,
-  Map<Type, List<int>> allOffsets,
-) {
+void _finampUserSerialize(FinampUser object,
+    IsarWriter writer,
+    List<int> offsets,
+    Map<Type, List<int>> allOffsets,) {
   writer.writeString(offsets[0], object.accessToken);
   writer.writeString(offsets[1], object.baseURL);
   writer.writeString(offsets[2], object.publicAddress);
@@ -3097,12 +3162,10 @@ void _finampUserSerialize(
   writer.writeString(offsets[9], object.serverId);
 }
 
-FinampUser _finampUserDeserialize(
-  Id id,
-  IsarReader reader,
-  List<int> offsets,
-  Map<Type, List<int>> allOffsets,
-) {
+FinampUser _finampUserDeserialize(Id id,
+    IsarReader reader,
+    List<int> offsets,
+    Map<Type, List<int>> allOffsets,) {
   final object = FinampUser(
     accessToken: reader.readString(offsets[0]),
     publicAddress: reader.readString(offsets[2]),
@@ -3117,12 +3180,10 @@ FinampUser _finampUserDeserialize(
   return object;
 }
 
-P _finampUserDeserializeProp<P>(
-  IsarReader reader,
-  int propertyId,
-  int offset,
-  Map<Type, List<int>> allOffsets,
-) {
+P _finampUserDeserializeProp<P>(IsarReader reader,
+    int propertyId,
+    int offset,
+    Map<Type, List<int>> allOffsets,) {
   switch (propertyId) {
     case 0:
       return (reader.readString(offset)) as P;
@@ -3160,7 +3221,7 @@ List<IsarLinkBase<dynamic>> _finampUserGetLinks(FinampUser object) {
 void _finampUserAttach(IsarCollection<dynamic> col, Id id, FinampUser object) {}
 
 extension FinampUserQueryWhereSort
-    on QueryBuilder<FinampUser, FinampUser, QWhere> {
+on QueryBuilder<FinampUser, FinampUser, QWhere> {
   QueryBuilder<FinampUser, FinampUser, QAfterWhere> anyIsarId() {
     return QueryBuilder.apply(this, (query) {
       return query.addWhereClause(const IdWhereClause.any());
@@ -3169,10 +3230,9 @@ extension FinampUserQueryWhereSort
 }
 
 extension FinampUserQueryWhere
-    on QueryBuilder<FinampUser, FinampUser, QWhereClause> {
+on QueryBuilder<FinampUser, FinampUser, QWhereClause> {
   QueryBuilder<FinampUser, FinampUser, QAfterWhereClause> isarIdEqualTo(
-    Id isarId,
-  ) {
+      Id isarId,) {
     return QueryBuilder.apply(this, (query) {
       return query.addWhereClause(
         IdWhereClause.between(lower: isarId, upper: isarId),
@@ -3181,33 +3241,32 @@ extension FinampUserQueryWhere
   }
 
   QueryBuilder<FinampUser, FinampUser, QAfterWhereClause> isarIdNotEqualTo(
-    Id isarId,
-  ) {
+      Id isarId,) {
     return QueryBuilder.apply(this, (query) {
       if (query.whereSort == Sort.asc) {
         return query
             .addWhereClause(
-              IdWhereClause.lessThan(upper: isarId, includeUpper: false),
-            )
+          IdWhereClause.lessThan(upper: isarId, includeUpper: false),
+        )
             .addWhereClause(
-              IdWhereClause.greaterThan(lower: isarId, includeLower: false),
-            );
+          IdWhereClause.greaterThan(lower: isarId, includeLower: false),
+        );
       } else {
         return query
             .addWhereClause(
-              IdWhereClause.greaterThan(lower: isarId, includeLower: false),
-            )
+          IdWhereClause.greaterThan(lower: isarId, includeLower: false),
+        )
             .addWhereClause(
-              IdWhereClause.lessThan(upper: isarId, includeUpper: false),
-            );
+          IdWhereClause.lessThan(upper: isarId, includeUpper: false),
+        );
       }
     });
   }
 
   QueryBuilder<FinampUser, FinampUser, QAfterWhereClause> isarIdGreaterThan(
-    Id isarId, {
-    bool include = false,
-  }) {
+      Id isarId, {
+        bool include = false,
+      }) {
     return QueryBuilder.apply(this, (query) {
       return query.addWhereClause(
         IdWhereClause.greaterThan(lower: isarId, includeLower: include),
@@ -3216,9 +3275,9 @@ extension FinampUserQueryWhere
   }
 
   QueryBuilder<FinampUser, FinampUser, QAfterWhereClause> isarIdLessThan(
-    Id isarId, {
-    bool include = false,
-  }) {
+      Id isarId, {
+        bool include = false,
+      }) {
     return QueryBuilder.apply(this, (query) {
       return query.addWhereClause(
         IdWhereClause.lessThan(upper: isarId, includeUpper: include),
@@ -3227,11 +3286,11 @@ extension FinampUserQueryWhere
   }
 
   QueryBuilder<FinampUser, FinampUser, QAfterWhereClause> isarIdBetween(
-    Id lowerIsarId,
-    Id upperIsarId, {
-    bool includeLower = true,
-    bool includeUpper = true,
-  }) {
+      Id lowerIsarId,
+      Id upperIsarId, {
+        bool includeLower = true,
+        bool includeUpper = true,
+      }) {
     return QueryBuilder.apply(this, (query) {
       return query.addWhereClause(
         IdWhereClause.between(
@@ -3246,7 +3305,7 @@ extension FinampUserQueryWhere
 }
 
 extension FinampUserQueryFilter
-    on QueryBuilder<FinampUser, FinampUser, QFilterCondition> {
+on QueryBuilder<FinampUser, FinampUser, QFilterCondition> {
   QueryBuilder<FinampUser, FinampUser, QAfterFilterCondition>
   accessTokenEqualTo(String value, {bool caseSensitive = true}) {
     return QueryBuilder.apply(this, (query) {
@@ -3261,8 +3320,7 @@ extension FinampUserQueryFilter
   }
 
   QueryBuilder<FinampUser, FinampUser, QAfterFilterCondition>
-  accessTokenGreaterThan(
-    String value, {
+  accessTokenGreaterThan(String value, {
     bool include = false,
     bool caseSensitive = true,
   }) {
@@ -3279,8 +3337,7 @@ extension FinampUserQueryFilter
   }
 
   QueryBuilder<FinampUser, FinampUser, QAfterFilterCondition>
-  accessTokenLessThan(
-    String value, {
+  accessTokenLessThan(String value, {
     bool include = false,
     bool caseSensitive = true,
   }) {
@@ -3297,13 +3354,12 @@ extension FinampUserQueryFilter
   }
 
   QueryBuilder<FinampUser, FinampUser, QAfterFilterCondition>
-  accessTokenBetween(
-    String lower,
-    String upper, {
-    bool includeLower = true,
-    bool includeUpper = true,
-    bool caseSensitive = true,
-  }) {
+  accessTokenBetween(String lower,
+      String upper, {
+        bool includeLower = true,
+        bool includeUpper = true,
+        bool caseSensitive = true,
+      }) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(
         FilterCondition.between(
@@ -3389,9 +3445,9 @@ extension FinampUserQueryFilter
   }
 
   QueryBuilder<FinampUser, FinampUser, QAfterFilterCondition> baseURLEqualTo(
-    String value, {
-    bool caseSensitive = true,
-  }) {
+      String value, {
+        bool caseSensitive = true,
+      }) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(
         FilterCondition.equalTo(
@@ -3404,8 +3460,7 @@ extension FinampUserQueryFilter
   }
 
   QueryBuilder<FinampUser, FinampUser, QAfterFilterCondition>
-  baseURLGreaterThan(
-    String value, {
+  baseURLGreaterThan(String value, {
     bool include = false,
     bool caseSensitive = true,
   }) {
@@ -3422,10 +3477,10 @@ extension FinampUserQueryFilter
   }
 
   QueryBuilder<FinampUser, FinampUser, QAfterFilterCondition> baseURLLessThan(
-    String value, {
-    bool include = false,
-    bool caseSensitive = true,
-  }) {
+      String value, {
+        bool include = false,
+        bool caseSensitive = true,
+      }) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(
         FilterCondition.lessThan(
@@ -3439,12 +3494,12 @@ extension FinampUserQueryFilter
   }
 
   QueryBuilder<FinampUser, FinampUser, QAfterFilterCondition> baseURLBetween(
-    String lower,
-    String upper, {
-    bool includeLower = true,
-    bool includeUpper = true,
-    bool caseSensitive = true,
-  }) {
+      String lower,
+      String upper, {
+        bool includeLower = true,
+        bool includeUpper = true,
+        bool caseSensitive = true,
+      }) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(
         FilterCondition.between(
@@ -3460,9 +3515,9 @@ extension FinampUserQueryFilter
   }
 
   QueryBuilder<FinampUser, FinampUser, QAfterFilterCondition> baseURLStartsWith(
-    String value, {
-    bool caseSensitive = true,
-  }) {
+      String value, {
+        bool caseSensitive = true,
+      }) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(
         FilterCondition.startsWith(
@@ -3475,9 +3530,9 @@ extension FinampUserQueryFilter
   }
 
   QueryBuilder<FinampUser, FinampUser, QAfterFilterCondition> baseURLEndsWith(
-    String value, {
-    bool caseSensitive = true,
-  }) {
+      String value, {
+        bool caseSensitive = true,
+      }) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(
         FilterCondition.endsWith(
@@ -3490,9 +3545,9 @@ extension FinampUserQueryFilter
   }
 
   QueryBuilder<FinampUser, FinampUser, QAfterFilterCondition> baseURLContains(
-    String value, {
-    bool caseSensitive = true,
-  }) {
+      String value, {
+        bool caseSensitive = true,
+      }) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(
         FilterCondition.contains(
@@ -3505,9 +3560,9 @@ extension FinampUserQueryFilter
   }
 
   QueryBuilder<FinampUser, FinampUser, QAfterFilterCondition> baseURLMatches(
-    String pattern, {
-    bool caseSensitive = true,
-  }) {
+      String pattern, {
+        bool caseSensitive = true,
+      }) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(
         FilterCondition.matches(
@@ -3550,8 +3605,7 @@ extension FinampUserQueryFilter
   }
 
   QueryBuilder<FinampUser, FinampUser, QAfterFilterCondition>
-  publicAddressGreaterThan(
-    String value, {
+  publicAddressGreaterThan(String value, {
     bool include = false,
     bool caseSensitive = true,
   }) {
@@ -3568,8 +3622,7 @@ extension FinampUserQueryFilter
   }
 
   QueryBuilder<FinampUser, FinampUser, QAfterFilterCondition>
-  publicAddressLessThan(
-    String value, {
+  publicAddressLessThan(String value, {
     bool include = false,
     bool caseSensitive = true,
   }) {
@@ -3586,13 +3639,12 @@ extension FinampUserQueryFilter
   }
 
   QueryBuilder<FinampUser, FinampUser, QAfterFilterCondition>
-  publicAddressBetween(
-    String lower,
-    String upper, {
-    bool includeLower = true,
-    bool includeUpper = true,
-    bool caseSensitive = true,
-  }) {
+  publicAddressBetween(String lower,
+      String upper, {
+        bool includeLower = true,
+        bool includeUpper = true,
+        bool caseSensitive = true,
+      }) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(
         FilterCondition.between(
@@ -3709,8 +3761,7 @@ extension FinampUserQueryFilter
   }
 
   QueryBuilder<FinampUser, FinampUser, QAfterFilterCondition>
-  isarCurrentViewIdGreaterThan(
-    String? value, {
+  isarCurrentViewIdGreaterThan(String? value, {
     bool include = false,
     bool caseSensitive = true,
   }) {
@@ -3727,8 +3778,7 @@ extension FinampUserQueryFilter
   }
 
   QueryBuilder<FinampUser, FinampUser, QAfterFilterCondition>
-  isarCurrentViewIdLessThan(
-    String? value, {
+  isarCurrentViewIdLessThan(String? value, {
     bool include = false,
     bool caseSensitive = true,
   }) {
@@ -3745,13 +3795,12 @@ extension FinampUserQueryFilter
   }
 
   QueryBuilder<FinampUser, FinampUser, QAfterFilterCondition>
-  isarCurrentViewIdBetween(
-    String? lower,
-    String? upper, {
-    bool includeLower = true,
-    bool includeUpper = true,
-    bool caseSensitive = true,
-  }) {
+  isarCurrentViewIdBetween(String? lower,
+      String? upper, {
+        bool includeLower = true,
+        bool includeUpper = true,
+        bool caseSensitive = true,
+      }) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(
         FilterCondition.between(
@@ -3837,9 +3886,9 @@ extension FinampUserQueryFilter
   }
 
   QueryBuilder<FinampUser, FinampUser, QAfterFilterCondition> idEqualTo(
-    String value, {
-    bool caseSensitive = true,
-  }) {
+      String value, {
+        bool caseSensitive = true,
+      }) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(
         FilterCondition.equalTo(
@@ -3852,10 +3901,10 @@ extension FinampUserQueryFilter
   }
 
   QueryBuilder<FinampUser, FinampUser, QAfterFilterCondition> idGreaterThan(
-    String value, {
-    bool include = false,
-    bool caseSensitive = true,
-  }) {
+      String value, {
+        bool include = false,
+        bool caseSensitive = true,
+      }) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(
         FilterCondition.greaterThan(
@@ -3869,10 +3918,10 @@ extension FinampUserQueryFilter
   }
 
   QueryBuilder<FinampUser, FinampUser, QAfterFilterCondition> idLessThan(
-    String value, {
-    bool include = false,
-    bool caseSensitive = true,
-  }) {
+      String value, {
+        bool include = false,
+        bool caseSensitive = true,
+      }) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(
         FilterCondition.lessThan(
@@ -3886,12 +3935,12 @@ extension FinampUserQueryFilter
   }
 
   QueryBuilder<FinampUser, FinampUser, QAfterFilterCondition> idBetween(
-    String lower,
-    String upper, {
-    bool includeLower = true,
-    bool includeUpper = true,
-    bool caseSensitive = true,
-  }) {
+      String lower,
+      String upper, {
+        bool includeLower = true,
+        bool includeUpper = true,
+        bool caseSensitive = true,
+      }) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(
         FilterCondition.between(
@@ -3907,9 +3956,9 @@ extension FinampUserQueryFilter
   }
 
   QueryBuilder<FinampUser, FinampUser, QAfterFilterCondition> idStartsWith(
-    String value, {
-    bool caseSensitive = true,
-  }) {
+      String value, {
+        bool caseSensitive = true,
+      }) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(
         FilterCondition.startsWith(
@@ -3922,9 +3971,9 @@ extension FinampUserQueryFilter
   }
 
   QueryBuilder<FinampUser, FinampUser, QAfterFilterCondition> idEndsWith(
-    String value, {
-    bool caseSensitive = true,
-  }) {
+      String value, {
+        bool caseSensitive = true,
+      }) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(
         FilterCondition.endsWith(
@@ -3937,9 +3986,9 @@ extension FinampUserQueryFilter
   }
 
   QueryBuilder<FinampUser, FinampUser, QAfterFilterCondition> idContains(
-    String value, {
-    bool caseSensitive = true,
-  }) {
+      String value, {
+        bool caseSensitive = true,
+      }) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(
         FilterCondition.contains(
@@ -3952,9 +4001,9 @@ extension FinampUserQueryFilter
   }
 
   QueryBuilder<FinampUser, FinampUser, QAfterFilterCondition> idMatches(
-    String pattern, {
-    bool caseSensitive = true,
-  }) {
+      String pattern, {
+        bool caseSensitive = true,
+      }) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(
         FilterCondition.matches(
@@ -3983,8 +4032,7 @@ extension FinampUserQueryFilter
   }
 
   QueryBuilder<FinampUser, FinampUser, QAfterFilterCondition> isLocalEqualTo(
-    bool value,
-  ) {
+      bool value,) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(
         FilterCondition.equalTo(property: r'isLocal', value: value),
@@ -3993,8 +4041,7 @@ extension FinampUserQueryFilter
   }
 
   QueryBuilder<FinampUser, FinampUser, QAfterFilterCondition> isarIdEqualTo(
-    Id value,
-  ) {
+      Id value,) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(
         FilterCondition.equalTo(property: r'isarId', value: value),
@@ -4003,9 +4050,9 @@ extension FinampUserQueryFilter
   }
 
   QueryBuilder<FinampUser, FinampUser, QAfterFilterCondition> isarIdGreaterThan(
-    Id value, {
-    bool include = false,
-  }) {
+      Id value, {
+        bool include = false,
+      }) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(
         FilterCondition.greaterThan(
@@ -4018,9 +4065,9 @@ extension FinampUserQueryFilter
   }
 
   QueryBuilder<FinampUser, FinampUser, QAfterFilterCondition> isarIdLessThan(
-    Id value, {
-    bool include = false,
-  }) {
+      Id value, {
+        bool include = false,
+      }) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(
         FilterCondition.lessThan(
@@ -4033,11 +4080,11 @@ extension FinampUserQueryFilter
   }
 
   QueryBuilder<FinampUser, FinampUser, QAfterFilterCondition> isarIdBetween(
-    Id lower,
-    Id upper, {
-    bool includeLower = true,
-    bool includeUpper = true,
-  }) {
+      Id lower,
+      Id upper, {
+        bool includeLower = true,
+        bool includeUpper = true,
+      }) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(
         FilterCondition.between(
@@ -4052,9 +4099,9 @@ extension FinampUserQueryFilter
   }
 
   QueryBuilder<FinampUser, FinampUser, QAfterFilterCondition> isarViewsEqualTo(
-    String value, {
-    bool caseSensitive = true,
-  }) {
+      String value, {
+        bool caseSensitive = true,
+      }) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(
         FilterCondition.equalTo(
@@ -4067,8 +4114,7 @@ extension FinampUserQueryFilter
   }
 
   QueryBuilder<FinampUser, FinampUser, QAfterFilterCondition>
-  isarViewsGreaterThan(
-    String value, {
+  isarViewsGreaterThan(String value, {
     bool include = false,
     bool caseSensitive = true,
   }) {
@@ -4085,10 +4131,10 @@ extension FinampUserQueryFilter
   }
 
   QueryBuilder<FinampUser, FinampUser, QAfterFilterCondition> isarViewsLessThan(
-    String value, {
-    bool include = false,
-    bool caseSensitive = true,
-  }) {
+      String value, {
+        bool include = false,
+        bool caseSensitive = true,
+      }) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(
         FilterCondition.lessThan(
@@ -4102,12 +4148,12 @@ extension FinampUserQueryFilter
   }
 
   QueryBuilder<FinampUser, FinampUser, QAfterFilterCondition> isarViewsBetween(
-    String lower,
-    String upper, {
-    bool includeLower = true,
-    bool includeUpper = true,
-    bool caseSensitive = true,
-  }) {
+      String lower,
+      String upper, {
+        bool includeLower = true,
+        bool includeUpper = true,
+        bool caseSensitive = true,
+      }) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(
         FilterCondition.between(
@@ -4136,9 +4182,9 @@ extension FinampUserQueryFilter
   }
 
   QueryBuilder<FinampUser, FinampUser, QAfterFilterCondition> isarViewsEndsWith(
-    String value, {
-    bool caseSensitive = true,
-  }) {
+      String value, {
+        bool caseSensitive = true,
+      }) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(
         FilterCondition.endsWith(
@@ -4151,9 +4197,9 @@ extension FinampUserQueryFilter
   }
 
   QueryBuilder<FinampUser, FinampUser, QAfterFilterCondition> isarViewsContains(
-    String value, {
-    bool caseSensitive = true,
-  }) {
+      String value, {
+        bool caseSensitive = true,
+      }) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(
         FilterCondition.contains(
@@ -4166,9 +4212,9 @@ extension FinampUserQueryFilter
   }
 
   QueryBuilder<FinampUser, FinampUser, QAfterFilterCondition> isarViewsMatches(
-    String pattern, {
-    bool caseSensitive = true,
-  }) {
+      String pattern, {
+        bool caseSensitive = true,
+      }) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(
         FilterCondition.matches(
@@ -4212,8 +4258,7 @@ extension FinampUserQueryFilter
   }
 
   QueryBuilder<FinampUser, FinampUser, QAfterFilterCondition>
-  localAddressGreaterThan(
-    String value, {
+  localAddressGreaterThan(String value, {
     bool include = false,
     bool caseSensitive = true,
   }) {
@@ -4230,8 +4275,7 @@ extension FinampUserQueryFilter
   }
 
   QueryBuilder<FinampUser, FinampUser, QAfterFilterCondition>
-  localAddressLessThan(
-    String value, {
+  localAddressLessThan(String value, {
     bool include = false,
     bool caseSensitive = true,
   }) {
@@ -4248,13 +4292,12 @@ extension FinampUserQueryFilter
   }
 
   QueryBuilder<FinampUser, FinampUser, QAfterFilterCondition>
-  localAddressBetween(
-    String lower,
-    String upper, {
-    bool includeLower = true,
-    bool includeUpper = true,
-    bool caseSensitive = true,
-  }) {
+  localAddressBetween(String lower,
+      String upper, {
+        bool includeLower = true,
+        bool includeUpper = true,
+        bool caseSensitive = true,
+      }) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(
         FilterCondition.between(
@@ -4349,9 +4392,9 @@ extension FinampUserQueryFilter
   }
 
   QueryBuilder<FinampUser, FinampUser, QAfterFilterCondition> serverIdEqualTo(
-    String value, {
-    bool caseSensitive = true,
-  }) {
+      String value, {
+        bool caseSensitive = true,
+      }) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(
         FilterCondition.equalTo(
@@ -4364,8 +4407,7 @@ extension FinampUserQueryFilter
   }
 
   QueryBuilder<FinampUser, FinampUser, QAfterFilterCondition>
-  serverIdGreaterThan(
-    String value, {
+  serverIdGreaterThan(String value, {
     bool include = false,
     bool caseSensitive = true,
   }) {
@@ -4382,10 +4424,10 @@ extension FinampUserQueryFilter
   }
 
   QueryBuilder<FinampUser, FinampUser, QAfterFilterCondition> serverIdLessThan(
-    String value, {
-    bool include = false,
-    bool caseSensitive = true,
-  }) {
+      String value, {
+        bool include = false,
+        bool caseSensitive = true,
+      }) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(
         FilterCondition.lessThan(
@@ -4399,12 +4441,12 @@ extension FinampUserQueryFilter
   }
 
   QueryBuilder<FinampUser, FinampUser, QAfterFilterCondition> serverIdBetween(
-    String lower,
-    String upper, {
-    bool includeLower = true,
-    bool includeUpper = true,
-    bool caseSensitive = true,
-  }) {
+      String lower,
+      String upper, {
+        bool includeLower = true,
+        bool includeUpper = true,
+        bool caseSensitive = true,
+      }) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(
         FilterCondition.between(
@@ -4433,9 +4475,9 @@ extension FinampUserQueryFilter
   }
 
   QueryBuilder<FinampUser, FinampUser, QAfterFilterCondition> serverIdEndsWith(
-    String value, {
-    bool caseSensitive = true,
-  }) {
+      String value, {
+        bool caseSensitive = true,
+      }) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(
         FilterCondition.endsWith(
@@ -4448,9 +4490,9 @@ extension FinampUserQueryFilter
   }
 
   QueryBuilder<FinampUser, FinampUser, QAfterFilterCondition> serverIdContains(
-    String value, {
-    bool caseSensitive = true,
-  }) {
+      String value, {
+        bool caseSensitive = true,
+      }) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(
         FilterCondition.contains(
@@ -4463,9 +4505,9 @@ extension FinampUserQueryFilter
   }
 
   QueryBuilder<FinampUser, FinampUser, QAfterFilterCondition> serverIdMatches(
-    String pattern, {
-    bool caseSensitive = true,
-  }) {
+      String pattern, {
+        bool caseSensitive = true,
+      }) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(
         FilterCondition.matches(
@@ -4497,13 +4539,13 @@ extension FinampUserQueryFilter
 }
 
 extension FinampUserQueryObject
-    on QueryBuilder<FinampUser, FinampUser, QFilterCondition> {}
+on QueryBuilder<FinampUser, FinampUser, QFilterCondition> {}
 
 extension FinampUserQueryLinks
-    on QueryBuilder<FinampUser, FinampUser, QFilterCondition> {}
+on QueryBuilder<FinampUser, FinampUser, QFilterCondition> {}
 
 extension FinampUserQuerySortBy
-    on QueryBuilder<FinampUser, FinampUser, QSortBy> {
+on QueryBuilder<FinampUser, FinampUser, QSortBy> {
   QueryBuilder<FinampUser, FinampUser, QAfterSortBy> sortByAccessToken() {
     return QueryBuilder.apply(this, (query) {
       return query.addSortBy(r'accessToken', Sort.asc);
@@ -4629,7 +4671,7 @@ extension FinampUserQuerySortBy
 }
 
 extension FinampUserQuerySortThenBy
-    on QueryBuilder<FinampUser, FinampUser, QSortThenBy> {
+on QueryBuilder<FinampUser, FinampUser, QSortThenBy> {
   QueryBuilder<FinampUser, FinampUser, QAfterSortBy> thenByAccessToken() {
     return QueryBuilder.apply(this, (query) {
       return query.addSortBy(r'accessToken', Sort.asc);
@@ -4767,7 +4809,7 @@ extension FinampUserQuerySortThenBy
 }
 
 extension FinampUserQueryWhereDistinct
-    on QueryBuilder<FinampUser, FinampUser, QDistinct> {
+on QueryBuilder<FinampUser, FinampUser, QDistinct> {
   QueryBuilder<FinampUser, FinampUser, QDistinct> distinctByAccessToken({
     bool caseSensitive = true,
   }) {
@@ -4850,7 +4892,7 @@ extension FinampUserQueryWhereDistinct
 }
 
 extension FinampUserQueryProperty
-    on QueryBuilder<FinampUser, FinampUser, QQueryProperty> {
+on QueryBuilder<FinampUser, FinampUser, QQueryProperty> {
   QueryBuilder<FinampUser, int, QQueryOperations> isarIdProperty() {
     return QueryBuilder.apply(this, (query) {
       return query.addPropertyName(r'isarId');
@@ -5065,22 +5107,20 @@ const DownloadItemSchema = CollectionSchema(
   version: '3.1.0+1',
 );
 
-int _downloadItemEstimateSize(
-  DownloadItem object,
-  List<int> offsets,
-  Map<Type, List<int>> allOffsets,
-) {
+int _downloadItemEstimateSize(DownloadItem object,
+    List<int> offsets,
+    Map<Type, List<int>> allOffsets,) {
   var bytesCount = offsets.last;
   {
     final value = object.fileTranscodingProfile;
     if (value != null) {
       bytesCount +=
           3 +
-          DownloadProfileSchema.estimateSize(
-            value,
-            allOffsets[DownloadProfile]!,
-            allOffsets,
-          );
+              DownloadProfileSchema.estimateSize(
+                value,
+                allOffsets[DownloadProfile]!,
+                allOffsets,
+              );
     }
   }
   bytesCount += 3 + object.id.length * 3;
@@ -5108,11 +5148,11 @@ int _downloadItemEstimateSize(
     if (value != null) {
       bytesCount +=
           3 +
-          DownloadProfileSchema.estimateSize(
-            value,
-            allOffsets[DownloadProfile]!,
-            allOffsets,
-          );
+              DownloadProfileSchema.estimateSize(
+                value,
+                allOffsets[DownloadProfile]!,
+                allOffsets,
+              );
     }
   }
   {
@@ -5120,11 +5160,11 @@ int _downloadItemEstimateSize(
     if (value != null) {
       bytesCount +=
           3 +
-          DownloadProfileSchema.estimateSize(
-            value,
-            allOffsets[DownloadProfile]!,
-            allOffsets,
-          );
+              DownloadProfileSchema.estimateSize(
+                value,
+                allOffsets[DownloadProfile]!,
+                allOffsets,
+              );
     }
   }
   {
@@ -5136,12 +5176,10 @@ int _downloadItemEstimateSize(
   return bytesCount;
 }
 
-void _downloadItemSerialize(
-  DownloadItem object,
-  IsarWriter writer,
-  List<int> offsets,
-  Map<Type, List<int>> allOffsets,
-) {
+void _downloadItemSerialize(DownloadItem object,
+    IsarWriter writer,
+    List<int> offsets,
+    Map<Type, List<int>> allOffsets,) {
   writer.writeLong(offsets[0], object.baseIndexNumber);
   writer.writeByte(offsets[1], object.baseItemType.index);
   writer.writeObject<DownloadProfile>(
@@ -5173,18 +5211,16 @@ void _downloadItemSerialize(
   writer.writeString(offsets[13], object.isarViewId);
 }
 
-DownloadItem _downloadItemDeserialize(
-  Id id,
-  IsarReader reader,
-  List<int> offsets,
-  Map<Type, List<int>> allOffsets,
-) {
+DownloadItem _downloadItemDeserialize(Id id,
+    IsarReader reader,
+    List<int> offsets,
+    Map<Type, List<int>> allOffsets,) {
   final object = DownloadItem(
     baseIndexNumber: reader.readLongOrNull(offsets[0]),
     baseItemType:
-        _DownloadItembaseItemTypeValueEnumMap[reader.readByteOrNull(
-          offsets[1],
-        )] ??
+    _DownloadItembaseItemTypeValueEnumMap[reader.readByteOrNull(
+      offsets[1],
+    )] ??
         BaseItemDtoType.noItem,
     fileTranscodingProfile: reader.readObjectOrNull<DownloadProfile>(
       offsets[2],
@@ -5199,7 +5235,7 @@ DownloadItem _downloadItemDeserialize(
     parentIndexNumber: reader.readLongOrNull(offsets[7]),
     path: reader.readStringOrNull(offsets[8]),
     state:
-        _DownloadItemstateValueEnumMap[reader.readByteOrNull(offsets[9])] ??
+    _DownloadItemstateValueEnumMap[reader.readByteOrNull(offsets[9])] ??
         DownloadItemState.notDownloaded,
     syncTranscodingProfile: reader.readObjectOrNull<DownloadProfile>(
       offsets[10],
@@ -5207,7 +5243,7 @@ DownloadItem _downloadItemDeserialize(
       allOffsets,
     ),
     type:
-        _DownloadItemtypeValueEnumMap[reader.readByteOrNull(offsets[11])] ??
+    _DownloadItemtypeValueEnumMap[reader.readByteOrNull(offsets[11])] ??
         DownloadItemType.collection,
     userTranscodingProfile: reader.readObjectOrNull<DownloadProfile>(
       offsets[12],
@@ -5219,28 +5255,26 @@ DownloadItem _downloadItemDeserialize(
   return object;
 }
 
-P _downloadItemDeserializeProp<P>(
-  IsarReader reader,
-  int propertyId,
-  int offset,
-  Map<Type, List<int>> allOffsets,
-) {
+P _downloadItemDeserializeProp<P>(IsarReader reader,
+    int propertyId,
+    int offset,
+    Map<Type, List<int>> allOffsets,) {
   switch (propertyId) {
     case 0:
       return (reader.readLongOrNull(offset)) as P;
     case 1:
       return (_DownloadItembaseItemTypeValueEnumMap[reader.readByteOrNull(
-                offset,
-              )] ??
-              BaseItemDtoType.noItem)
-          as P;
+        offset,
+      )] ??
+          BaseItemDtoType.noItem)
+      as P;
     case 2:
       return (reader.readObjectOrNull<DownloadProfile>(
-            offset,
-            DownloadProfileSchema.deserialize,
-            allOffsets,
-          ))
-          as P;
+        offset,
+        DownloadProfileSchema.deserialize,
+        allOffsets,
+      ))
+      as P;
     case 3:
       return (reader.readString(offset)) as P;
     case 4:
@@ -5255,26 +5289,26 @@ P _downloadItemDeserializeProp<P>(
       return (reader.readStringOrNull(offset)) as P;
     case 9:
       return (_DownloadItemstateValueEnumMap[reader.readByteOrNull(offset)] ??
-              DownloadItemState.notDownloaded)
-          as P;
+          DownloadItemState.notDownloaded)
+      as P;
     case 10:
       return (reader.readObjectOrNull<DownloadProfile>(
-            offset,
-            DownloadProfileSchema.deserialize,
-            allOffsets,
-          ))
-          as P;
+        offset,
+        DownloadProfileSchema.deserialize,
+        allOffsets,
+      ))
+      as P;
     case 11:
       return (_DownloadItemtypeValueEnumMap[reader.readByteOrNull(offset)] ??
-              DownloadItemType.collection)
-          as P;
+          DownloadItemType.collection)
+      as P;
     case 12:
       return (reader.readObjectOrNull<DownloadProfile>(
-            offset,
-            DownloadProfileSchema.deserialize,
-            allOffsets,
-          ))
-          as P;
+        offset,
+        DownloadProfileSchema.deserialize,
+        allOffsets,
+      ))
+      as P;
     case 13:
       return (reader.readStringOrNull(offset)) as P;
     default:
@@ -5359,11 +5393,9 @@ List<IsarLinkBase<dynamic>> _downloadItemGetLinks(DownloadItem object) {
   return [object.requires, object.requiredBy, object.info, object.infoFor];
 }
 
-void _downloadItemAttach(
-  IsarCollection<dynamic> col,
-  Id id,
-  DownloadItem object,
-) {
+void _downloadItemAttach(IsarCollection<dynamic> col,
+    Id id,
+    DownloadItem object,) {
   object.requires.attach(
     col,
     col.isar.collection<DownloadItem>(),
@@ -5386,7 +5418,7 @@ void _downloadItemAttach(
 }
 
 extension DownloadItemQueryWhereSort
-    on QueryBuilder<DownloadItem, DownloadItem, QWhere> {
+on QueryBuilder<DownloadItem, DownloadItem, QWhere> {
   QueryBuilder<DownloadItem, DownloadItem, QAfterWhere> anyIsarId() {
     return QueryBuilder.apply(this, (query) {
       return query.addWhereClause(const IdWhereClause.any());
@@ -5411,10 +5443,9 @@ extension DownloadItemQueryWhereSort
 }
 
 extension DownloadItemQueryWhere
-    on QueryBuilder<DownloadItem, DownloadItem, QWhereClause> {
+on QueryBuilder<DownloadItem, DownloadItem, QWhereClause> {
   QueryBuilder<DownloadItem, DownloadItem, QAfterWhereClause> isarIdEqualTo(
-    Id isarId,
-  ) {
+      Id isarId,) {
     return QueryBuilder.apply(this, (query) {
       return query.addWhereClause(
         IdWhereClause.between(lower: isarId, upper: isarId),
@@ -5423,33 +5454,32 @@ extension DownloadItemQueryWhere
   }
 
   QueryBuilder<DownloadItem, DownloadItem, QAfterWhereClause> isarIdNotEqualTo(
-    Id isarId,
-  ) {
+      Id isarId,) {
     return QueryBuilder.apply(this, (query) {
       if (query.whereSort == Sort.asc) {
         return query
             .addWhereClause(
-              IdWhereClause.lessThan(upper: isarId, includeUpper: false),
-            )
+          IdWhereClause.lessThan(upper: isarId, includeUpper: false),
+        )
             .addWhereClause(
-              IdWhereClause.greaterThan(lower: isarId, includeLower: false),
-            );
+          IdWhereClause.greaterThan(lower: isarId, includeLower: false),
+        );
       } else {
         return query
             .addWhereClause(
-              IdWhereClause.greaterThan(lower: isarId, includeLower: false),
-            )
+          IdWhereClause.greaterThan(lower: isarId, includeLower: false),
+        )
             .addWhereClause(
-              IdWhereClause.lessThan(upper: isarId, includeUpper: false),
-            );
+          IdWhereClause.lessThan(upper: isarId, includeUpper: false),
+        );
       }
     });
   }
 
   QueryBuilder<DownloadItem, DownloadItem, QAfterWhereClause> isarIdGreaterThan(
-    Id isarId, {
-    bool include = false,
-  }) {
+      Id isarId, {
+        bool include = false,
+      }) {
     return QueryBuilder.apply(this, (query) {
       return query.addWhereClause(
         IdWhereClause.greaterThan(lower: isarId, includeLower: include),
@@ -5458,9 +5488,9 @@ extension DownloadItemQueryWhere
   }
 
   QueryBuilder<DownloadItem, DownloadItem, QAfterWhereClause> isarIdLessThan(
-    Id isarId, {
-    bool include = false,
-  }) {
+      Id isarId, {
+        bool include = false,
+      }) {
     return QueryBuilder.apply(this, (query) {
       return query.addWhereClause(
         IdWhereClause.lessThan(upper: isarId, includeUpper: include),
@@ -5469,11 +5499,11 @@ extension DownloadItemQueryWhere
   }
 
   QueryBuilder<DownloadItem, DownloadItem, QAfterWhereClause> isarIdBetween(
-    Id lowerIsarId,
-    Id upperIsarId, {
-    bool includeLower = true,
-    bool includeUpper = true,
-  }) {
+      Id lowerIsarId,
+      Id upperIsarId, {
+        bool includeLower = true,
+        bool includeUpper = true,
+      }) {
     return QueryBuilder.apply(this, (query) {
       return query.addWhereClause(
         IdWhereClause.between(
@@ -5487,8 +5517,7 @@ extension DownloadItemQueryWhere
   }
 
   QueryBuilder<DownloadItem, DownloadItem, QAfterWhereClause> stateEqualTo(
-    DownloadItemState state,
-  ) {
+      DownloadItemState state,) {
     return QueryBuilder.apply(this, (query) {
       return query.addWhereClause(
         IndexWhereClause.equalTo(indexName: r'state', value: [state]),
@@ -5497,53 +5526,52 @@ extension DownloadItemQueryWhere
   }
 
   QueryBuilder<DownloadItem, DownloadItem, QAfterWhereClause> stateNotEqualTo(
-    DownloadItemState state,
-  ) {
+      DownloadItemState state,) {
     return QueryBuilder.apply(this, (query) {
       if (query.whereSort == Sort.asc) {
         return query
             .addWhereClause(
-              IndexWhereClause.between(
-                indexName: r'state',
-                lower: [],
-                upper: [state],
-                includeUpper: false,
-              ),
-            )
+          IndexWhereClause.between(
+            indexName: r'state',
+            lower: [],
+            upper: [state],
+            includeUpper: false,
+          ),
+        )
             .addWhereClause(
-              IndexWhereClause.between(
-                indexName: r'state',
-                lower: [state],
-                includeLower: false,
-                upper: [],
-              ),
-            );
+          IndexWhereClause.between(
+            indexName: r'state',
+            lower: [state],
+            includeLower: false,
+            upper: [],
+          ),
+        );
       } else {
         return query
             .addWhereClause(
-              IndexWhereClause.between(
-                indexName: r'state',
-                lower: [state],
-                includeLower: false,
-                upper: [],
-              ),
-            )
+          IndexWhereClause.between(
+            indexName: r'state',
+            lower: [state],
+            includeLower: false,
+            upper: [],
+          ),
+        )
             .addWhereClause(
-              IndexWhereClause.between(
-                indexName: r'state',
-                lower: [],
-                upper: [state],
-                includeUpper: false,
-              ),
-            );
+          IndexWhereClause.between(
+            indexName: r'state',
+            lower: [],
+            upper: [state],
+            includeUpper: false,
+          ),
+        );
       }
     });
   }
 
   QueryBuilder<DownloadItem, DownloadItem, QAfterWhereClause> stateGreaterThan(
-    DownloadItemState state, {
-    bool include = false,
-  }) {
+      DownloadItemState state, {
+        bool include = false,
+      }) {
     return QueryBuilder.apply(this, (query) {
       return query.addWhereClause(
         IndexWhereClause.between(
@@ -5557,9 +5585,9 @@ extension DownloadItemQueryWhere
   }
 
   QueryBuilder<DownloadItem, DownloadItem, QAfterWhereClause> stateLessThan(
-    DownloadItemState state, {
-    bool include = false,
-  }) {
+      DownloadItemState state, {
+        bool include = false,
+      }) {
     return QueryBuilder.apply(this, (query) {
       return query.addWhereClause(
         IndexWhereClause.between(
@@ -5573,11 +5601,11 @@ extension DownloadItemQueryWhere
   }
 
   QueryBuilder<DownloadItem, DownloadItem, QAfterWhereClause> stateBetween(
-    DownloadItemState lowerState,
-    DownloadItemState upperState, {
-    bool includeLower = true,
-    bool includeUpper = true,
-  }) {
+      DownloadItemState lowerState,
+      DownloadItemState upperState, {
+        bool includeLower = true,
+        bool includeUpper = true,
+      }) {
     return QueryBuilder.apply(this, (query) {
       return query.addWhereClause(
         IndexWhereClause.between(
@@ -5592,8 +5620,7 @@ extension DownloadItemQueryWhere
   }
 
   QueryBuilder<DownloadItem, DownloadItem, QAfterWhereClause> typeEqualTo(
-    DownloadItemType type,
-  ) {
+      DownloadItemType type,) {
     return QueryBuilder.apply(this, (query) {
       return query.addWhereClause(
         IndexWhereClause.equalTo(indexName: r'type', value: [type]),
@@ -5602,53 +5629,52 @@ extension DownloadItemQueryWhere
   }
 
   QueryBuilder<DownloadItem, DownloadItem, QAfterWhereClause> typeNotEqualTo(
-    DownloadItemType type,
-  ) {
+      DownloadItemType type,) {
     return QueryBuilder.apply(this, (query) {
       if (query.whereSort == Sort.asc) {
         return query
             .addWhereClause(
-              IndexWhereClause.between(
-                indexName: r'type',
-                lower: [],
-                upper: [type],
-                includeUpper: false,
-              ),
-            )
+          IndexWhereClause.between(
+            indexName: r'type',
+            lower: [],
+            upper: [type],
+            includeUpper: false,
+          ),
+        )
             .addWhereClause(
-              IndexWhereClause.between(
-                indexName: r'type',
-                lower: [type],
-                includeLower: false,
-                upper: [],
-              ),
-            );
+          IndexWhereClause.between(
+            indexName: r'type',
+            lower: [type],
+            includeLower: false,
+            upper: [],
+          ),
+        );
       } else {
         return query
             .addWhereClause(
-              IndexWhereClause.between(
-                indexName: r'type',
-                lower: [type],
-                includeLower: false,
-                upper: [],
-              ),
-            )
+          IndexWhereClause.between(
+            indexName: r'type',
+            lower: [type],
+            includeLower: false,
+            upper: [],
+          ),
+        )
             .addWhereClause(
-              IndexWhereClause.between(
-                indexName: r'type',
-                lower: [],
-                upper: [type],
-                includeUpper: false,
-              ),
-            );
+          IndexWhereClause.between(
+            indexName: r'type',
+            lower: [],
+            upper: [type],
+            includeUpper: false,
+          ),
+        );
       }
     });
   }
 
   QueryBuilder<DownloadItem, DownloadItem, QAfterWhereClause> typeGreaterThan(
-    DownloadItemType type, {
-    bool include = false,
-  }) {
+      DownloadItemType type, {
+        bool include = false,
+      }) {
     return QueryBuilder.apply(this, (query) {
       return query.addWhereClause(
         IndexWhereClause.between(
@@ -5662,9 +5688,9 @@ extension DownloadItemQueryWhere
   }
 
   QueryBuilder<DownloadItem, DownloadItem, QAfterWhereClause> typeLessThan(
-    DownloadItemType type, {
-    bool include = false,
-  }) {
+      DownloadItemType type, {
+        bool include = false,
+      }) {
     return QueryBuilder.apply(this, (query) {
       return query.addWhereClause(
         IndexWhereClause.between(
@@ -5678,11 +5704,11 @@ extension DownloadItemQueryWhere
   }
 
   QueryBuilder<DownloadItem, DownloadItem, QAfterWhereClause> typeBetween(
-    DownloadItemType lowerType,
-    DownloadItemType upperType, {
-    bool includeLower = true,
-    bool includeUpper = true,
-  }) {
+      DownloadItemType lowerType,
+      DownloadItemType upperType, {
+        bool includeLower = true,
+        bool includeUpper = true,
+      }) {
     return QueryBuilder.apply(this, (query) {
       return query.addWhereClause(
         IndexWhereClause.between(
@@ -5698,7 +5724,7 @@ extension DownloadItemQueryWhere
 }
 
 extension DownloadItemQueryFilter
-    on QueryBuilder<DownloadItem, DownloadItem, QFilterCondition> {
+on QueryBuilder<DownloadItem, DownloadItem, QFilterCondition> {
   QueryBuilder<DownloadItem, DownloadItem, QAfterFilterCondition>
   baseIndexNumberIsNull() {
     return QueryBuilder.apply(this, (query) {
@@ -5753,12 +5779,11 @@ extension DownloadItemQueryFilter
   }
 
   QueryBuilder<DownloadItem, DownloadItem, QAfterFilterCondition>
-  baseIndexNumberBetween(
-    int? lower,
-    int? upper, {
-    bool includeLower = true,
-    bool includeUpper = true,
-  }) {
+  baseIndexNumberBetween(int? lower,
+      int? upper, {
+        bool includeLower = true,
+        bool includeUpper = true,
+      }) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(
         FilterCondition.between(
@@ -5808,12 +5833,11 @@ extension DownloadItemQueryFilter
   }
 
   QueryBuilder<DownloadItem, DownloadItem, QAfterFilterCondition>
-  baseItemTypeBetween(
-    BaseItemDtoType lower,
-    BaseItemDtoType upper, {
-    bool includeLower = true,
-    bool includeUpper = true,
-  }) {
+  baseItemTypeBetween(BaseItemDtoType lower,
+      BaseItemDtoType upper, {
+        bool includeLower = true,
+        bool includeUpper = true,
+      }) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(
         FilterCondition.between(
@@ -5846,9 +5870,9 @@ extension DownloadItemQueryFilter
   }
 
   QueryBuilder<DownloadItem, DownloadItem, QAfterFilterCondition> idEqualTo(
-    String value, {
-    bool caseSensitive = true,
-  }) {
+      String value, {
+        bool caseSensitive = true,
+      }) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(
         FilterCondition.equalTo(
@@ -5861,10 +5885,10 @@ extension DownloadItemQueryFilter
   }
 
   QueryBuilder<DownloadItem, DownloadItem, QAfterFilterCondition> idGreaterThan(
-    String value, {
-    bool include = false,
-    bool caseSensitive = true,
-  }) {
+      String value, {
+        bool include = false,
+        bool caseSensitive = true,
+      }) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(
         FilterCondition.greaterThan(
@@ -5878,10 +5902,10 @@ extension DownloadItemQueryFilter
   }
 
   QueryBuilder<DownloadItem, DownloadItem, QAfterFilterCondition> idLessThan(
-    String value, {
-    bool include = false,
-    bool caseSensitive = true,
-  }) {
+      String value, {
+        bool include = false,
+        bool caseSensitive = true,
+      }) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(
         FilterCondition.lessThan(
@@ -5895,12 +5919,12 @@ extension DownloadItemQueryFilter
   }
 
   QueryBuilder<DownloadItem, DownloadItem, QAfterFilterCondition> idBetween(
-    String lower,
-    String upper, {
-    bool includeLower = true,
-    bool includeUpper = true,
-    bool caseSensitive = true,
-  }) {
+      String lower,
+      String upper, {
+        bool includeLower = true,
+        bool includeUpper = true,
+        bool caseSensitive = true,
+      }) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(
         FilterCondition.between(
@@ -5916,9 +5940,9 @@ extension DownloadItemQueryFilter
   }
 
   QueryBuilder<DownloadItem, DownloadItem, QAfterFilterCondition> idStartsWith(
-    String value, {
-    bool caseSensitive = true,
-  }) {
+      String value, {
+        bool caseSensitive = true,
+      }) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(
         FilterCondition.startsWith(
@@ -5931,9 +5955,9 @@ extension DownloadItemQueryFilter
   }
 
   QueryBuilder<DownloadItem, DownloadItem, QAfterFilterCondition> idEndsWith(
-    String value, {
-    bool caseSensitive = true,
-  }) {
+      String value, {
+        bool caseSensitive = true,
+      }) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(
         FilterCondition.endsWith(
@@ -5946,9 +5970,9 @@ extension DownloadItemQueryFilter
   }
 
   QueryBuilder<DownloadItem, DownloadItem, QAfterFilterCondition> idContains(
-    String value, {
-    bool caseSensitive = true,
-  }) {
+      String value, {
+        bool caseSensitive = true,
+      }) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(
         FilterCondition.contains(
@@ -5961,9 +5985,9 @@ extension DownloadItemQueryFilter
   }
 
   QueryBuilder<DownloadItem, DownloadItem, QAfterFilterCondition> idMatches(
-    String pattern, {
-    bool caseSensitive = true,
-  }) {
+      String pattern, {
+        bool caseSensitive = true,
+      }) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(
         FilterCondition.matches(
@@ -5993,8 +6017,7 @@ extension DownloadItemQueryFilter
   }
 
   QueryBuilder<DownloadItem, DownloadItem, QAfterFilterCondition> isarIdEqualTo(
-    Id value,
-  ) {
+      Id value,) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(
         FilterCondition.equalTo(property: r'isarId', value: value),
@@ -6029,11 +6052,11 @@ extension DownloadItemQueryFilter
   }
 
   QueryBuilder<DownloadItem, DownloadItem, QAfterFilterCondition> isarIdBetween(
-    Id lower,
-    Id upper, {
-    bool includeLower = true,
-    bool includeUpper = true,
-  }) {
+      Id lower,
+      Id upper, {
+        bool includeLower = true,
+        bool includeUpper = true,
+      }) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(
         FilterCondition.between(
@@ -6079,8 +6102,7 @@ extension DownloadItemQueryFilter
   }
 
   QueryBuilder<DownloadItem, DownloadItem, QAfterFilterCondition>
-  jsonItemGreaterThan(
-    String? value, {
+  jsonItemGreaterThan(String? value, {
     bool include = false,
     bool caseSensitive = true,
   }) {
@@ -6097,8 +6119,7 @@ extension DownloadItemQueryFilter
   }
 
   QueryBuilder<DownloadItem, DownloadItem, QAfterFilterCondition>
-  jsonItemLessThan(
-    String? value, {
+  jsonItemLessThan(String? value, {
     bool include = false,
     bool caseSensitive = true,
   }) {
@@ -6115,13 +6136,12 @@ extension DownloadItemQueryFilter
   }
 
   QueryBuilder<DownloadItem, DownloadItem, QAfterFilterCondition>
-  jsonItemBetween(
-    String? lower,
-    String? upper, {
-    bool includeLower = true,
-    bool includeUpper = true,
-    bool caseSensitive = true,
-  }) {
+  jsonItemBetween(String? lower,
+      String? upper, {
+        bool includeLower = true,
+        bool includeUpper = true,
+        bool caseSensitive = true,
+      }) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(
         FilterCondition.between(
@@ -6207,9 +6227,9 @@ extension DownloadItemQueryFilter
   }
 
   QueryBuilder<DownloadItem, DownloadItem, QAfterFilterCondition> nameEqualTo(
-    String value, {
-    bool caseSensitive = true,
-  }) {
+      String value, {
+        bool caseSensitive = true,
+      }) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(
         FilterCondition.equalTo(
@@ -6222,8 +6242,7 @@ extension DownloadItemQueryFilter
   }
 
   QueryBuilder<DownloadItem, DownloadItem, QAfterFilterCondition>
-  nameGreaterThan(
-    String value, {
+  nameGreaterThan(String value, {
     bool include = false,
     bool caseSensitive = true,
   }) {
@@ -6240,10 +6259,10 @@ extension DownloadItemQueryFilter
   }
 
   QueryBuilder<DownloadItem, DownloadItem, QAfterFilterCondition> nameLessThan(
-    String value, {
-    bool include = false,
-    bool caseSensitive = true,
-  }) {
+      String value, {
+        bool include = false,
+        bool caseSensitive = true,
+      }) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(
         FilterCondition.lessThan(
@@ -6257,12 +6276,12 @@ extension DownloadItemQueryFilter
   }
 
   QueryBuilder<DownloadItem, DownloadItem, QAfterFilterCondition> nameBetween(
-    String lower,
-    String upper, {
-    bool includeLower = true,
-    bool includeUpper = true,
-    bool caseSensitive = true,
-  }) {
+      String lower,
+      String upper, {
+        bool includeLower = true,
+        bool includeUpper = true,
+        bool caseSensitive = true,
+      }) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(
         FilterCondition.between(
@@ -6291,9 +6310,9 @@ extension DownloadItemQueryFilter
   }
 
   QueryBuilder<DownloadItem, DownloadItem, QAfterFilterCondition> nameEndsWith(
-    String value, {
-    bool caseSensitive = true,
-  }) {
+      String value, {
+        bool caseSensitive = true,
+      }) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(
         FilterCondition.endsWith(
@@ -6306,9 +6325,9 @@ extension DownloadItemQueryFilter
   }
 
   QueryBuilder<DownloadItem, DownloadItem, QAfterFilterCondition> nameContains(
-    String value, {
-    bool caseSensitive = true,
-  }) {
+      String value, {
+        bool caseSensitive = true,
+      }) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(
         FilterCondition.contains(
@@ -6321,9 +6340,9 @@ extension DownloadItemQueryFilter
   }
 
   QueryBuilder<DownloadItem, DownloadItem, QAfterFilterCondition> nameMatches(
-    String pattern, {
-    bool caseSensitive = true,
-  }) {
+      String pattern, {
+        bool caseSensitive = true,
+      }) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(
         FilterCondition.matches(
@@ -6407,12 +6426,11 @@ extension DownloadItemQueryFilter
   }
 
   QueryBuilder<DownloadItem, DownloadItem, QAfterFilterCondition>
-  orderedChildrenElementBetween(
-    int lower,
-    int upper, {
-    bool includeLower = true,
-    bool includeUpper = true,
-  }) {
+  orderedChildrenElementBetween(int lower,
+      int upper, {
+        bool includeLower = true,
+        bool includeUpper = true,
+      }) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(
         FilterCondition.between(
@@ -6468,12 +6486,11 @@ extension DownloadItemQueryFilter
   }
 
   QueryBuilder<DownloadItem, DownloadItem, QAfterFilterCondition>
-  orderedChildrenLengthBetween(
-    int lower,
-    int upper, {
-    bool includeLower = true,
-    bool includeUpper = true,
-  }) {
+  orderedChildrenLengthBetween(int lower,
+      int upper, {
+        bool includeLower = true,
+        bool includeUpper = true,
+      }) {
     return QueryBuilder.apply(this, (query) {
       return query.listLength(
         r'orderedChildren',
@@ -6539,12 +6556,11 @@ extension DownloadItemQueryFilter
   }
 
   QueryBuilder<DownloadItem, DownloadItem, QAfterFilterCondition>
-  parentIndexNumberBetween(
-    int? lower,
-    int? upper, {
-    bool includeLower = true,
-    bool includeUpper = true,
-  }) {
+  parentIndexNumberBetween(int? lower,
+      int? upper, {
+        bool includeLower = true,
+        bool includeUpper = true,
+      }) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(
         FilterCondition.between(
@@ -6576,9 +6592,9 @@ extension DownloadItemQueryFilter
   }
 
   QueryBuilder<DownloadItem, DownloadItem, QAfterFilterCondition> pathEqualTo(
-    String? value, {
-    bool caseSensitive = true,
-  }) {
+      String? value, {
+        bool caseSensitive = true,
+      }) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(
         FilterCondition.equalTo(
@@ -6591,8 +6607,7 @@ extension DownloadItemQueryFilter
   }
 
   QueryBuilder<DownloadItem, DownloadItem, QAfterFilterCondition>
-  pathGreaterThan(
-    String? value, {
+  pathGreaterThan(String? value, {
     bool include = false,
     bool caseSensitive = true,
   }) {
@@ -6609,10 +6624,10 @@ extension DownloadItemQueryFilter
   }
 
   QueryBuilder<DownloadItem, DownloadItem, QAfterFilterCondition> pathLessThan(
-    String? value, {
-    bool include = false,
-    bool caseSensitive = true,
-  }) {
+      String? value, {
+        bool include = false,
+        bool caseSensitive = true,
+      }) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(
         FilterCondition.lessThan(
@@ -6626,12 +6641,12 @@ extension DownloadItemQueryFilter
   }
 
   QueryBuilder<DownloadItem, DownloadItem, QAfterFilterCondition> pathBetween(
-    String? lower,
-    String? upper, {
-    bool includeLower = true,
-    bool includeUpper = true,
-    bool caseSensitive = true,
-  }) {
+      String? lower,
+      String? upper, {
+        bool includeLower = true,
+        bool includeUpper = true,
+        bool caseSensitive = true,
+      }) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(
         FilterCondition.between(
@@ -6660,9 +6675,9 @@ extension DownloadItemQueryFilter
   }
 
   QueryBuilder<DownloadItem, DownloadItem, QAfterFilterCondition> pathEndsWith(
-    String value, {
-    bool caseSensitive = true,
-  }) {
+      String value, {
+        bool caseSensitive = true,
+      }) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(
         FilterCondition.endsWith(
@@ -6675,9 +6690,9 @@ extension DownloadItemQueryFilter
   }
 
   QueryBuilder<DownloadItem, DownloadItem, QAfterFilterCondition> pathContains(
-    String value, {
-    bool caseSensitive = true,
-  }) {
+      String value, {
+        bool caseSensitive = true,
+      }) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(
         FilterCondition.contains(
@@ -6690,9 +6705,9 @@ extension DownloadItemQueryFilter
   }
 
   QueryBuilder<DownloadItem, DownloadItem, QAfterFilterCondition> pathMatches(
-    String pattern, {
-    bool caseSensitive = true,
-  }) {
+      String pattern, {
+        bool caseSensitive = true,
+      }) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(
         FilterCondition.matches(
@@ -6723,8 +6738,7 @@ extension DownloadItemQueryFilter
   }
 
   QueryBuilder<DownloadItem, DownloadItem, QAfterFilterCondition> stateEqualTo(
-    DownloadItemState value,
-  ) {
+      DownloadItemState value,) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(
         FilterCondition.equalTo(property: r'state', value: value),
@@ -6746,9 +6760,9 @@ extension DownloadItemQueryFilter
   }
 
   QueryBuilder<DownloadItem, DownloadItem, QAfterFilterCondition> stateLessThan(
-    DownloadItemState value, {
-    bool include = false,
-  }) {
+      DownloadItemState value, {
+        bool include = false,
+      }) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(
         FilterCondition.lessThan(
@@ -6761,11 +6775,11 @@ extension DownloadItemQueryFilter
   }
 
   QueryBuilder<DownloadItem, DownloadItem, QAfterFilterCondition> stateBetween(
-    DownloadItemState lower,
-    DownloadItemState upper, {
-    bool includeLower = true,
-    bool includeUpper = true,
-  }) {
+      DownloadItemState lower,
+      DownloadItemState upper, {
+        bool includeLower = true,
+        bool includeUpper = true,
+      }) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(
         FilterCondition.between(
@@ -6798,8 +6812,7 @@ extension DownloadItemQueryFilter
   }
 
   QueryBuilder<DownloadItem, DownloadItem, QAfterFilterCondition> typeEqualTo(
-    DownloadItemType value,
-  ) {
+      DownloadItemType value,) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(
         FilterCondition.equalTo(property: r'type', value: value),
@@ -6821,9 +6834,9 @@ extension DownloadItemQueryFilter
   }
 
   QueryBuilder<DownloadItem, DownloadItem, QAfterFilterCondition> typeLessThan(
-    DownloadItemType value, {
-    bool include = false,
-  }) {
+      DownloadItemType value, {
+        bool include = false,
+      }) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(
         FilterCondition.lessThan(
@@ -6836,11 +6849,11 @@ extension DownloadItemQueryFilter
   }
 
   QueryBuilder<DownloadItem, DownloadItem, QAfterFilterCondition> typeBetween(
-    DownloadItemType lower,
-    DownloadItemType upper, {
-    bool includeLower = true,
-    bool includeUpper = true,
-  }) {
+      DownloadItemType lower,
+      DownloadItemType upper, {
+        bool includeLower = true,
+        bool includeUpper = true,
+      }) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(
         FilterCondition.between(
@@ -6904,8 +6917,7 @@ extension DownloadItemQueryFilter
   }
 
   QueryBuilder<DownloadItem, DownloadItem, QAfterFilterCondition>
-  isarViewIdGreaterThan(
-    String? value, {
+  isarViewIdGreaterThan(String? value, {
     bool include = false,
     bool caseSensitive = true,
   }) {
@@ -6922,8 +6934,7 @@ extension DownloadItemQueryFilter
   }
 
   QueryBuilder<DownloadItem, DownloadItem, QAfterFilterCondition>
-  isarViewIdLessThan(
-    String? value, {
+  isarViewIdLessThan(String? value, {
     bool include = false,
     bool caseSensitive = true,
   }) {
@@ -6940,13 +6951,12 @@ extension DownloadItemQueryFilter
   }
 
   QueryBuilder<DownloadItem, DownloadItem, QAfterFilterCondition>
-  isarViewIdBetween(
-    String? lower,
-    String? upper, {
-    bool includeLower = true,
-    bool includeUpper = true,
-    bool caseSensitive = true,
-  }) {
+  isarViewIdBetween(String? lower,
+      String? upper, {
+        bool includeLower = true,
+        bool includeUpper = true,
+        bool caseSensitive = true,
+      }) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(
         FilterCondition.between(
@@ -7033,7 +7043,7 @@ extension DownloadItemQueryFilter
 }
 
 extension DownloadItemQueryObject
-    on QueryBuilder<DownloadItem, DownloadItem, QFilterCondition> {
+on QueryBuilder<DownloadItem, DownloadItem, QFilterCondition> {
   QueryBuilder<DownloadItem, DownloadItem, QAfterFilterCondition>
   fileTranscodingProfile(FilterQuery<DownloadProfile> q) {
     return QueryBuilder.apply(this, (query) {
@@ -7057,10 +7067,9 @@ extension DownloadItemQueryObject
 }
 
 extension DownloadItemQueryLinks
-    on QueryBuilder<DownloadItem, DownloadItem, QFilterCondition> {
+on QueryBuilder<DownloadItem, DownloadItem, QFilterCondition> {
   QueryBuilder<DownloadItem, DownloadItem, QAfterFilterCondition> requires(
-    FilterQuery<DownloadItem> q,
-  ) {
+      FilterQuery<DownloadItem> q,) {
     return QueryBuilder.apply(this, (query) {
       return query.link(q, r'requires');
     });
@@ -7102,12 +7111,11 @@ extension DownloadItemQueryLinks
   }
 
   QueryBuilder<DownloadItem, DownloadItem, QAfterFilterCondition>
-  requiresLengthBetween(
-    int lower,
-    int upper, {
-    bool includeLower = true,
-    bool includeUpper = true,
-  }) {
+  requiresLengthBetween(int lower,
+      int upper, {
+        bool includeLower = true,
+        bool includeUpper = true,
+      }) {
     return QueryBuilder.apply(this, (query) {
       return query.linkLength(
         r'requires',
@@ -7120,8 +7128,7 @@ extension DownloadItemQueryLinks
   }
 
   QueryBuilder<DownloadItem, DownloadItem, QAfterFilterCondition> requiredBy(
-    FilterQuery<DownloadItem> q,
-  ) {
+      FilterQuery<DownloadItem> q,) {
     return QueryBuilder.apply(this, (query) {
       return query.link(q, r'requiredBy');
     });
@@ -7163,12 +7170,11 @@ extension DownloadItemQueryLinks
   }
 
   QueryBuilder<DownloadItem, DownloadItem, QAfterFilterCondition>
-  requiredByLengthBetween(
-    int lower,
-    int upper, {
-    bool includeLower = true,
-    bool includeUpper = true,
-  }) {
+  requiredByLengthBetween(int lower,
+      int upper, {
+        bool includeLower = true,
+        bool includeUpper = true,
+      }) {
     return QueryBuilder.apply(this, (query) {
       return query.linkLength(
         r'requiredBy',
@@ -7181,8 +7187,7 @@ extension DownloadItemQueryLinks
   }
 
   QueryBuilder<DownloadItem, DownloadItem, QAfterFilterCondition> info(
-    FilterQuery<DownloadItem> q,
-  ) {
+      FilterQuery<DownloadItem> q,) {
     return QueryBuilder.apply(this, (query) {
       return query.link(q, r'info');
     });
@@ -7224,12 +7229,11 @@ extension DownloadItemQueryLinks
   }
 
   QueryBuilder<DownloadItem, DownloadItem, QAfterFilterCondition>
-  infoLengthBetween(
-    int lower,
-    int upper, {
-    bool includeLower = true,
-    bool includeUpper = true,
-  }) {
+  infoLengthBetween(int lower,
+      int upper, {
+        bool includeLower = true,
+        bool includeUpper = true,
+      }) {
     return QueryBuilder.apply(this, (query) {
       return query.linkLength(
         r'info',
@@ -7242,8 +7246,7 @@ extension DownloadItemQueryLinks
   }
 
   QueryBuilder<DownloadItem, DownloadItem, QAfterFilterCondition> infoFor(
-    FilterQuery<DownloadItem> q,
-  ) {
+      FilterQuery<DownloadItem> q,) {
     return QueryBuilder.apply(this, (query) {
       return query.link(q, r'infoFor');
     });
@@ -7285,12 +7288,11 @@ extension DownloadItemQueryLinks
   }
 
   QueryBuilder<DownloadItem, DownloadItem, QAfterFilterCondition>
-  infoForLengthBetween(
-    int lower,
-    int upper, {
-    bool includeLower = true,
-    bool includeUpper = true,
-  }) {
+  infoForLengthBetween(int lower,
+      int upper, {
+        bool includeLower = true,
+        bool includeUpper = true,
+      }) {
     return QueryBuilder.apply(this, (query) {
       return query.linkLength(
         r'infoFor',
@@ -7304,7 +7306,7 @@ extension DownloadItemQueryLinks
 }
 
 extension DownloadItemQuerySortBy
-    on QueryBuilder<DownloadItem, DownloadItem, QSortBy> {
+on QueryBuilder<DownloadItem, DownloadItem, QSortBy> {
   QueryBuilder<DownloadItem, DownloadItem, QAfterSortBy>
   sortByBaseIndexNumber() {
     return QueryBuilder.apply(this, (query) {
@@ -7433,7 +7435,7 @@ extension DownloadItemQuerySortBy
 }
 
 extension DownloadItemQuerySortThenBy
-    on QueryBuilder<DownloadItem, DownloadItem, QSortThenBy> {
+on QueryBuilder<DownloadItem, DownloadItem, QSortThenBy> {
   QueryBuilder<DownloadItem, DownloadItem, QAfterSortBy>
   thenByBaseIndexNumber() {
     return QueryBuilder.apply(this, (query) {
@@ -7574,7 +7576,7 @@ extension DownloadItemQuerySortThenBy
 }
 
 extension DownloadItemQueryWhereDistinct
-    on QueryBuilder<DownloadItem, DownloadItem, QDistinct> {
+on QueryBuilder<DownloadItem, DownloadItem, QDistinct> {
   QueryBuilder<DownloadItem, DownloadItem, QDistinct>
   distinctByBaseIndexNumber() {
     return QueryBuilder.apply(this, (query) {
@@ -7656,7 +7658,7 @@ extension DownloadItemQueryWhereDistinct
 }
 
 extension DownloadItemQueryProperty
-    on QueryBuilder<DownloadItem, DownloadItem, QQueryProperty> {
+on QueryBuilder<DownloadItem, DownloadItem, QQueryProperty> {
   QueryBuilder<DownloadItem, int, QQueryOperations> isarIdProperty() {
     return QueryBuilder.apply(this, (query) {
       return query.addPropertyName(r'isarId');
@@ -7789,11 +7791,9 @@ const DownloadedLyricsSchema = CollectionSchema(
   version: '3.1.0+1',
 );
 
-int _downloadedLyricsEstimateSize(
-  DownloadedLyrics object,
-  List<int> offsets,
-  Map<Type, List<int>> allOffsets,
-) {
+int _downloadedLyricsEstimateSize(DownloadedLyrics object,
+    List<int> offsets,
+    Map<Type, List<int>> allOffsets,) {
   var bytesCount = offsets.last;
   {
     final value = object.jsonItem;
@@ -7804,21 +7804,17 @@ int _downloadedLyricsEstimateSize(
   return bytesCount;
 }
 
-void _downloadedLyricsSerialize(
-  DownloadedLyrics object,
-  IsarWriter writer,
-  List<int> offsets,
-  Map<Type, List<int>> allOffsets,
-) {
+void _downloadedLyricsSerialize(DownloadedLyrics object,
+    IsarWriter writer,
+    List<int> offsets,
+    Map<Type, List<int>> allOffsets,) {
   writer.writeString(offsets[0], object.jsonItem);
 }
 
-DownloadedLyrics _downloadedLyricsDeserialize(
-  Id id,
-  IsarReader reader,
-  List<int> offsets,
-  Map<Type, List<int>> allOffsets,
-) {
+DownloadedLyrics _downloadedLyricsDeserialize(Id id,
+    IsarReader reader,
+    List<int> offsets,
+    Map<Type, List<int>> allOffsets,) {
   final object = DownloadedLyrics(
     isarId: id,
     jsonItem: reader.readStringOrNull(offsets[0]),
@@ -7826,12 +7822,10 @@ DownloadedLyrics _downloadedLyricsDeserialize(
   return object;
 }
 
-P _downloadedLyricsDeserializeProp<P>(
-  IsarReader reader,
-  int propertyId,
-  int offset,
-  Map<Type, List<int>> allOffsets,
-) {
+P _downloadedLyricsDeserializeProp<P>(IsarReader reader,
+    int propertyId,
+    int offset,
+    Map<Type, List<int>> allOffsets,) {
   switch (propertyId) {
     case 0:
       return (reader.readStringOrNull(offset)) as P;
@@ -7848,14 +7842,12 @@ List<IsarLinkBase<dynamic>> _downloadedLyricsGetLinks(DownloadedLyrics object) {
   return [];
 }
 
-void _downloadedLyricsAttach(
-  IsarCollection<dynamic> col,
-  Id id,
-  DownloadedLyrics object,
-) {}
+void _downloadedLyricsAttach(IsarCollection<dynamic> col,
+    Id id,
+    DownloadedLyrics object,) {}
 
 extension DownloadedLyricsQueryWhereSort
-    on QueryBuilder<DownloadedLyrics, DownloadedLyrics, QWhere> {
+on QueryBuilder<DownloadedLyrics, DownloadedLyrics, QWhere> {
   QueryBuilder<DownloadedLyrics, DownloadedLyrics, QAfterWhere> anyIsarId() {
     return QueryBuilder.apply(this, (query) {
       return query.addWhereClause(const IdWhereClause.any());
@@ -7864,7 +7856,7 @@ extension DownloadedLyricsQueryWhereSort
 }
 
 extension DownloadedLyricsQueryWhere
-    on QueryBuilder<DownloadedLyrics, DownloadedLyrics, QWhereClause> {
+on QueryBuilder<DownloadedLyrics, DownloadedLyrics, QWhereClause> {
   QueryBuilder<DownloadedLyrics, DownloadedLyrics, QAfterWhereClause>
   isarIdEqualTo(Id isarId) {
     return QueryBuilder.apply(this, (query) {
@@ -7880,19 +7872,19 @@ extension DownloadedLyricsQueryWhere
       if (query.whereSort == Sort.asc) {
         return query
             .addWhereClause(
-              IdWhereClause.lessThan(upper: isarId, includeUpper: false),
-            )
+          IdWhereClause.lessThan(upper: isarId, includeUpper: false),
+        )
             .addWhereClause(
-              IdWhereClause.greaterThan(lower: isarId, includeLower: false),
-            );
+          IdWhereClause.greaterThan(lower: isarId, includeLower: false),
+        );
       } else {
         return query
             .addWhereClause(
-              IdWhereClause.greaterThan(lower: isarId, includeLower: false),
-            )
+          IdWhereClause.greaterThan(lower: isarId, includeLower: false),
+        )
             .addWhereClause(
-              IdWhereClause.lessThan(upper: isarId, includeUpper: false),
-            );
+          IdWhereClause.lessThan(upper: isarId, includeUpper: false),
+        );
       }
     });
   }
@@ -7916,12 +7908,11 @@ extension DownloadedLyricsQueryWhere
   }
 
   QueryBuilder<DownloadedLyrics, DownloadedLyrics, QAfterWhereClause>
-  isarIdBetween(
-    Id lowerIsarId,
-    Id upperIsarId, {
-    bool includeLower = true,
-    bool includeUpper = true,
-  }) {
+  isarIdBetween(Id lowerIsarId,
+      Id upperIsarId, {
+        bool includeLower = true,
+        bool includeUpper = true,
+      }) {
     return QueryBuilder.apply(this, (query) {
       return query.addWhereClause(
         IdWhereClause.between(
@@ -7936,7 +7927,7 @@ extension DownloadedLyricsQueryWhere
 }
 
 extension DownloadedLyricsQueryFilter
-    on QueryBuilder<DownloadedLyrics, DownloadedLyrics, QFilterCondition> {
+on QueryBuilder<DownloadedLyrics, DownloadedLyrics, QFilterCondition> {
   QueryBuilder<DownloadedLyrics, DownloadedLyrics, QAfterFilterCondition>
   isarIdEqualTo(Id value) {
     return QueryBuilder.apply(this, (query) {
@@ -7973,12 +7964,11 @@ extension DownloadedLyricsQueryFilter
   }
 
   QueryBuilder<DownloadedLyrics, DownloadedLyrics, QAfterFilterCondition>
-  isarIdBetween(
-    Id lower,
-    Id upper, {
-    bool includeLower = true,
-    bool includeUpper = true,
-  }) {
+  isarIdBetween(Id lower,
+      Id upper, {
+        bool includeLower = true,
+        bool includeUpper = true,
+      }) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(
         FilterCondition.between(
@@ -8024,8 +8014,7 @@ extension DownloadedLyricsQueryFilter
   }
 
   QueryBuilder<DownloadedLyrics, DownloadedLyrics, QAfterFilterCondition>
-  jsonItemGreaterThan(
-    String? value, {
+  jsonItemGreaterThan(String? value, {
     bool include = false,
     bool caseSensitive = true,
   }) {
@@ -8042,8 +8031,7 @@ extension DownloadedLyricsQueryFilter
   }
 
   QueryBuilder<DownloadedLyrics, DownloadedLyrics, QAfterFilterCondition>
-  jsonItemLessThan(
-    String? value, {
+  jsonItemLessThan(String? value, {
     bool include = false,
     bool caseSensitive = true,
   }) {
@@ -8060,13 +8048,12 @@ extension DownloadedLyricsQueryFilter
   }
 
   QueryBuilder<DownloadedLyrics, DownloadedLyrics, QAfterFilterCondition>
-  jsonItemBetween(
-    String? lower,
-    String? upper, {
-    bool includeLower = true,
-    bool includeUpper = true,
-    bool caseSensitive = true,
-  }) {
+  jsonItemBetween(String? lower,
+      String? upper, {
+        bool includeLower = true,
+        bool includeUpper = true,
+        bool caseSensitive = true,
+      }) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(
         FilterCondition.between(
@@ -8153,13 +8140,13 @@ extension DownloadedLyricsQueryFilter
 }
 
 extension DownloadedLyricsQueryObject
-    on QueryBuilder<DownloadedLyrics, DownloadedLyrics, QFilterCondition> {}
+on QueryBuilder<DownloadedLyrics, DownloadedLyrics, QFilterCondition> {}
 
 extension DownloadedLyricsQueryLinks
-    on QueryBuilder<DownloadedLyrics, DownloadedLyrics, QFilterCondition> {}
+on QueryBuilder<DownloadedLyrics, DownloadedLyrics, QFilterCondition> {}
 
 extension DownloadedLyricsQuerySortBy
-    on QueryBuilder<DownloadedLyrics, DownloadedLyrics, QSortBy> {
+on QueryBuilder<DownloadedLyrics, DownloadedLyrics, QSortBy> {
   QueryBuilder<DownloadedLyrics, DownloadedLyrics, QAfterSortBy>
   sortByJsonItem() {
     return QueryBuilder.apply(this, (query) {
@@ -8176,7 +8163,7 @@ extension DownloadedLyricsQuerySortBy
 }
 
 extension DownloadedLyricsQuerySortThenBy
-    on QueryBuilder<DownloadedLyrics, DownloadedLyrics, QSortThenBy> {
+on QueryBuilder<DownloadedLyrics, DownloadedLyrics, QSortThenBy> {
   QueryBuilder<DownloadedLyrics, DownloadedLyrics, QAfterSortBy>
   thenByIsarId() {
     return QueryBuilder.apply(this, (query) {
@@ -8207,7 +8194,7 @@ extension DownloadedLyricsQuerySortThenBy
 }
 
 extension DownloadedLyricsQueryWhereDistinct
-    on QueryBuilder<DownloadedLyrics, DownloadedLyrics, QDistinct> {
+on QueryBuilder<DownloadedLyrics, DownloadedLyrics, QDistinct> {
   QueryBuilder<DownloadedLyrics, DownloadedLyrics, QDistinct>
   distinctByJsonItem({bool caseSensitive = true}) {
     return QueryBuilder.apply(this, (query) {
@@ -8217,7 +8204,7 @@ extension DownloadedLyricsQueryWhereDistinct
 }
 
 extension DownloadedLyricsQueryProperty
-    on QueryBuilder<DownloadedLyrics, DownloadedLyrics, QQueryProperty> {
+on QueryBuilder<DownloadedLyrics, DownloadedLyrics, QQueryProperty> {
   QueryBuilder<DownloadedLyrics, int, QQueryOperations> isarIdProperty() {
     return QueryBuilder.apply(this, (query) {
       return query.addPropertyName(r'isarId');
@@ -8266,11 +8253,9 @@ const DownloadProfileSchema = Schema(
   deserializeProp: _downloadProfileDeserializeProp,
 );
 
-int _downloadProfileEstimateSize(
-  DownloadProfile object,
-  List<int> offsets,
-  Map<Type, List<int>> allOffsets,
-) {
+int _downloadProfileEstimateSize(DownloadProfile object,
+    List<int> offsets,
+    Map<Type, List<int>> allOffsets,) {
   var bytesCount = offsets.last;
   {
     final value = object.downloadLocationId;
@@ -8281,46 +8266,40 @@ int _downloadProfileEstimateSize(
   return bytesCount;
 }
 
-void _downloadProfileSerialize(
-  DownloadProfile object,
-  IsarWriter writer,
-  List<int> offsets,
-  Map<Type, List<int>> allOffsets,
-) {
+void _downloadProfileSerialize(DownloadProfile object,
+    IsarWriter writer,
+    List<int> offsets,
+    Map<Type, List<int>> allOffsets,) {
   writer.writeByte(offsets[0], object.codec.index);
   writer.writeString(offsets[1], object.downloadLocationId);
   writer.writeLong(offsets[2], object.stereoBitrate);
 }
 
-DownloadProfile _downloadProfileDeserialize(
-  Id id,
-  IsarReader reader,
-  List<int> offsets,
-  Map<Type, List<int>> allOffsets,
-) {
+DownloadProfile _downloadProfileDeserialize(Id id,
+    IsarReader reader,
+    List<int> offsets,
+    Map<Type, List<int>> allOffsets,) {
   final object = DownloadProfile(
     downloadLocationId: reader.readStringOrNull(offsets[1]),
   );
   object.codec =
       _DownloadProfilecodecValueEnumMap[reader.readByteOrNull(offsets[0])] ??
-      FinampTranscodingCodec.aac;
+          FinampTranscodingCodec.aac;
   object.stereoBitrate = reader.readLong(offsets[2]);
   return object;
 }
 
-P _downloadProfileDeserializeProp<P>(
-  IsarReader reader,
-  int propertyId,
-  int offset,
-  Map<Type, List<int>> allOffsets,
-) {
+P _downloadProfileDeserializeProp<P>(IsarReader reader,
+    int propertyId,
+    int offset,
+    Map<Type, List<int>> allOffsets,) {
   switch (propertyId) {
     case 0:
       return (_DownloadProfilecodecValueEnumMap[reader.readByteOrNull(
-                offset,
-              )] ??
-              FinampTranscodingCodec.aac)
-          as P;
+        offset,
+      )] ??
+          FinampTranscodingCodec.aac)
+      as P;
     case 1:
       return (reader.readStringOrNull(offset)) as P;
     case 2:
@@ -8344,7 +8323,7 @@ const _DownloadProfilecodecValueEnumMap = {
 };
 
 extension DownloadProfileQueryFilter
-    on QueryBuilder<DownloadProfile, DownloadProfile, QFilterCondition> {
+on QueryBuilder<DownloadProfile, DownloadProfile, QFilterCondition> {
   QueryBuilder<DownloadProfile, DownloadProfile, QAfterFilterCondition>
   codecEqualTo(FinampTranscodingCodec value) {
     return QueryBuilder.apply(this, (query) {
@@ -8381,12 +8360,11 @@ extension DownloadProfileQueryFilter
   }
 
   QueryBuilder<DownloadProfile, DownloadProfile, QAfterFilterCondition>
-  codecBetween(
-    FinampTranscodingCodec lower,
-    FinampTranscodingCodec upper, {
-    bool includeLower = true,
-    bool includeUpper = true,
-  }) {
+  codecBetween(FinampTranscodingCodec lower,
+      FinampTranscodingCodec upper, {
+        bool includeLower = true,
+        bool includeUpper = true,
+      }) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(
         FilterCondition.between(
@@ -8432,8 +8410,7 @@ extension DownloadProfileQueryFilter
   }
 
   QueryBuilder<DownloadProfile, DownloadProfile, QAfterFilterCondition>
-  downloadLocationIdGreaterThan(
-    String? value, {
+  downloadLocationIdGreaterThan(String? value, {
     bool include = false,
     bool caseSensitive = true,
   }) {
@@ -8450,8 +8427,7 @@ extension DownloadProfileQueryFilter
   }
 
   QueryBuilder<DownloadProfile, DownloadProfile, QAfterFilterCondition>
-  downloadLocationIdLessThan(
-    String? value, {
+  downloadLocationIdLessThan(String? value, {
     bool include = false,
     bool caseSensitive = true,
   }) {
@@ -8468,13 +8444,12 @@ extension DownloadProfileQueryFilter
   }
 
   QueryBuilder<DownloadProfile, DownloadProfile, QAfterFilterCondition>
-  downloadLocationIdBetween(
-    String? lower,
-    String? upper, {
-    bool includeLower = true,
-    bool includeUpper = true,
-    bool caseSensitive = true,
-  }) {
+  downloadLocationIdBetween(String? lower,
+      String? upper, {
+        bool includeLower = true,
+        bool includeUpper = true,
+        bool caseSensitive = true,
+      }) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(
         FilterCondition.between(
@@ -8595,12 +8570,11 @@ extension DownloadProfileQueryFilter
   }
 
   QueryBuilder<DownloadProfile, DownloadProfile, QAfterFilterCondition>
-  stereoBitrateBetween(
-    int lower,
-    int upper, {
-    bool includeLower = true,
-    bool includeUpper = true,
-  }) {
+  stereoBitrateBetween(int lower,
+      int upper, {
+        bool includeLower = true,
+        bool includeUpper = true,
+      }) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(
         FilterCondition.between(
@@ -8616,27 +8590,29 @@ extension DownloadProfileQueryFilter
 }
 
 extension DownloadProfileQueryObject
-    on QueryBuilder<DownloadProfile, DownloadProfile, QFilterCondition> {}
+on QueryBuilder<DownloadProfile, DownloadProfile, QFilterCondition> {}
 
 // **************************************************************************
 // JsonSerializableGenerator
 // **************************************************************************
 
-DownloadedTrack _$DownloadedTrackFromJson(Map json) => DownloadedTrack(
-  track: BaseItemDto.fromJson(Map<String, dynamic>.from(json['track'] as Map)),
-  mediaSourceInfo: MediaSourceInfo.fromJson(
-    Map<String, dynamic>.from(json['mediaSourceInfo'] as Map),
-  ),
-  downloadId: json['downloadId'] as String,
-  requiredBy: (json['requiredBy'] as List<dynamic>)
-      .map((e) => e as String)
-      .toList(),
-  path: json['path'] as String,
-  useHumanReadableNames: json['useHumanReadableNames'] as bool,
-  viewId: json['viewId'] as String,
-  isPathRelative: json['isPathRelative'] as bool? ?? true,
-  downloadLocationId: json['downloadLocationId'] as String?,
-);
+DownloadedTrack _$DownloadedTrackFromJson(Map json) =>
+    DownloadedTrack(
+      track: BaseItemDto.fromJson(
+          Map<String, dynamic>.from(json['track'] as Map)),
+      mediaSourceInfo: MediaSourceInfo.fromJson(
+        Map<String, dynamic>.from(json['mediaSourceInfo'] as Map),
+      ),
+      downloadId: json['downloadId'] as String,
+      requiredBy: (json['requiredBy'] as List<dynamic>)
+          .map((e) => e as String)
+          .toList(),
+      path: json['path'] as String,
+      useHumanReadableNames: json['useHumanReadableNames'] as bool,
+      viewId: json['viewId'] as String,
+      isPathRelative: json['isPathRelative'] as bool? ?? true,
+      downloadLocationId: json['downloadLocationId'] as String?,
+    );
 
 Map<String, dynamic> _$DownloadedTrackToJson(DownloadedTrack instance) =>
     <String, dynamic>{
@@ -8651,14 +8627,15 @@ Map<String, dynamic> _$DownloadedTrackToJson(DownloadedTrack instance) =>
       'downloadLocationId': instance.downloadLocationId,
     };
 
-DownloadStub _$DownloadStubFromJson(Map json) => DownloadStub._build(
-  id: json['Id'] as String,
-  type: $enumDecode(_$DownloadItemTypeEnumMap, json['Type']),
-  jsonItem: json['JsonItem'] as String?,
-  isarId: (json['IsarId'] as num).toInt(),
-  name: json['Name'] as String,
-  baseItemType: $enumDecode(_$BaseItemDtoTypeEnumMap, json['BaseItemType']),
-);
+DownloadStub _$DownloadStubFromJson(Map json) =>
+    DownloadStub._build(
+      id: json['Id'] as String,
+      type: $enumDecode(_$DownloadItemTypeEnumMap, json['Type']),
+      jsonItem: json['JsonItem'] as String?,
+      isarId: (json['IsarId'] as num).toInt(),
+      name: json['Name'] as String,
+      baseItemType: $enumDecode(_$BaseItemDtoTypeEnumMap, json['BaseItemType']),
+    );
 
 Map<String, dynamic> _$DownloadStubToJson(DownloadStub instance) =>
     <String, dynamic>{
@@ -8696,15 +8673,18 @@ const _$BaseItemDtoTypeEnumMap = {
   BaseItemDtoType.unknown: 'unknown',
 };
 
-FinampCollection _$FinampCollectionFromJson(Map json) => FinampCollection(
-  type: $enumDecode(_$FinampCollectionTypeEnumMap, json['Type']),
-  library: json['Library'] == null
-      ? null
-      : BaseItemDto.fromJson(Map<String, dynamic>.from(json['Library'] as Map)),
-  item: json['Item'] == null
-      ? null
-      : BaseItemDto.fromJson(Map<String, dynamic>.from(json['Item'] as Map)),
-);
+FinampCollection _$FinampCollectionFromJson(Map json) =>
+    FinampCollection(
+      type: $enumDecode(_$FinampCollectionTypeEnumMap, json['Type']),
+      library: json['Library'] == null
+          ? null
+          : BaseItemDto.fromJson(
+          Map<String, dynamic>.from(json['Library'] as Map)),
+      item: json['Item'] == null
+          ? null
+          : BaseItemDto.fromJson(
+          Map<String, dynamic>.from(json['Item'] as Map)),
+    );
 
 Map<String, dynamic> _$FinampCollectionToJson(FinampCollection instance) =>
     <String, dynamic>{
@@ -8720,21 +8700,22 @@ const _$FinampCollectionTypeEnumMap = {
   FinampCollectionType.libraryImages: 'libraryImages',
   FinampCollectionType.allPlaylistsMetadata: 'allPlaylistsMetadata',
   FinampCollectionType.collectionWithLibraryFilter:
-      'collectionWithLibraryFilter',
+  'collectionWithLibraryFilter',
 };
 
-MediaItemId _$MediaItemIdFromJson(Map<String, dynamic> json) => MediaItemId(
-  contentType: $enumDecode(_$TabContentTypeEnumMap, json['contentType']),
-  parentType: $enumDecode(_$MediaItemParentTypeEnumMap, json['parentType']),
-  itemId: _$JsonConverterFromJson<String, BaseItemId>(
-    json['itemId'],
-    const BaseItemIdConverter().fromJson,
-  ),
-  parentId: _$JsonConverterFromJson<String, BaseItemId>(
-    json['parentId'],
-    const BaseItemIdConverter().fromJson,
-  ),
-);
+MediaItemId _$MediaItemIdFromJson(Map<String, dynamic> json) =>
+    MediaItemId(
+      contentType: $enumDecode(_$TabContentTypeEnumMap, json['contentType']),
+      parentType: $enumDecode(_$MediaItemParentTypeEnumMap, json['parentType']),
+      itemId: _$JsonConverterFromJson<String, BaseItemId>(
+        json['itemId'],
+        const BaseItemIdConverter().fromJson,
+      ),
+      parentId: _$JsonConverterFromJson<String, BaseItemId>(
+        json['parentId'],
+        const BaseItemIdConverter().fromJson,
+      ),
+    );
 
 Map<String, dynamic> _$MediaItemIdToJson(MediaItemId instance) =>
     <String, dynamic>{
@@ -8764,33 +8745,31 @@ const _$MediaItemParentTypeEnumMap = {
   MediaItemParentType.instantMix: 'instantMix',
 };
 
-Value? _$JsonConverterFromJson<Json, Value>(
-  Object? json,
-  Value? Function(Json json) fromJson,
-) => json == null ? null : fromJson(json as Json);
+Value? _$JsonConverterFromJson<Json, Value>(Object? json,
+    Value? Function(Json json) fromJson,) =>
+    json == null ? null : fromJson(json as Json);
 
-Json? _$JsonConverterToJson<Json, Value>(
-  Value? value,
-  Json? Function(Value value) toJson,
-) => value == null ? null : toJson(value);
+Json? _$JsonConverterToJson<Json, Value>(Value? value,
+    Json? Function(Value value) toJson,) =>
+    value == null ? null : toJson(value);
 
 FinampFeatureChipsConfiguration _$FinampFeatureChipsConfigurationFromJson(
-  Map<String, dynamic> json,
-) => FinampFeatureChipsConfiguration(
-  enabled: json['enabled'] as bool,
-  features: (json['features'] as List<dynamic>)
-      .map((e) => $enumDecode(_$FinampFeatureChipTypeEnumMap, e))
-      .toList(),
-);
+    Map<String, dynamic> json,) =>
+    FinampFeatureChipsConfiguration(
+      enabled: json['enabled'] as bool,
+      features: (json['features'] as List<dynamic>)
+          .map((e) => $enumDecode(_$FinampFeatureChipTypeEnumMap, e))
+          .toList(),
+    );
 
 Map<String, dynamic> _$FinampFeatureChipsConfigurationToJson(
-  FinampFeatureChipsConfiguration instance,
-) => <String, dynamic>{
-  'enabled': instance.enabled,
-  'features': instance.features
-      .map((e) => _$FinampFeatureChipTypeEnumMap[e]!)
-      .toList(),
-};
+    FinampFeatureChipsConfiguration instance,) =>
+    <String, dynamic>{
+      'enabled': instance.enabled,
+      'features': instance.features
+          .map((e) => _$FinampFeatureChipTypeEnumMap[e]!)
+          .toList(),
+    };
 
 const _$FinampFeatureChipTypeEnumMap = {
   FinampFeatureChipType.playCount: 'playCount',

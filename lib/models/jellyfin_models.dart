@@ -3894,3 +3894,4 @@ class PlaylistUsers {
   factory PlaylistUsers.fromJson(Map<String, dynamic> json) => _$PlaylistUsersFromJson(json);
   Map<String, dynamic> toJson() => _$PlaylistUsersToJson(this);
 }
+

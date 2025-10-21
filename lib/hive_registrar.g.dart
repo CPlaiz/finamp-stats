@@ -102,6 +102,8 @@ extension HiveRegistrar on HiveInterface {
     registerAdapter(UserPolicyAdapter());
     registerAdapter(VolumeNormalizationModeAdapter());
     registerAdapter(XmlAttributeAdapter());
+    registerAdapter(StatsTabContentTypeAdapter());
+    registerAdapter(StatsSortByAdapter());
   }
 }
 
@@ -201,5 +203,7 @@ extension IsolatedHiveRegistrar on IsolatedHiveInterface {
     registerAdapter(UserPolicyAdapter());
     registerAdapter(VolumeNormalizationModeAdapter());
     registerAdapter(XmlAttributeAdapter());
+    registerAdapter(StatsTabContentTypeAdapter());
+    registerAdapter(StatsSortByAdapter());
   }
 }

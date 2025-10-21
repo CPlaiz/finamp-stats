@@ -395,6 +395,7 @@ Future<void> _setupPlaybackServices() async {
     cacheManager: StubImageCache(),
   );
 
+
   GetIt.instance.registerSingleton<MusicPlayerBackgroundTask>(audioHandler);
   var queueService = QueueService();
   GetIt.instance.registerSingleton(queueService);
@@ -404,6 +405,9 @@ Future<void> _setupPlaybackServices() async {
 
   // Begin to restore queue
   unawaited(queueService.performInitialQueueLoad().catchError((dynamic x) => GlobalSnackbar.error(x)));
+
+  // Start stats
+  Stats.listen();
 }
 
 /// Migrates the old DownloadLocations list to a map

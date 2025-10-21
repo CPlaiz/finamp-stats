@@ -35,31 +35,6 @@ class PlayerButtons extends StatelessWidget {
         final mediaState = snapshot.data!;
         final playbackState = mediaState.playbackState;
         final fadeState = mediaState.fadeState;
-        final mediaItem = mediaState.mediaItem;
-        final lastMediaItem = Stats.lastMediaItem;
-        final lastPlaybackSegment = Stats.lastPlaybackSegment;
-        final playbackSegmentStart = Stats.playbackSegmentStart;
-
-        if (mediaItem != null) {
-          if (lastMediaItem?.id == mediaItem.id) {
-            if (playbackState.playing) {
-              Stats.lastPlaybackSegment = playbackState.position;
-            }
-          } else {
-            if (lastMediaItem != null && lastPlaybackSegment != null) {
-              Stats.addEntry(
-                PlaybackEntry(
-                    lastMediaItem,
-                    DateTime.timestamp(),
-                    lastPlaybackSegment - playbackSegmentStart!
-                ),
-              );
-            }
-
-            Stats.lastMediaItem = mediaItem;
-            Stats.playbackSegmentStart = playbackState.position;
-          }
-        }
 
         return Row(
           mainAxisSize: MainAxisSize.max,
