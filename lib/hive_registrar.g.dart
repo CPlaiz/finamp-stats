@@ -104,6 +104,8 @@ extension HiveRegistrar on HiveInterface {
     registerAdapter(XmlAttributeAdapter());
     registerAdapter(StatsTabContentTypeAdapter());
     registerAdapter(StatsSortByAdapter());
+    registerAdapter(TrackInfoAdapter());
+    registerAdapter(PlaybackEntryAdapter());
   }
 }
 

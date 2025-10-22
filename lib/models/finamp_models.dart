@@ -3657,185 +3657,12 @@ enum StatsTabContentType {
   final String name;
 }
 
-class TrackInfo {
-  const TrackInfo(this.title, this.artists, this.album);
-
-  final String title;
-  final List<String> artists;
-  final String album;
-
-  String get id => "${artistsString ?? "Unknown Artist"} - $title";
-
-  String? get artistsString => artists.join(", ");
-
-  static TrackInfo fromMediaItem(MediaItem mediaItem) {
-    List<String> artists = mediaItem.artist?.split(",").map((artistString) => artistString.trim()).toList() ?? [];
-    String title = mediaItem.title;
-    String album = mediaItem.album ?? "Unknown Album";
-    return TrackInfo(title, artists, album);
-  }
-}
-
-class PlaybackEntry {
-  const PlaybackEntry(this.trackInfo, this.startTime, this.duration);
-
-  final TrackInfo trackInfo;
-  final DateTime startTime;
-  final Duration duration;
-}
-
 extension BaseItemDtoDescriptor on BaseItemDto {
   String descriptor() => "${nullsafeArtistsString()} - $name";
 
   String? artistsString() => artists?.join(", ");
 
   String nullsafeArtistsString() => artistsString() ?? "Unknown Artist";
-}
-
-class Stats {
-  static List<PlaybackEntry> consolidatedPlaybackEntries = [];
-  static List<PlaybackEntry> consecutivePlaybackEntries = [];
-
-  static List<PlaybackEntry> get playbackEntries =>
-      consolidatedPlaybackEntries + [?combinePlaybackEntries(consecutivePlaybackEntries)];
-  static MediaItem? lastMediaItem;
-  static Duration? playbackSegmentStartPosition;
-  static DateTime? playbackSegmentStartTime;
-
-  static void saveEntry(MediaItem mediaItem, Duration startPosition, Duration endPosition, DateTime startTime) {
-    Duration duration = endPosition - startPosition;
-    consecutivePlaybackEntries.add(PlaybackEntry(TrackInfo.fromMediaItem(mediaItem), startTime, duration));
-    reset();
-  }
-
-  static void reset() {
-    playbackSegmentStartPosition = null;
-    playbackSegmentStartTime = null;
-  }
-
-  static void startEntry(DateTime startTime, Duration startPosition) {
-    playbackSegmentStartTime ??= startTime;
-    playbackSegmentStartPosition ??= startPosition;
-  }
-
-  static void consolidateEntries() {
-    consolidatedPlaybackEntries += [?combinePlaybackEntries(consecutivePlaybackEntries)];
-    consecutivePlaybackEntries.clear();
-  }
-
-  static PlaybackEntry? combinePlaybackEntries(List<PlaybackEntry> entries) {
-    if (entries.isEmpty) return null;
-    final PlaybackEntry firstEntry = entries.first;
-    return PlaybackEntry(
-      firstEntry.trackInfo,
-      firstEntry.startTime,
-      entries.fold(Duration.zero, (sum, entry) => sum + entry.duration),
-    );
-  }
-
-  static void listen() {
-    final audioHandler = GetIt.instance<MusicPlayerBackgroundTask>();
-    Rx.combineLatest2<MediaItem?, PlaybackState, (MediaItem?, PlaybackState)>(
-      audioHandler.mediaItem,
-      audioHandler.playbackState,
-      (mediaItem, state) => (mediaItem, state),
-    ).pairwise().listen((eventPair) {
-      final (previousMediaItem, previousPlaybackState) = eventPair[0];
-      final (currentMediaItem, currentPlaybackState) = eventPair[1];
-      final timestamp = DateTime.now();
-
-      if (currentMediaItem == null) return;
-
-      if (previousMediaItem != null) {
-        if (currentMediaItem == previousMediaItem) {
-          final Duration timeBetweenCycles = currentPlaybackState.position - previousPlaybackState.position;
-          if (timeBetweenCycles.inSeconds != 0 &&
-              playbackSegmentStartTime != null &&
-              playbackSegmentStartPosition != null) {
-            saveEntry(
-              previousMediaItem,
-              playbackSegmentStartPosition!,
-              previousPlaybackState.position,
-              playbackSegmentStartTime!,
-            );
-            if (currentPlaybackState.playing) {
-              startEntry(timestamp, currentPlaybackState.position);
-            }
-          }
-        } else {
-          if (playbackSegmentStartTime != null && playbackSegmentStartPosition != null) {
-            saveEntry(
-              previousMediaItem,
-              playbackSegmentStartPosition!,
-              previousPlaybackState.position,
-              playbackSegmentStartTime!,
-            );
-          }
-          consolidateEntries();
-          if (currentPlaybackState.playing) {
-            startEntry(timestamp, currentPlaybackState.position);
-          }
-        }
-      }
-
-      if (previousPlaybackState.playing) {
-        if (!currentPlaybackState.playing) {
-          saveEntry(
-            currentMediaItem,
-            playbackSegmentStartPosition!,
-            previousPlaybackState.position,
-            playbackSegmentStartTime!,
-          );
-        }
-      } else {
-        if (currentPlaybackState.playing) {
-          startEntry(timestamp, currentPlaybackState.position);
-        }
-      }
-    });
-  }
-
-  static Map<String, int> calculatePlaycountRanking() {
-    final Map<String, int> countsById = {};
-
-    for (final play in playbackEntries) {
-      final id = play.trackInfo.id;
-      countsById[id] = (countsById[id] ?? 0) + 1;
-    }
-    return countsById;
-  }
-
-  static Map<String, Duration> calculatePlaytimeRanking() {
-    final Map<String, Duration> timeById = {};
-
-    for (final play in playbackEntries) {
-      final id = play.trackInfo.id;
-      timeById[id] = (timeById[id] ?? Duration.zero) + play.duration;
-    }
-    return timeById;
-  }
-
-  static Map<String, int> calculatePlaycountRankingForArtists() {
-    final Map<String, int> countsById = {};
-
-    for (final play in playbackEntries) {
-      for (final artist in play.trackInfo.artists) {
-        countsById[artist] = (countsById[artist] ?? 0) + 1;
-      }
-    }
-    return countsById;
-  }
-
-  static Map<String, Duration> calculatePlaytimeRankingForArtists() {
-    final Map<String, Duration> timeById = {};
-
-    for (final play in playbackEntries) {
-      for (final artist in play.trackInfo.artists) {
-        timeById[artist] = (timeById[artist] ?? Duration.zero) + play.duration;
-      }
-    }
-    return timeById;
-  }
 }
 
 @HiveType(typeId: 110)
@@ -3948,4 +3775,47 @@ enum StatsSortBy {
         return TablerIcons.server;
     }
   }
+}
+
+@HiveType(typeId: 111)
+class TrackInfo {
+  const TrackInfo({required this.title, required this.artists, required this.album});
+
+  @HiveField(0)
+  final String title;
+  @HiveField(1)
+  final List<String> artists;
+  @HiveField(2)
+  final String album;
+
+  String get id => "${artistsString ?? "Unknown Artist"} - $title";
+
+  String? get artistsString => artists.join(", ");
+
+  static TrackInfo fromMediaItem(MediaItem mediaItem) {
+    List<String> artists = mediaItem.artist?.split(",").map((artistString) => artistString.trim()).toList() ?? [];
+    String title = mediaItem.title;
+    String album = mediaItem.album ?? "Unknown Album";
+    return TrackInfo(title: title, artists: artists, album: album);
+  }
+}
+
+@HiveType(typeId: 112)
+class PlaybackEntry {
+  const PlaybackEntry({required this.trackInfo, required this.startTime, required this.duration});
+
+  @HiveField(0)
+  final TrackInfo trackInfo;
+  @HiveField(1)
+  final DateTime startTime;
+  @HiveField(2)
+  final Duration duration;
+}
+
+@HiveType(typeId: 113)
+class PersistentStats {
+  PersistentStats({required this.entries});
+
+  @HiveField(0)
+  List<PlaybackEntry> entries;
 }

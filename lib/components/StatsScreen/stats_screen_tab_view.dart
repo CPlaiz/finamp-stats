@@ -21,6 +21,7 @@ import 'package:scroll_to_index/scroll_to_index.dart';
 
 import '../../models/jellyfin_models.dart';
 import '../../services/finamp_settings_helper.dart';
+import '../../services/stats_service.dart';
 import '../first_page_progress_indicator.dart';
 import '../new_page_progress_indicator.dart';
 
@@ -77,11 +78,11 @@ class _StatsScreenTabViewState extends ConsumerState<StatsScreenTabView>
   int refreshCount = 0;
   int fullyLoadedRefresh = -1;
 
-  Map<String, int> rankingPlaycountForTracks = Stats.calculatePlaycountRanking();
-  Map<String, Duration> rankingPlaytimeForTracks = Stats.calculatePlaytimeRanking();
+  Map<String, int> rankingPlaycountForTracks = StatsService.calculatePlaycountRanking();
+  Map<String, Duration> rankingPlaytimeForTracks = StatsService.calculatePlaytimeRanking();
 
-  Map<String, int> rankingPlaycountForArtists = Stats.calculatePlaycountRankingForArtists();
-  Map<String, Duration> rankingPlaytimeForArtists = Stats.calculatePlaytimeRankingForArtists();
+  Map<String, int> rankingPlaycountForArtists = StatsService.calculatePlaycountRankingForArtists();
+  Map<String, Duration> rankingPlaytimeForArtists = StatsService.calculatePlaytimeRankingForArtists();
 
   (Map<String, int>, Map<String, Duration>) get ranking {
     switch (widget.statsTabContentType) {
@@ -93,7 +94,6 @@ class _StatsScreenTabViewState extends ConsumerState<StatsScreenTabView>
   }
 
   Map<String, int> get rankingPlaycount => ranking.$1;
-
   Map<String, Duration> get rankingPlaytime => ranking.$2;
 
   // This function just lets us easily set stuff to the getItems call we want.

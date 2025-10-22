@@ -44,6 +44,7 @@ import 'package:finamp/services/offline_listen_helper.dart';
 import 'package:finamp/services/playback_history_service.dart';
 import 'package:finamp/services/playon_service.dart';
 import 'package:finamp/services/queue_service.dart';
+import 'package:finamp/services/stats_service.dart';
 import 'package:finamp/services/ui_overlay_setter_observer.dart';
 import 'package:finamp/services/widget_bindings_observer_provider.dart';
 import 'package:flutter/foundation.dart';
@@ -277,6 +278,7 @@ Future<void> setupHive() async {
     Hive.openBox<FinampStorableQueueInfo>("Queues", path: dir.path),
     Hive.openBox<OfflineListen>("OfflineListens", path: dir.path),
     Hive.openBox<RawThemeResult>("CachedThemes", path: dir.path),
+    Hive.openBox<PlaybackEntry>("PersistentStats", path: dir.path),
   ]);
 
   // If the settings box is empty, we add an initial settings value here.
@@ -407,7 +409,7 @@ Future<void> _setupPlaybackServices() async {
   unawaited(queueService.performInitialQueueLoad().catchError((dynamic x) => GlobalSnackbar.error(x)));
 
   // Start stats
-  Stats.listen();
+  StatsService.init();
 }
 
 /// Migrates the old DownloadLocations list to a map
