@@ -3647,25 +3647,41 @@ class RawThemeResult {
 @HiveType(typeId: 109)
 enum StatsTabContentType {
   @HiveField(0)
-  track("Track"),
+  track(BaseItemDtoType.track, "Tracks"),
   @HiveField(1)
-  artist("Künstler");
+  artist(BaseItemDtoType.artist, "Künstler");
 
-  const StatsTabContentType(this.name);
+  const StatsTabContentType(this.itemType, this.name);
 
+  final BaseItemDtoType itemType;
   final String name;
 }
 
-class PlaybackEntry {
-  const PlaybackEntry(this.mediaItem, this.startTime, this.duration);
+class TrackInfo {
+  const TrackInfo(this.title, this.artists, this.album);
 
-  final MediaItem mediaItem;
-  final DateTime startTime;
-  final Duration duration;
+  final String title;
+  final List<String> artists;
+  final String album;
+
+  String get id => "${artistsString ?? "Unknown Artist"} - $title";
+
+  String? get artistsString => artists.join(", ");
+
+  static TrackInfo fromMediaItem(MediaItem mediaItem) {
+    List<String> artists = mediaItem.artist?.split(",").map((artistString) => artistString.trim()).toList() ?? [];
+    String title = mediaItem.title;
+    String album = mediaItem.album ?? "Unknown Album";
+    return TrackInfo(title, artists, album);
+  }
 }
 
-extension MediaItemDescriptor on MediaItem {
-  String descriptor() => "${artist ?? "Unknown Artist"} - $title";
+class PlaybackEntry {
+  const PlaybackEntry(this.trackInfo, this.startTime, this.duration);
+
+  final TrackInfo trackInfo;
+  final DateTime startTime;
+  final Duration duration;
 }
 
 extension BaseItemDtoDescriptor on BaseItemDto {
@@ -3688,7 +3704,7 @@ class Stats {
 
   static void saveEntry(MediaItem mediaItem, Duration startPosition, Duration endPosition, DateTime startTime) {
     Duration duration = endPosition - startPosition;
-    consecutivePlaybackEntries.add(PlaybackEntry(mediaItem, startTime, duration));
+    consecutivePlaybackEntries.add(PlaybackEntry(TrackInfo.fromMediaItem(mediaItem), startTime, duration));
     reset();
   }
 
@@ -3711,7 +3727,7 @@ class Stats {
     if (entries.isEmpty) return null;
     final PlaybackEntry firstEntry = entries.first;
     return PlaybackEntry(
-      firstEntry.mediaItem,
+      firstEntry.trackInfo,
       firstEntry.startTime,
       entries.fold(Duration.zero, (sum, entry) => sum + entry.duration),
     );
@@ -3733,7 +3749,9 @@ class Stats {
       if (previousMediaItem != null) {
         if (currentMediaItem == previousMediaItem) {
           final Duration timeBetweenCycles = currentPlaybackState.position - previousPlaybackState.position;
-          if (timeBetweenCycles.inSeconds != 0 && playbackSegmentStartTime != null && playbackSegmentStartPosition != null) {
+          if (timeBetweenCycles.inSeconds != 0 &&
+              playbackSegmentStartTime != null &&
+              playbackSegmentStartPosition != null) {
             saveEntry(
               previousMediaItem,
               playbackSegmentStartPosition!,
@@ -3781,7 +3799,7 @@ class Stats {
     final Map<String, int> countsById = {};
 
     for (final play in playbackEntries) {
-      final id = play.mediaItem.descriptor();
+      final id = play.trackInfo.id;
       countsById[id] = (countsById[id] ?? 0) + 1;
     }
     return countsById;
@@ -3791,10 +3809,31 @@ class Stats {
     final Map<String, Duration> timeById = {};
 
     for (final play in playbackEntries) {
-      final id = play.mediaItem.descriptor();
+      final id = play.trackInfo.id;
       timeById[id] = (timeById[id] ?? Duration.zero) + play.duration;
     }
-    print(timeById);
+    return timeById;
+  }
+
+  static Map<String, int> calculatePlaycountRankingForArtists() {
+    final Map<String, int> countsById = {};
+
+    for (final play in playbackEntries) {
+      for (final artist in play.trackInfo.artists) {
+        countsById[artist] = (countsById[artist] ?? 0) + 1;
+      }
+    }
+    return countsById;
+  }
+
+  static Map<String, Duration> calculatePlaytimeRankingForArtists() {
+    final Map<String, Duration> timeById = {};
+
+    for (final play in playbackEntries) {
+      for (final artist in play.trackInfo.artists) {
+        timeById[artist] = (timeById[artist] ?? Duration.zero) + play.duration;
+      }
+    }
     return timeById;
   }
 }

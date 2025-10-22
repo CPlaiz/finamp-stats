@@ -641,7 +641,7 @@ class FinampApp extends ConsumerWidget {
         GenreScreen.routeName: (context) => const GenreScreen(),
         PlayerScreen.routeName: (context) => const PlayerScreen(key: ValueKey(PlayerScreen.routeName)),
         DownloadsScreen.routeName: (context) => const DownloadsScreen(),
-        StatsScreen.routeName: (context) => const StatsScreen(),
+        StatsScreen.routeName: (context) => const StatsScreen(sortOrderOverrideInit: SortOrder.ascending, sortByOverrideInit: StatsSortBy.count),
         ActiveDownloadsScreen.routeName: (context) => const ActiveDownloadsScreen(),
         PlaybackHistoryScreen.routeName: (context) => const PlaybackHistoryScreen(),
         LogsScreen.routeName: (context) => const LogsScreen(),

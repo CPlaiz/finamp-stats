@@ -77,8 +77,24 @@ class _StatsScreenTabViewState extends ConsumerState<StatsScreenTabView>
   int refreshCount = 0;
   int fullyLoadedRefresh = -1;
 
-  Map<String, int> rankingPlaycount = Stats.calculatePlaycountRanking();
-  Map<String, Duration> rankingPlaytime = Stats.calculatePlaytimeRanking();
+  Map<String, int> rankingPlaycountForTracks = Stats.calculatePlaycountRanking();
+  Map<String, Duration> rankingPlaytimeForTracks = Stats.calculatePlaytimeRanking();
+
+  Map<String, int> rankingPlaycountForArtists = Stats.calculatePlaycountRankingForArtists();
+  Map<String, Duration> rankingPlaytimeForArtists = Stats.calculatePlaytimeRankingForArtists();
+
+  (Map<String, int>, Map<String, Duration>) get ranking {
+    switch (widget.statsTabContentType) {
+      case StatsTabContentType.track:
+        return (rankingPlaycountForTracks, rankingPlaytimeForTracks);
+      case StatsTabContentType.artist:
+        return (rankingPlaycountForArtists, rankingPlaytimeForArtists);
+    }
+  }
+
+  Map<String, int> get rankingPlaycount => ranking.$1;
+
+  Map<String, Duration> get rankingPlaytime => ranking.$2;
 
   // This function just lets us easily set stuff to the getItems call we want.
   Future<void> _getPage(int pageKey) async {
@@ -99,7 +115,7 @@ class _StatsScreenTabViewState extends ConsumerState<StatsScreenTabView>
             sortBy: null,
             sortOrder: null,
             startIndex: pageKey,
-            includeItemTypes: "Audio",
+            includeItemTypes: widget.statsTabContentType.itemType.idString,
             limit: _pageSize,
           )) ??
           [];
@@ -279,9 +295,12 @@ class _StatsScreenTabViewState extends ConsumerState<StatsScreenTabView>
       keyboardDismissBehavior: ScrollViewKeyboardDismissBehavior.onDrag,
       builderDelegate: PagedChildBuilderDelegate<BaseItemDto>(
         itemBuilder: (context, item, index) {
+          String id = (item.isArtist ? item.name : item.descriptor()) ?? "";
+          int playcount = rankingPlaycount[id] ?? 0;
+          int playtime = rankingPlaytime[id]?.inMinutes ?? 0;
+          String trailing = !item.isArtist ? " • ${item.nullsafeArtistsString()}" : "";
           // Use right padding inherited from fast scroller minus
           // built-in icon padding
-          String descriptor = item.descriptor();
           return Padding(
             padding: EdgeInsets.only(right: max(0, MediaQuery.paddingOf(context).right - 20)),
             child: CachedBuilder(
@@ -295,9 +314,7 @@ class _StatsScreenTabViewState extends ConsumerState<StatsScreenTabView>
                   child: ListTile(
                     leading: AlbumImage(item: item, borderRadius: BorderRadius.circular(8.0)),
                     title: Text(item.name ?? "NULL"),
-                    subtitle: Text(
-                      "${rankingPlaycount[descriptor] ?? 0} plays • ${rankingPlaytime[descriptor]?.inMinutes ?? 0} Minutes • ${item.nullsafeArtistsString()}",
-                    ),
+                    subtitle: Text("${playcount}x • $playtime Minuten$trailing"),
                   ),
                 );
               },
@@ -368,21 +385,22 @@ List<BaseItemDto> sortItems(
   List<BaseItemDto> itemsToSort,
   StatsSortBy? sortBy,
   SortOrder? sortOrder,
-  Map<String, int> rankingPlaycount,
-  Map<String, Duration> rankingPlaytime,
+  Map<String, int> playcountRanking,
+  Map<String, Duration> playtimeRanking,
 ) {
   itemsToSort.sortBy((a) {
+    String id = (itemsToSort.first.isArtist ? a.name : a.descriptor()) ?? "";
     switch (sortBy ?? StatsSortBy.count) {
       case StatsSortBy.count:
-        return rankingPlaycount[a.descriptor()] ?? 0;
+        return playcountRanking[id] ?? 0;
       case StatsSortBy.time:
-        return rankingPlaytime[a.descriptor()]?.inSeconds ?? 0;
+        return playtimeRanking[id]?.inSeconds ?? 0;
       default:
-        throw UnimplementedError("Unimplemented offline sort mode $sortBy");
+        throw UnimplementedError("Unimplemented sort mode $sortBy");
     }
   });
 
-  return sortOrder == SortOrder.descending ? itemsToSort.reversed.toList() : itemsToSort;
+  return sortOrder == SortOrder.ascending ? itemsToSort.reversed.toList() : itemsToSort;
 }
 
 // This function helps to sort artist tracks in order they appear in the album list

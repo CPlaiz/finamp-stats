@@ -20,7 +20,6 @@ class StatsSortOrderButton extends ConsumerWidget {
       tooltip: AppLocalizations.of(context)!.sortOrder,
       icon: order == SortOrder.ascending ? const Icon(Icons.arrow_downward) : const Icon(Icons.arrow_upward),
       onPressed: () {
-        print(sortOrderOverride);
         final newOrder = order == SortOrder.ascending ? SortOrder.descending : SortOrder.ascending;
         if (sortOrderOverride != null && onOverrideChanged != null) {
           onOverrideChanged!(newOrder);
