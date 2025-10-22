@@ -1,18 +1,13 @@
-import 'dart:async';
 import 'dart:io';
-import 'dart:ui';
 
 import 'package:finamp/components/StatsScreen/stats_screen_tab_view.dart';
 import 'package:finamp/components/StatsScreen/stats_sort_by_menu_button.dart';
 import 'package:finamp/components/StatsScreen/stats_sort_order_button.dart';
-import 'package:finamp/components/global_snackbar.dart';
 import 'package:finamp/components/now_playing_bar.dart';
 import 'package:finamp/l10n/app_localizations.dart';
 import 'package:finamp/models/finamp_models.dart';
 import 'package:finamp/screens/music_screen.dart';
-import 'package:finamp/services/audio_service_helper.dart';
 import 'package:finamp/services/finamp_user_helper.dart';
-import 'package:finamp/services/jellyfin_api_helper.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
@@ -31,7 +26,6 @@ class StatsScreen extends ConsumerStatefulWidget {
     this.tabTypeFilter,
     this.sortByOverrideInit,
     this.sortOrderOverrideInit,
-    this.isFavoriteOverrideInit,
   });
 
   static const routeName = "/stats";
@@ -40,7 +34,6 @@ class StatsScreen extends ConsumerStatefulWidget {
   final StatsTabContentType? tabTypeFilter;
   final StatsSortBy? sortByOverrideInit;
   final SortOrder? sortOrderOverrideInit;
-  final bool? isFavoriteOverrideInit;
 
   @override
   ConsumerState<StatsScreen> createState() => _StatsScreenState();
@@ -53,13 +46,10 @@ class _StatsScreenState extends ConsumerState<StatsScreen>
   final Map<StatsTabContentType, StatsRefreshCallback> refreshMap = {};
   StatsSortBy? sortByOverride;
   SortOrder? sortOrderOverride;
-  bool? isFavoriteOverride;
 
   TabController? _tabController;
 
-  final _audioServiceHelper = GetIt.instance<AudioServiceHelper>();
   final _finampUserHelper = GetIt.instance<FinampUserHelper>();
-  final _jellyfinApiHelper = GetIt.instance<JellyfinApiHelper>();
 
   void _tabIndexCallback() {
     // We have to rebuild, otherwise the Action Buttons
@@ -83,7 +73,6 @@ class _StatsScreenState extends ConsumerState<StatsScreen>
     super.initState();
     sortByOverride = widget.sortByOverrideInit;
     sortOrderOverride = widget.sortOrderOverrideInit;
-    isFavoriteOverride = widget.isFavoriteOverrideInit;
   }
 
   @override
@@ -102,12 +91,6 @@ class _StatsScreenState extends ConsumerState<StatsScreen>
       _buildTabController();
     }
     ref.watch(FinampUserHelper.finampCurrentUserProvider);
-    // Get the filtered tab or the tabs from the user's tab order,
-    // and filter them to only include enabled tabs
-    /*final sortedTabs = widget.tabTypeFilter != null
-        ? [widget.tabTypeFilter!]
-        : ref
-        .watch(finampSettingsProvider.tabOrder);*/
     final sortedTabs = StatsTabContentType.values;
     refreshMap[sortedTabs.elementAt(_tabController!.index)] =
         StatsRefreshCallback();
@@ -201,12 +184,6 @@ class _StatsScreenState extends ConsumerState<StatsScreen>
               children: sortedTabs.map((tabType) {
                 return Column(
                   children: [
-                    /*ArtistTypeSelectionRow(
-                      tabType: tabType,
-                      defaultArtistType: ref.watch(
-                          finampSettingsProvider.defaultArtistType),
-                      refreshTab: refreshTab,
-                    ),*/
                     Expanded(
                       child: StatsScreenTabView(
                         statsTabContentType: tabType,
@@ -215,26 +192,12 @@ class _StatsScreenState extends ConsumerState<StatsScreen>
                         tabBarFiltered: (widget.tabTypeFilter != null),
                         sortByOverride: sortByOverride,
                         sortOrderOverride: sortOrderOverride,
-                        isFavoriteOverride: isFavoriteOverride,
                       ),
                     ),
                   ],
                 );
               }).toList(),
             );
-
-            if (Platform.isAndroid) {
-              return TransparentRightSwipeDetector(
-                action: () {
-                  if (_tabController?.index == 0 &&
-                      !ref.watch(finampSettingsProvider.disableGesture)) {
-                    Scaffold.of(context).openDrawer();
-                  }
-                },
-                child: child,
-              );
-            }
-
             return child;
           },
         ),

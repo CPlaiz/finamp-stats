@@ -35,7 +35,6 @@ class StatsScreenTabView extends ConsumerStatefulWidget {
     this.tabBarFiltered = false,
     this.sortByOverride,
     this.sortOrderOverride,
-    this.isFavoriteOverride,
   });
 
   final StatsTabContentType statsTabContentType;
@@ -44,7 +43,6 @@ class StatsScreenTabView extends ConsumerStatefulWidget {
   final bool tabBarFiltered;
   final StatsSortBy? sortByOverride;
   final SortOrder? sortOrderOverride;
-  final bool? isFavoriteOverride;
 
   @override
   ConsumerState<StatsScreenTabView> createState() => _StatsScreenTabViewState();
@@ -141,9 +139,6 @@ class _StatsScreenTabViewState extends ConsumerState<StatsScreenTabView>
     offlineItems = await _isarDownloader.getAllTracks(
       viewFilter: widget.view?.id,
       nullableViewFilters: settings.showDownloadsWithUnknownLibrary,
-      onlyFavorites:
-          (widget.isFavoriteOverride == true || (widget.isFavoriteOverride == null && settings.onlyShowFavorites)) &&
-          settings.trackOfflineFavorites,
       genreFilter: null,
     );
 
@@ -225,8 +220,9 @@ class _StatsScreenTabViewState extends ConsumerState<StatsScreenTabView>
     final settings = FinampSettingsHelper.finampSettings;
     var newRefreshHash = Object.hash(
       settings.onlyShowFavorites,
-      widget.isFavoriteOverride,
+      settings.statsTabSortBy[widget.statsTabContentType],
       widget.sortByOverride,
+      settings.statsTabSortOrder[widget.statsTabContentType],
       widget.sortOrderOverride,
       settings.onlyShowFullyDownloaded,
       widget.view?.id,
@@ -286,9 +282,6 @@ class _StatsScreenTabViewState extends ConsumerState<StatsScreenTabView>
           // Use right padding inherited from fast scroller minus
           // built-in icon padding
           String descriptor = item.descriptor();
-          print(descriptor);
-          print(rankingPlaytime);
-          print(rankingPlaytime[descriptor]);
           return Padding(
             padding: EdgeInsets.only(right: max(0, MediaQuery.paddingOf(context).right - 20)),
             child: CachedBuilder(
