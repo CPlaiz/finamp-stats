@@ -1,4 +1,5 @@
 import 'package:audio_service/audio_service.dart';
+import 'package:collection/collection.dart';
 import 'package:finamp/models/finamp_models.dart';
 import 'package:finamp/services/music_player_background_task.dart';
 import 'package:finamp/services/stats_persistance_helper.dart';
@@ -14,6 +15,13 @@ class StatsService {
   static MediaItem? lastMediaItem;
   static Duration? playbackSegmentStartPosition;
   static DateTime? playbackSegmentStartTime;
+
+  static Map<String, List<PlaybackEntry>> get playbackEntriesForTracks =>
+      groupBy(playbackEntries, (entry) => entry.trackInfo.id);
+
+  static Map<String, List<PlaybackEntry>> get playbackEntriesForArtists => playbackEntries
+      .expand((entry) => entry.trackInfo.artists.map((artist) => MapEntry(artist, entry)))
+      .fold(<String, List<PlaybackEntry>>{}, (map, entry) => map..putIfAbsent(entry.key, () => []).add(entry.value));
 
   static void init() {
     consolidatedPlaybackEntries = StatsPersistanceHelper.persistentStats;
@@ -38,7 +46,8 @@ class StatsService {
     playbackSegmentStartPosition ??= startPosition;
   }
 
-  static void consolidateEntries() { // TODO: run on app exit
+  static void consolidateEntries() {
+    // TODO: run on app exit
     consolidatedPlaybackEntries += [?combinePlaybackEntries(consecutivePlaybackEntries)];
     consecutivePlaybackEntries.clear();
     writeEntriesToPersistence();

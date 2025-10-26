@@ -28,6 +28,7 @@ import 'package:finamp/screens/player_settings_screen.dart';
 import 'package:finamp/screens/playlist_edit_screen.dart';
 import 'package:finamp/screens/queue_restore_screen.dart';
 import 'package:finamp/screens/stats_screen.dart';
+import 'package:finamp/screens/track_stats_screen.dart';
 import 'package:finamp/services/album_image_provider.dart';
 import 'package:finamp/services/android_auto_helper.dart';
 import 'package:finamp/services/audio_service_smtc.dart';
@@ -644,6 +645,7 @@ class FinampApp extends ConsumerWidget {
         PlayerScreen.routeName: (context) => const PlayerScreen(key: ValueKey(PlayerScreen.routeName)),
         DownloadsScreen.routeName: (context) => const DownloadsScreen(),
         StatsScreen.routeName: (context) => const StatsScreen(sortOrderOverrideInit: SortOrder.ascending, sortByOverrideInit: StatsSortBy.count),
+        TrackStatsScreen.routeName: (context) => const TrackStatsScreen(),
         ActiveDownloadsScreen.routeName: (context) => const ActiveDownloadsScreen(),
         PlaybackHistoryScreen.routeName: (context) => const PlaybackHistoryScreen(),
         LogsScreen.routeName: (context) => const LogsScreen(),

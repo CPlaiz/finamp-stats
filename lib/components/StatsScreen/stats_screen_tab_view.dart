@@ -8,6 +8,7 @@ import 'package:finamp/components/album_image.dart';
 import 'package:finamp/components/global_snackbar.dart';
 import 'package:finamp/l10n/app_localizations.dart';
 import 'package:finamp/models/finamp_models.dart';
+import 'package:finamp/screens/track_stats_screen.dart';
 import 'package:finamp/services/downloads_service.dart';
 import 'package:finamp/services/finamp_user_helper.dart';
 import 'package:finamp/services/jellyfin_api_helper.dart';
@@ -83,18 +84,22 @@ class _StatsScreenTabViewState extends ConsumerState<StatsScreenTabView>
 
   Map<String, int> rankingPlaycountForArtists = StatsService.calculatePlaycountRankingForArtists();
   Map<String, Duration> rankingPlaytimeForArtists = StatsService.calculatePlaytimeRankingForArtists();
+  
+  Map<String, List<PlaybackEntry>> playbackEntriesForTracks = StatsService.playbackEntriesForTracks;
+  Map<String, List<PlaybackEntry>> playbackEntriesForArtists = StatsService.playbackEntriesForArtists;
 
-  (Map<String, int>, Map<String, Duration>) get ranking {
+  (Map<String, int>, Map<String, Duration>, Map<String, List<PlaybackEntry>>) get playbackData {
     switch (widget.statsTabContentType) {
       case StatsTabContentType.track:
-        return (rankingPlaycountForTracks, rankingPlaytimeForTracks);
+        return (rankingPlaycountForTracks, rankingPlaytimeForTracks, playbackEntriesForTracks);
       case StatsTabContentType.artist:
-        return (rankingPlaycountForArtists, rankingPlaytimeForArtists);
+        return (rankingPlaycountForArtists, rankingPlaytimeForArtists, playbackEntriesForArtists);
     }
   }
 
-  Map<String, int> get rankingPlaycount => ranking.$1;
-  Map<String, Duration> get rankingPlaytime => ranking.$2;
+  Map<String, int> get rankingPlaycount => playbackData.$1;
+  Map<String, Duration> get rankingPlaytime => playbackData.$2;
+  Map<String, List<PlaybackEntry>> get playbackEntries => playbackData.$3;
 
   // This function just lets us easily set stuff to the getItems call we want.
   Future<void> _getPage(int pageKey) async {
@@ -315,6 +320,9 @@ class _StatsScreenTabViewState extends ConsumerState<StatsScreenTabView>
                     leading: AlbumImage(item: item, borderRadius: BorderRadius.circular(8.0)),
                     title: Text(item.name ?? "NULL"),
                     subtitle: Text("${playcount}x • $playtime Minuten$trailing"),
+                    onTap: () {
+                      Navigator.of(context).pushNamed(TrackStatsScreen.routeName, arguments: (item, playbackEntries[id]));
+                    },
                   ),
                 );
               },

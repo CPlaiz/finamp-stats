@@ -3798,6 +3798,12 @@ class TrackInfo {
     String album = mediaItem.album ?? "Unknown Album";
     return TrackInfo(title: title, artists: artists, album: album);
   }
+
+  static TrackInfo fromBaseItemDto(BaseItemDto item) => TrackInfo(
+    title: item.name ?? "Unknown title",
+    artists: item.artists ?? [],
+    album: item.album ?? "Unknown Album",
+  );
 }
 
 @HiveType(typeId: 112)
