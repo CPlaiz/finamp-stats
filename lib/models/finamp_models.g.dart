@@ -3060,51 +3060,9 @@ class StatsSortByAdapter extends TypeAdapter<StatsSortBy> {
               typeId == other.typeId;
 }
 
-
-class TrackInfoAdapter extends TypeAdapter<TrackInfo> {
-  @override
-  final typeId = 111;
-
-  @override
-  TrackInfo read(BinaryReader reader) {
-    final numOfFields = reader.readByte();
-    final fields = <int, dynamic>{
-      for (int i = 0; i < numOfFields; i++) reader.readByte(): reader.read(),
-    };
-    return TrackInfo(
-      title: fields[0] as String,
-      artists: fields[1] as List<String>,
-      album: fields[2] as String,
-    );
-  }
-
-  @override
-  void write(BinaryWriter writer, TrackInfo obj) {
-    writer
-      ..writeByte(3)
-      ..writeByte(0)
-      ..write(obj.title)
-      ..writeByte(1)
-      ..write(obj.artists)
-      ..writeByte(2)
-      ..write(obj.album);
-  }
-
-  @override
-  int get hashCode => typeId.hashCode;
-
-  @override
-  bool operator ==(Object other) =>
-      identical(this, other) ||
-          other is PlaybackEntryAdapter &&
-              runtimeType == other.runtimeType &&
-              typeId == other.typeId;
-}
-
-
 class PlaybackEntryAdapter extends TypeAdapter<PlaybackEntry> {
   @override
-  final typeId = 112;
+  final typeId = 111;
 
   @override
   PlaybackEntry read(BinaryReader reader) {
@@ -3113,21 +3071,24 @@ class PlaybackEntryAdapter extends TypeAdapter<PlaybackEntry> {
       for (int i = 0; i < numOfFields; i++) reader.readByte(): reader.read(),
     };
     return PlaybackEntry(
-      trackInfo: fields[0] as TrackInfo,
-      startTime: fields[1] as DateTime,
-      duration: fields[2] as Duration,
+      trackId: fields[0] as String,
+      artistIds: fields[1] as List<String>,
+      startTime: fields[2] as DateTime,
+      duration: fields[3] as Duration,
     );
   }
 
   @override
   void write(BinaryWriter writer, PlaybackEntry obj) {
     writer
-      ..writeByte(3)
+      ..writeByte(4)
       ..writeByte(0)
-      ..write(obj.trackInfo)
+      ..write(obj.trackId)
       ..writeByte(1)
-      ..write(obj.startTime)
+      ..write(obj.artistIds)
       ..writeByte(2)
+      ..write(obj.startTime)
+      ..writeByte(3)
       ..write(obj.duration);
   }
 

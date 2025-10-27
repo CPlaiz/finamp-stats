@@ -17,10 +17,10 @@ class StatsService {
   static DateTime? playbackSegmentStartTime;
 
   static Map<String, List<PlaybackEntry>> get playbackEntriesForTracks =>
-      groupBy(playbackEntries, (entry) => entry.trackInfo.id);
+      groupBy(playbackEntries, (entry) => entry.trackId);
 
   static Map<String, List<PlaybackEntry>> get playbackEntriesForArtists => playbackEntries
-      .expand((entry) => entry.trackInfo.artists.map((artist) => MapEntry(artist, entry)))
+      .expand((entry) => entry.artistIds.map((artist) => MapEntry(artist, entry)))
       .fold(<String, List<PlaybackEntry>>{}, (map, entry) => map..putIfAbsent(entry.key, () => []).add(entry.value));
 
   static void init() {
@@ -28,10 +28,16 @@ class StatsService {
     listen();
   }
 
-  static void saveEntry(MediaItem mediaItem, Duration startPosition, Duration endPosition, DateTime startTime) {
+  static void saveEntry(
+    String id,
+    List<String> artistIds,
+    Duration startPosition,
+    Duration endPosition,
+    DateTime startTime,
+  ) {
     Duration duration = endPosition - startPosition;
     consecutivePlaybackEntries.add(
-      PlaybackEntry(trackInfo: TrackInfo.fromMediaItem(mediaItem), startTime: startTime, duration: duration),
+      PlaybackEntry(trackId: id, artistIds: artistIds, startTime: startTime, duration: duration),
     );
     reset();
   }
@@ -62,7 +68,8 @@ class StatsService {
     if (entries.isEmpty) return null;
     final PlaybackEntry firstEntry = entries.first;
     return PlaybackEntry(
-      trackInfo: firstEntry.trackInfo,
+      trackId: firstEntry.trackId,
+      artistIds: firstEntry.artistIds,
       startTime: firstEntry.startTime,
       duration: entries.fold(Duration.zero, (sum, entry) => sum + entry.duration),
     );
@@ -79,6 +86,15 @@ class StatsService {
       final (currentMediaItem, currentPlaybackState) = eventPair[1];
       final timestamp = DateTime.now();
 
+      var currentItemId = currentMediaItem?.extras?["itemJson"]?["Id"] as String?;
+      var previousItemId = previousMediaItem?.extras?["itemJson"]?["Id"] as String?;
+      var currentArtistIds = (currentMediaItem?.extras?["itemJson"]?["ArtistItems"] as List<dynamic>?)
+          ?.map((e) => e['Id'] as String)
+          .toList();
+      var previousArtistIds = (previousMediaItem?.extras?["itemJson"]?["ArtistItems"] as List<dynamic>?)
+          ?.map((e) => e['Id'] as String)
+          .toList();
+
       if (currentMediaItem == null) return;
 
       if (previousMediaItem != null) {
@@ -88,7 +104,8 @@ class StatsService {
               playbackSegmentStartTime != null &&
               playbackSegmentStartPosition != null) {
             saveEntry(
-              previousMediaItem,
+              previousItemId!,
+              previousArtistIds!,
               playbackSegmentStartPosition!,
               previousPlaybackState.position,
               playbackSegmentStartTime!,
@@ -100,7 +117,8 @@ class StatsService {
         } else {
           if (playbackSegmentStartTime != null && playbackSegmentStartPosition != null) {
             saveEntry(
-              previousMediaItem,
+              previousItemId!,
+              previousArtistIds!,
               playbackSegmentStartPosition!,
               previousPlaybackState.position,
               playbackSegmentStartTime!,
@@ -116,7 +134,8 @@ class StatsService {
       if (previousPlaybackState.playing) {
         if (!currentPlaybackState.playing) {
           saveEntry(
-            currentMediaItem,
+            currentItemId!,
+            currentArtistIds!,
             playbackSegmentStartPosition!,
             previousPlaybackState.position,
             playbackSegmentStartTime!,
@@ -134,7 +153,7 @@ class StatsService {
     final Map<String, int> countsById = {};
 
     for (final play in playbackEntries) {
-      final id = play.trackInfo.id;
+      final id = play.trackId;
       countsById[id] = (countsById[id] ?? 0) + 1;
     }
     return countsById;
@@ -144,7 +163,7 @@ class StatsService {
     final Map<String, Duration> timeById = {};
 
     for (final play in playbackEntries) {
-      final id = play.trackInfo.id;
+      final id = play.trackId;
       timeById[id] = (timeById[id] ?? Duration.zero) + play.duration;
     }
     return timeById;
@@ -154,7 +173,7 @@ class StatsService {
     final Map<String, int> countsById = {};
 
     for (final play in playbackEntries) {
-      for (final artist in play.trackInfo.artists) {
+      for (final artist in play.artistIds) {
         countsById[artist] = (countsById[artist] ?? 0) + 1;
       }
     }
@@ -165,7 +184,7 @@ class StatsService {
     final Map<String, Duration> timeById = {};
 
     for (final play in playbackEntries) {
-      for (final artist in play.trackInfo.artists) {
+      for (final artist in play.artistIds) {
         timeById[artist] = (timeById[artist] ?? Duration.zero) + play.duration;
       }
     }

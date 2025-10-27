@@ -3658,8 +3658,6 @@ enum StatsTabContentType {
 }
 
 extension BaseItemDtoDescriptor on BaseItemDto {
-  String descriptor() => "${nullsafeArtistsString()} - $name";
-
   String? artistsString() => artists?.join(", ");
 
   String nullsafeArtistsString() => artistsString() ?? "Unknown Artist";
@@ -3778,44 +3776,17 @@ enum StatsSortBy {
 }
 
 @HiveType(typeId: 111)
-class TrackInfo {
-  const TrackInfo({required this.title, required this.artists, required this.album});
-
-  @HiveField(0)
-  final String title;
-  @HiveField(1)
-  final List<String> artists;
-  @HiveField(2)
-  final String album;
-
-  String get id => "${artistsString ?? "Unknown Artist"} - $title";
-
-  String? get artistsString => artists.join(", ");
-
-  static TrackInfo fromMediaItem(MediaItem mediaItem) {
-    List<String> artists = mediaItem.artist?.split(",").map((artistString) => artistString.trim()).toList() ?? [];
-    String title = mediaItem.title;
-    String album = mediaItem.album ?? "Unknown Album";
-    return TrackInfo(title: title, artists: artists, album: album);
-  }
-
-  static TrackInfo fromBaseItemDto(BaseItemDto item) => TrackInfo(
-    title: item.name ?? "Unknown title",
-    artists: item.artists ?? [],
-    album: item.album ?? "Unknown Album",
-  );
-}
-
-@HiveType(typeId: 112)
 class PlaybackEntry {
-  const PlaybackEntry({required this.trackInfo, required this.startTime, required this.duration});
+  const PlaybackEntry({required this.trackId, required this.startTime, required this.duration, required this.artistIds});
 
   @HiveField(0)
-  final TrackInfo trackInfo;
+  final String trackId;
   @HiveField(1)
   final DateTime startTime;
   @HiveField(2)
   final Duration duration;
+  @HiveField(3)
+  final List<String> artistIds;
 }
 
 @HiveType(typeId: 113)

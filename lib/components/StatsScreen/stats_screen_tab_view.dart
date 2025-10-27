@@ -300,7 +300,7 @@ class _StatsScreenTabViewState extends ConsumerState<StatsScreenTabView>
       keyboardDismissBehavior: ScrollViewKeyboardDismissBehavior.onDrag,
       builderDelegate: PagedChildBuilderDelegate<BaseItemDto>(
         itemBuilder: (context, item, index) {
-          String id = (item.isArtist ? item.name : item.descriptor()) ?? "";
+          String id = item.id.raw;
           int playcount = rankingPlaycount[id] ?? 0;
           int playtime = rankingPlaytime[id]?.inMinutes ?? 0;
           String trailing = !item.isArtist ? " • ${item.nullsafeArtistsString()}" : "";
@@ -397,7 +397,7 @@ List<BaseItemDto> sortItems(
   Map<String, Duration> playtimeRanking,
 ) {
   itemsToSort.sortBy((a) {
-    String id = (itemsToSort.first.isArtist ? a.name : a.descriptor()) ?? "";
+    String id = a.id.raw;
     switch (sortBy ?? StatsSortBy.count) {
       case StatsSortBy.count:
         return playcountRanking[id] ?? 0;
