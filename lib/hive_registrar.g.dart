@@ -66,7 +66,9 @@ extension HiveRegistrar on HiveInterface {
     registerAdapter(NameIdPairAdapter());
     registerAdapter(NameLongIdPairAdapter());
     registerAdapter(OfflineListenAdapter());
+    registerAdapter(PersistentStatsAdapter());
     registerAdapter(PlaybackActionRowPageAdapter());
+    registerAdapter(PlaybackEntryAdapter());
     registerAdapter(PlaybackInfoRequestAdapter());
     registerAdapter(PlaybackSpeedVisibilityAdapter());
     registerAdapter(PlayerStateInfoAdapter());
@@ -91,6 +93,8 @@ extension HiveRegistrar on HiveInterface {
     registerAdapter(SleepTimerTypeAdapter());
     registerAdapter(SortByAdapter());
     registerAdapter(SortOrderAdapter());
+    registerAdapter(StatsSortByAdapter());
+    registerAdapter(StatsTabContentTypeAdapter());
     registerAdapter(SubtitleProfileAdapter());
     registerAdapter(TabContentTypeAdapter());
     registerAdapter(TileAdditionalInfoTypeAdapter());
@@ -102,9 +106,6 @@ extension HiveRegistrar on HiveInterface {
     registerAdapter(UserPolicyAdapter());
     registerAdapter(VolumeNormalizationModeAdapter());
     registerAdapter(XmlAttributeAdapter());
-    registerAdapter(StatsTabContentTypeAdapter());
-    registerAdapter(StatsSortByAdapter());
-    registerAdapter(PlaybackEntryAdapter());
   }
 }
 
@@ -168,7 +169,9 @@ extension IsolatedHiveRegistrar on IsolatedHiveInterface {
     registerAdapter(NameIdPairAdapter());
     registerAdapter(NameLongIdPairAdapter());
     registerAdapter(OfflineListenAdapter());
+    registerAdapter(PersistentStatsAdapter());
     registerAdapter(PlaybackActionRowPageAdapter());
+    registerAdapter(PlaybackEntryAdapter());
     registerAdapter(PlaybackInfoRequestAdapter());
     registerAdapter(PlaybackSpeedVisibilityAdapter());
     registerAdapter(PlayerStateInfoAdapter());
@@ -193,6 +196,8 @@ extension IsolatedHiveRegistrar on IsolatedHiveInterface {
     registerAdapter(SleepTimerTypeAdapter());
     registerAdapter(SortByAdapter());
     registerAdapter(SortOrderAdapter());
+    registerAdapter(StatsSortByAdapter());
+    registerAdapter(StatsTabContentTypeAdapter());
     registerAdapter(SubtitleProfileAdapter());
     registerAdapter(TabContentTypeAdapter());
     registerAdapter(TileAdditionalInfoTypeAdapter());
@@ -204,7 +209,5 @@ extension IsolatedHiveRegistrar on IsolatedHiveInterface {
     registerAdapter(UserPolicyAdapter());
     registerAdapter(VolumeNormalizationModeAdapter());
     registerAdapter(XmlAttributeAdapter());
-    registerAdapter(StatsTabContentTypeAdapter());
-    registerAdapter(StatsSortByAdapter());
   }
 }

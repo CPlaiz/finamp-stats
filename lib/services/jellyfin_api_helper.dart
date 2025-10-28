@@ -1044,6 +1044,24 @@ class JellyfinApiHelper {
     }
   }
 
+  Future<List<PlaybackEntry>?> getUserTrackItems({DateTime? since}) async {
+    Response<dynamic> response = await jellyfinApi.getUserTrackItems(since: since?.millisecondsSinceEpoch);
+
+    final data = response.body; // Assuming `response.data` contains parsed JSON
+    if (data is! List || !response.isSuccessful) {
+      return null;
+    }
+
+    return data
+        .map((json) => PlaybackEntry.fromJson(json as Map<String, dynamic>))
+        .toList();
+  }
+
+  Future<bool> addUserTrackItems({required List<PlaybackEntry> playbackEntries}) async {
+    Response<dynamic> response = await jellyfinApi.addUserTrackItems(playbackEntries);
+    return response.isSuccessful;
+  }
+
   /// Returns the correct image URL for the given item, or null if there is no
   /// image. Uses [getImageId] to get the actual id. [maxWidth] and [maxHeight]
   /// can be specified to return a smaller image. [quality] can be modified to

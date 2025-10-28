@@ -543,6 +543,17 @@ abstract class JellyfinApi extends ChopperService {
   @Get(path: "/System/Endpoint", optionalBody: true)
   Future<Response<dynamic>> pingServer();
 
+
+  @FactoryConverter(request: JsonConverter.requestFactory, response: JsonConverter.responseFactory)
+  @GET(path: "/FinampStats/GetUserTrackItems", optionalBody: true)
+  Future<Response<dynamic>> getUserTrackItems({
+    @Query("since") int? since,
+  });
+
+  @FactoryConverter(request: JsonConverter.requestFactory, response: JsonConverter.responseFactory)
+  @POST(path: "/FinampStats/AddTrackItems")
+  Future<Response<dynamic>> addUserTrackItems(@Body() List<PlaybackEntry> playbackEntries);
+
   static JellyfinApi create(bool inForeground) {
     final chopperHttpLogLevel = Level.body; //TODO allow changing the log level in settings (and a debug config file?)
 

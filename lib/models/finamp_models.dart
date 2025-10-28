@@ -244,6 +244,7 @@ class DefaultSettings {
   static const preferNextUpPrepending = true;
   static const rememberLastUsedPlaybackActionRowPage = true;
   static const lastUsedPlaybackActionRowPage = PlaybackActionRowPage.newQueue;
+  static const DateTime? lastStatsSync = null;
 }
 
 @HiveType(typeId: 28)
@@ -381,6 +382,7 @@ class FinampSettings {
     this.hasCompletedThemeModeLocaleMigration = true,
     required this.statsTabSortBy,
     required this.statsTabSortOrder,
+    this.lastStatsSync,
   });
 
   @HiveField(0, defaultValue: DefaultSettings.isOffline)
@@ -812,6 +814,9 @@ class FinampSettings {
   @HiveField(137, defaultValue: <StatsTabContentType, SortOrder>{})
   @SettingsHelperMap("tabContentType", "sortOrder")
   Map<StatsTabContentType, SortOrder> statsTabSortOrder;
+
+  @HiveField(138, defaultValue: DefaultSettings.lastStatsSync)
+  DateTime? lastStatsSync = DefaultSettings.lastStatsSync;
 
   static Future<FinampSettings> create() async {
     final downloadLocation = await DownloadLocation.create(
@@ -3775,6 +3780,7 @@ enum StatsSortBy {
   }
 }
 
+@JsonSerializable(fieldRename: FieldRename.pascal, explicitToJson: true, anyMap: true, includeIfNull: false)
 @HiveType(typeId: 111)
 class PlaybackEntry {
   const PlaybackEntry({required this.trackId, required this.startTime, required this.duration, required this.artistIds});
@@ -3787,6 +3793,24 @@ class PlaybackEntry {
   final Duration duration;
   @HiveField(3)
   final List<String> artistIds;
+
+  factory PlaybackEntry.fromJson(Map<String, dynamic> json) {
+    return PlaybackEntry(
+      trackId: json['trackId'] as String,
+      startTime: DateTime.fromMillisecondsSinceEpoch(json['startTime'] as int),
+      duration: Duration(milliseconds: json['duration'] as int),
+      artistIds: (json['artistIds'] as List<dynamic>).map((e) => e as String).toList(),
+    );
+  }
+
+  Map<String, dynamic> toJson() {
+    return {
+      'trackId': trackId,
+      'startTime': startTime.millisecondsSinceEpoch,
+      'duration': duration.inMilliseconds,
+      'artistIds': artistIds,
+    };
+  }
 }
 
 @HiveType(typeId: 113)

@@ -806,4 +806,35 @@ final class _$JellyfinApi extends JellyfinApi {
     final Request $request = Request('GET', $url, client.baseUrl);
     return client.send<dynamic, dynamic>($request);
   }
+
+  @override
+  Future<Response<dynamic>> getUserTrackItems({int? since}) {
+    final Uri $url = Uri.parse('/FinampStats/GetUserTrackItems');
+    final Map<String, dynamic> $params = <String, dynamic>{'since': since};
+    final Request $request = Request(
+      'GET',
+      $url,
+      client.baseUrl,
+      parameters: $params,
+    );
+    return client.send<dynamic, dynamic>(
+      $request,
+      requestConverter: JsonConverter.requestFactory,
+      responseConverter: JsonConverter.responseFactory,
+    );
+  }
+
+  @override
+  Future<Response<dynamic>> addUserTrackItems(
+    List<PlaybackEntry> playbackEntries,
+  ) {
+    final Uri $url = Uri.parse('/FinampStats/AddTrackItems');
+    final $body = playbackEntries;
+    final Request $request = Request('POST', $url, client.baseUrl, body: $body);
+    return client.send<dynamic, dynamic>(
+      $request,
+      requestConverter: JsonConverter.requestFactory,
+      responseConverter: JsonConverter.responseFactory,
+    );
+  }
 }

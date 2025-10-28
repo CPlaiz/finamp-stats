@@ -1,6 +1,10 @@
+import 'dart:async';
+
 import 'package:audio_service/audio_service.dart';
 import 'package:collection/collection.dart';
 import 'package:finamp/models/finamp_models.dart';
+import 'package:finamp/services/finamp_settings_helper.dart';
+import 'package:finamp/services/jellyfin_api_helper.dart';
 import 'package:finamp/services/music_player_background_task.dart';
 import 'package:finamp/services/stats_persistance_helper.dart';
 import 'package:get_it/get_it.dart';
@@ -10,8 +14,16 @@ class StatsService {
   static List<PlaybackEntry> consolidatedPlaybackEntries = [];
   static List<PlaybackEntry> consecutivePlaybackEntries = [];
 
-  static List<PlaybackEntry> get playbackEntries =>
-      consolidatedPlaybackEntries + [?combinePlaybackEntries(consecutivePlaybackEntries)];
+  static List<PlaybackEntry> get playbackEntries {
+    final combined = combinePlaybackEntries(consecutivePlaybackEntries);
+
+    // Only add if combined is not null
+    if (combined != null) {
+      return consolidatedPlaybackEntries + [combined];
+    } else {
+      return consolidatedPlaybackEntries;
+    }
+  }
   static MediaItem? lastMediaItem;
   static Duration? playbackSegmentStartPosition;
   static DateTime? playbackSegmentStartTime;
@@ -26,6 +38,49 @@ class StatsService {
   static void init() {
     consolidatedPlaybackEntries = StatsPersistanceHelper.persistentStats;
     listen();
+    startSyncTimer();
+  }
+
+  static void startSyncTimer() {
+    print("start timer");
+    Timer.periodic(const Duration(minutes: 1), (timer) async {
+        await syncWithServer();
+    });
+  }
+
+  static Future<void> syncWithServer() async {
+    final settings = FinampSettingsHelper.finampSettings;
+    var lastStatsSync = settings.lastStatsSync;
+    var newLastStatsSync = DateTime.timestamp();
+    final results = await Future.wait([
+      getEntriesFromServer(lastStatsSync),
+      pushNewEntries(lastStatsSync, playbackEntries),
+    ]);
+
+    final newEntries = results[0] as List<PlaybackEntry>?;
+    final pushResult = results[1] as bool;
+
+    if (newEntries != null && pushResult) {
+      FinampSetters.setLastStatsSync(newLastStatsSync);
+      consolidatedPlaybackEntries += newEntries;
+    }
+  }
+
+  static Future<List<PlaybackEntry>?> getEntriesFromServer(DateTime? lastStatsSync) async {
+    var apiHelper = GetIt.instance<JellyfinApiHelper>();
+    return apiHelper.getUserTrackItems(since: lastStatsSync);
+  }
+
+  static Future<bool> pushNewEntries(DateTime? lastStatsSync, List<PlaybackEntry> entries) async {
+    final newEntries = lastStatsSync == null
+        ? entries
+        : entries.where((obj) => obj.startTime.isAfter(lastStatsSync)).toList();
+
+    if (newEntries.isEmpty) return true;
+
+    var apiHelper = GetIt.instance<JellyfinApiHelper>();
+
+    return apiHelper.addUserTrackItems(playbackEntries: newEntries);
   }
 
   static void saveEntry(
@@ -54,7 +109,10 @@ class StatsService {
 
   static void consolidateEntries() {
     // TODO: run on app exit
-    consolidatedPlaybackEntries += [?combinePlaybackEntries(consecutivePlaybackEntries)];
+    final combined = combinePlaybackEntries(consecutivePlaybackEntries);
+    if (combined != null) {
+      consolidatedPlaybackEntries.add(combined);
+    }
     consecutivePlaybackEntries.clear();
     writeEntriesToPersistence();
   }
@@ -84,16 +142,33 @@ class StatsService {
     ).pairwise().listen((eventPair) {
       final (previousMediaItem, previousPlaybackState) = eventPair[0];
       final (currentMediaItem, currentPlaybackState) = eventPair[1];
-      final timestamp = DateTime.now();
+      final timestamp = DateTime.timestamp();
 
-      var currentItemId = currentMediaItem?.extras?["itemJson"]?["Id"] as String?;
-      var previousItemId = previousMediaItem?.extras?["itemJson"]?["Id"] as String?;
-      var currentArtistIds = (currentMediaItem?.extras?["itemJson"]?["ArtistItems"] as List<dynamic>?)
-          ?.map((e) => e['Id'] as String)
-          .toList();
-      var previousArtistIds = (previousMediaItem?.extras?["itemJson"]?["ArtistItems"] as List<dynamic>?)
-          ?.map((e) => e['Id'] as String)
-          .toList();
+      String? currentItemId;
+      String? previousItemId;
+      List<String>? currentArtistIds;
+      List<String>? previousArtistIds;
+      if (currentMediaItem != null) {
+        final extras = currentMediaItem.extras;
+        if (extras != null && extras["itemJson"] is Map<String, dynamic>) {
+          final itemJson = extras["itemJson"] as Map<String, dynamic>;
+          if (itemJson["Id"] is String) {
+            currentItemId = itemJson["Id"] as String;
+            currentArtistIds =  (itemJson["ArtistItems"] as List<dynamic>?)?.map((e) => e['Id'] as String).toList();
+          }
+        }
+      }
+
+      if (previousMediaItem != null) {
+        final extras = previousMediaItem.extras;
+        if (extras != null && extras["itemJson"] is Map<String, dynamic>) {
+          final itemJson = extras["itemJson"] as Map<String, dynamic>;
+          if (itemJson["Id"] is String) {
+            previousItemId = itemJson["Id"] as String;
+            previousArtistIds = (itemJson["ArtistItems"] as List<dynamic>?)?.map((e) => e['Id'] as String).toList();
+          }
+        }
+      }
 
       if (currentMediaItem == null) return;
 

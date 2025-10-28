@@ -185,39 +185,6 @@ extension FinampSetters on FinampSettingsHelper {
     ).put("FinampSettings", finampSettingsTemp);
   }
 
-  static void setStatsTabSortBy(StatsTabContentType tabContentType, StatsSortBy sortBy) {
-    FinampSettings finampSettingsTemp = FinampSettingsHelper.finampSettings;
-    try {
-      finampSettingsTemp.statsTabSortBy[tabContentType] = sortBy;
-    } on UnsupportedError {
-      // We were using the default const map directly.  Clone to allow modifications.
-      finampSettingsTemp.statsTabSortBy = Map.from(finampSettingsTemp.statsTabSortBy);
-      finampSettingsTemp.statsTabSortBy[tabContentType] = sortBy;
-    }
-    Hive.box<FinampSettings>(
-      "FinampSettings",
-    ).put("FinampSettings", finampSettingsTemp);
-  }
-
-  static void setStatsTabSortOrder(
-    StatsTabContentType tabContentType,
-    SortOrder sortOrder,
-  ) {
-    FinampSettings finampSettingsTemp = FinampSettingsHelper.finampSettings;
-    try {
-      finampSettingsTemp.statsTabSortOrder[tabContentType] = sortOrder;
-    } on UnsupportedError {
-      // We were using the default const map directly.  Clone to allow modifications.
-      finampSettingsTemp.statsTabSortOrder = Map.from(
-        finampSettingsTemp.statsTabSortOrder,
-      );
-      finampSettingsTemp.statsTabSortOrder[tabContentType] = sortOrder;
-    }
-    Hive.box<FinampSettings>(
-      "FinampSettings",
-    ).put("FinampSettings", finampSettingsTemp);
-  }
-
   static void setShowFastScroller(bool newShowFastScroller) {
     FinampSettings finampSettingsTemp = FinampSettingsHelper.finampSettings;
     finampSettingsTemp.showFastScroller = newShowFastScroller;
@@ -1211,6 +1178,52 @@ extension FinampSetters on FinampSettingsHelper {
     ).put("FinampSettings", finampSettingsTemp);
   }
 
+  static void setStatsTabSortBy(
+    StatsTabContentType tabContentType,
+    StatsSortBy sortBy,
+  ) {
+    FinampSettings finampSettingsTemp = FinampSettingsHelper.finampSettings;
+    try {
+      finampSettingsTemp.statsTabSortBy[tabContentType] = sortBy;
+    } on UnsupportedError {
+      // We were using the default const map directly.  Clone to allow modifications.
+      finampSettingsTemp.statsTabSortBy = Map.from(
+        finampSettingsTemp.statsTabSortBy,
+      );
+      finampSettingsTemp.statsTabSortBy[tabContentType] = sortBy;
+    }
+    Hive.box<FinampSettings>(
+      "FinampSettings",
+    ).put("FinampSettings", finampSettingsTemp);
+  }
+
+  static void setStatsTabSortOrder(
+    StatsTabContentType tabContentType,
+    SortOrder sortOrder,
+  ) {
+    FinampSettings finampSettingsTemp = FinampSettingsHelper.finampSettings;
+    try {
+      finampSettingsTemp.statsTabSortOrder[tabContentType] = sortOrder;
+    } on UnsupportedError {
+      // We were using the default const map directly.  Clone to allow modifications.
+      finampSettingsTemp.statsTabSortOrder = Map.from(
+        finampSettingsTemp.statsTabSortOrder,
+      );
+      finampSettingsTemp.statsTabSortOrder[tabContentType] = sortOrder;
+    }
+    Hive.box<FinampSettings>(
+      "FinampSettings",
+    ).put("FinampSettings", finampSettingsTemp);
+  }
+
+  static void setLastStatsSync(DateTime? newLastStatsSync) {
+    FinampSettings finampSettingsTemp = FinampSettingsHelper.finampSettings;
+    finampSettingsTemp.lastStatsSync = newLastStatsSync;
+    Hive.box<FinampSettings>(
+      "FinampSettings",
+    ).put("FinampSettings", finampSettingsTemp);
+  }
+
   static void setBufferDuration(Duration newBufferDuration) {
     FinampSettings finampSettingsTemp = FinampSettingsHelper.finampSettings;
     finampSettingsTemp.bufferDuration = newBufferDuration;
@@ -1621,6 +1634,18 @@ extension FinampSettingsProviderSelectors on StreamProvider<FinampSettings> {
       finampSettingsProvider.select(
         (value) => value.requireValue.hasCompletedThemeModeLocaleMigration,
       );
+  ProviderListenable<StatsSortBy?> statsTabSortBy(
+    StatsTabContentType tabContentType,
+  ) => finampSettingsProvider.select(
+    (value) => value.requireValue.statsTabSortBy[tabContentType],
+  );
+  ProviderListenable<SortOrder?> statsTabSortOrder(
+    StatsTabContentType tabContentType,
+  ) => finampSettingsProvider.select(
+    (value) => value.requireValue.statsTabSortOrder[tabContentType],
+  );
+  ProviderListenable<DateTime?> get lastStatsSync => finampSettingsProvider
+      .select((value) => value.requireValue.lastStatsSync);
   ProviderListenable<DownloadProfile> get downloadTranscodingProfile =>
       finampSettingsProvider.select(
         (value) => value.requireValue.downloadTranscodingProfile,
@@ -1631,15 +1656,6 @@ extension FinampSettingsProviderSelectors on StreamProvider<FinampSettings> {
       );
   ProviderListenable<Duration> get bufferDuration => finampSettingsProvider
       .select((value) => value.requireValue.bufferDuration);
-
-  ProviderListenable<StatsSortBy?> statsTabSortBy(StatsTabContentType tabContentType) =>
-      finampSettingsProvider.select(
-            (value) => value.requireValue.statsTabSortBy[tabContentType],
-      );
-  ProviderListenable<SortOrder?> statsTabSortOrder(StatsTabContentType tabContentType) =>
-      finampSettingsProvider.select(
-            (value) => value.requireValue.statsTabSortOrder[tabContentType],
-      );
 }
 
 // **************************************************************************
