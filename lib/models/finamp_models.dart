@@ -3813,7 +3813,7 @@ class PlaybackEntry {
   }
 }
 
-@HiveType(typeId: 113)
+@HiveType(typeId: 112)
 class PersistentStats {
   PersistentStats({required this.entries});
 

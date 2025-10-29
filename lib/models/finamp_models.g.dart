@@ -1579,7 +1579,7 @@ class PlaybackEntryAdapter extends TypeAdapter<PlaybackEntry> {
 
 class PersistentStatsAdapter extends TypeAdapter<PersistentStats> {
   @override
-  final typeId = 113;
+  final typeId = 112;
 
   @override
   PersistentStats read(BinaryReader reader) {

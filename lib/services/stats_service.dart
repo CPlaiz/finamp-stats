@@ -63,6 +63,7 @@ class StatsService {
     if (newEntries != null && pushResult) {
       FinampSetters.setLastStatsSync(newLastStatsSync);
       consolidatedPlaybackEntries += newEntries;
+      writeEntriesToPersistence();
     }
   }
 
