@@ -14,7 +14,7 @@ class StatsService {
   static List<PlaybackEntry> consolidatedPlaybackEntries = [];
   static List<PlaybackEntry> consecutivePlaybackEntries = [];
 
-  static List<PlaybackEntry> get playbackEntries {
+  static List<PlaybackEntry> get playbackEntries { // replace completely with consolidated?
     final combined = combinePlaybackEntries(consecutivePlaybackEntries);
 
     // Only add if combined is not null
@@ -24,7 +24,6 @@ class StatsService {
       return consolidatedPlaybackEntries;
     }
   }
-  static MediaItem? lastMediaItem;
   static Duration? playbackSegmentStartPosition;
   static DateTime? playbackSegmentStartTime;
 
@@ -42,7 +41,6 @@ class StatsService {
   }
 
   static void startSyncTimer() {
-    print("start timer");
     Timer.periodic(const Duration(minutes: 1), (timer) async {
         await syncWithServer();
     });
@@ -54,7 +52,7 @@ class StatsService {
     var newLastStatsSync = DateTime.timestamp();
     final results = await Future.wait([
       getEntriesFromServer(lastStatsSync),
-      pushNewEntries(lastStatsSync, playbackEntries),
+      pushNewEntries(lastStatsSync, consolidatedPlaybackEntries),
     ]);
 
     final newEntries = results[0] as List<PlaybackEntry>?;
@@ -63,8 +61,19 @@ class StatsService {
     if (newEntries != null && pushResult) {
       FinampSetters.setLastStatsSync(newLastStatsSync);
       consolidatedPlaybackEntries += newEntries;
+      deduplicateEntries();
       writeEntriesToPersistence();
     }
+  }
+
+  static void deduplicateEntries() {
+    consolidatedPlaybackEntries = consolidatedPlaybackEntries
+        .fold<Map<DateTime, PlaybackEntry>>({}, (map, item) {
+          map[item.startTime] = item;
+          return map;
+        })
+        .values
+        .toList();
   }
 
   static Future<List<PlaybackEntry>?> getEntriesFromServer(DateTime? lastStatsSync) async {
