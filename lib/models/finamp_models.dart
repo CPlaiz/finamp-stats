@@ -244,7 +244,6 @@ class DefaultSettings {
   static const preferNextUpPrepending = true;
   static const rememberLastUsedPlaybackActionRowPage = true;
   static const lastUsedPlaybackActionRowPage = PlaybackActionRowPage.newQueue;
-  static const DateTime? lastStatsSync = null;
 }
 
 @HiveType(typeId: 28)
@@ -381,8 +380,7 @@ class FinampSettings {
     // !!! Don't touch this default value, it's supposed to be hard coded to run the migration only once
     this.hasCompletedThemeModeLocaleMigration = true,
     required this.statsTabSortBy,
-    required this.statsTabSortOrder,
-    this.lastStatsSync,
+    required this.statsTabSortOrder
   });
 
   @HiveField(0, defaultValue: DefaultSettings.isOffline)
@@ -814,9 +812,6 @@ class FinampSettings {
   @HiveField(137, defaultValue: <StatsTabContentType, SortOrder>{})
   @SettingsHelperMap("tabContentType", "sortOrder")
   Map<StatsTabContentType, SortOrder> statsTabSortOrder;
-
-  @HiveField(138, defaultValue: DefaultSettings.lastStatsSync)
-  DateTime? lastStatsSync = DefaultSettings.lastStatsSync;
 
   static Future<FinampSettings> create() async {
     final downloadLocation = await DownloadLocation.create(
@@ -3815,8 +3810,19 @@ class PlaybackEntry {
 
 @HiveType(typeId: 112)
 class PersistentStats {
-  PersistentStats({required this.entries});
+  PersistentStats({
+    this.consolidatedEntries = const <PlaybackEntry>[],
+    this.consecutiveEntries = const <PlaybackEntry>[],
+    this.lastStatsSync,
+  });
 
-  @HiveField(0)
-  List<PlaybackEntry> entries;
+  @HiveField(0, defaultValue: <PlaybackEntry>[])
+  List<PlaybackEntry> consolidatedEntries;
+
+  @HiveField(1, defaultValue: <PlaybackEntry>[])
+  List<PlaybackEntry> consecutiveEntries;
+
+  @HiveField(2, defaultValue: null)
+  DateTime? lastStatsSync;
+
 }

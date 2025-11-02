@@ -1216,14 +1216,6 @@ extension FinampSetters on FinampSettingsHelper {
     ).put("FinampSettings", finampSettingsTemp);
   }
 
-  static void setLastStatsSync(DateTime? newLastStatsSync) {
-    FinampSettings finampSettingsTemp = FinampSettingsHelper.finampSettings;
-    finampSettingsTemp.lastStatsSync = newLastStatsSync;
-    Hive.box<FinampSettings>(
-      "FinampSettings",
-    ).put("FinampSettings", finampSettingsTemp);
-  }
-
   static void setBufferDuration(Duration newBufferDuration) {
     FinampSettings finampSettingsTemp = FinampSettingsHelper.finampSettings;
     finampSettingsTemp.bufferDuration = newBufferDuration;
@@ -1644,8 +1636,6 @@ extension FinampSettingsProviderSelectors on StreamProvider<FinampSettings> {
   ) => finampSettingsProvider.select(
     (value) => value.requireValue.statsTabSortOrder[tabContentType],
   );
-  ProviderListenable<DateTime?> get lastStatsSync => finampSettingsProvider
-      .select((value) => value.requireValue.lastStatsSync);
   ProviderListenable<DownloadProfile> get downloadTranscodingProfile =>
       finampSettingsProvider.select(
         (value) => value.requireValue.downloadTranscodingProfile,

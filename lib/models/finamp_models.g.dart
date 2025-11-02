@@ -436,7 +436,6 @@ class FinampSettingsAdapter extends TypeAdapter<FinampSettings> {
         statsTabSortOrder: fields[137] == null
             ? {}
             : (fields[137] as Map).cast<StatsTabContentType, SortOrder>(),
-        lastStatsSync: fields[138] as DateTime?,
       )
       ..disableGesture = fields[19] == null ? false : fields[19] as bool
       ..showFastScroller = fields[25] == null ? true : fields[25] as bool
@@ -451,7 +450,7 @@ class FinampSettingsAdapter extends TypeAdapter<FinampSettings> {
   @override
   void write(BinaryWriter writer, FinampSettings obj) {
     writer
-      ..writeByte(132)
+      ..writeByte(131)
       ..writeByte(0)
       ..write(obj.isOffline)
       ..writeByte(1)
@@ -713,9 +712,7 @@ class FinampSettingsAdapter extends TypeAdapter<FinampSettings> {
       ..writeByte(136)
       ..write(obj.statsTabSortBy)
       ..writeByte(137)
-      ..write(obj.statsTabSortOrder)
-      ..writeByte(138)
-      ..write(obj.lastStatsSync);
+      ..write(obj.statsTabSortOrder);
   }
 
   @override
@@ -1587,15 +1584,23 @@ class PersistentStatsAdapter extends TypeAdapter<PersistentStats> {
     final fields = <int, dynamic>{
       for (int i = 0; i < numOfFields; i++) reader.readByte(): reader.read(),
     };
-    return PersistentStats(entries: (fields[0] as List).cast<PlaybackEntry>());
+    return PersistentStats(
+      consolidatedEntries: (fields[0] as List).cast<PlaybackEntry>(),
+      consecutiveEntries: (fields[1] as List).cast<PlaybackEntry>(),
+      lastStatsSync: fields[2] as DateTime?,
+    );
   }
 
   @override
   void write(BinaryWriter writer, PersistentStats obj) {
     writer
-      ..writeByte(1)
+      ..writeByte(3)
       ..writeByte(0)
-      ..write(obj.entries);
+      ..write(obj.consolidatedEntries)
+      ..writeByte(1)
+      ..write(obj.consecutiveEntries)
+      ..writeByte(2)
+      ..write(obj.lastStatsSync);
   }
 
   @override

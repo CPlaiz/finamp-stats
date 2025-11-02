@@ -35,7 +35,8 @@ class StatsService {
       .fold(<String, List<PlaybackEntry>>{}, (map, entry) => map..putIfAbsent(entry.key, () => []).add(entry.value));
 
   static void init() {
-    consolidatedPlaybackEntries = StatsPersistanceHelper.persistentStats;
+    consolidatedPlaybackEntries = StatsPersistanceHelper.persistentStats.consolidatedEntries;
+    consecutivePlaybackEntries = StatsPersistanceHelper.persistentStats.consecutiveEntries;
     listen();
     startSyncTimer();
   }
@@ -47,8 +48,8 @@ class StatsService {
   }
 
   static Future<void> syncWithServer() async {
-    final settings = FinampSettingsHelper.finampSettings;
-    var lastStatsSync = settings.lastStatsSync;
+    final persistentStats = StatsPersistanceHelper.persistentStats;
+    var lastStatsSync = persistentStats.lastStatsSync;
     var newLastStatsSync = DateTime.timestamp();
     final results = await Future.wait([
       getEntriesFromServer(lastStatsSync),
@@ -59,7 +60,7 @@ class StatsService {
     final pushResult = results[1] as bool;
 
     if (newEntries != null && pushResult) {
-      FinampSetters.setLastStatsSync(newLastStatsSync);
+      StatsPersistanceHelper.updateLastStatsSync(newLastStatsSync);
       consolidatedPlaybackEntries += newEntries;
       deduplicateEntries();
       writeEntriesToPersistence();
@@ -104,6 +105,7 @@ class StatsService {
     consecutivePlaybackEntries.add(
       PlaybackEntry(trackId: id, artistIds: artistIds, startTime: startTime, duration: duration),
     );
+    writeEntriesToPersistence();
     reset();
   }
 
@@ -128,8 +130,12 @@ class StatsService {
   }
 
   static void writeEntriesToPersistence() {
-    if (playbackEntries.isEmpty) return;
-    StatsPersistanceHelper.updateEntries(playbackEntries);
+    if (consolidatedPlaybackEntries.isNotEmpty) {
+      StatsPersistanceHelper.updateConsolidatedEntries(consolidatedPlaybackEntries);
+    }
+    if (consecutivePlaybackEntries.isNotEmpty) {
+      StatsPersistanceHelper.updateConsecutiveEntries(consecutivePlaybackEntries);
+    }
   }
 
   static PlaybackEntry? combinePlaybackEntries(List<PlaybackEntry> entries) {
