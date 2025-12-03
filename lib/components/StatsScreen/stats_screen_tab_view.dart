@@ -128,7 +128,7 @@ class _StatsScreenTabViewState extends ConsumerState<StatsScreenTabView>
       }.map((e) => BaseItemId(e)).toList();
 
        if (sortOrder == SortOrder.ascending) {
-         itemsToQuery = itemsToQuery.reversed.toList();
+         itemsToQuery = itemsToQuery.reversed.toList(); // TODO: pagination
        }
 
       final items =

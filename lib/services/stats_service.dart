@@ -10,7 +10,7 @@ import 'package:finamp/services/stats_persistance_helper.dart';
 import 'package:get_it/get_it.dart';
 import 'package:rxdart/rxdart.dart';
 
-class StatsService {
+class StatsService { // TODO: no stats recorded after fresh install
   static List<PlaybackEntry> consolidatedPlaybackEntries = [];
   static List<PlaybackEntry> consecutivePlaybackEntries = [];
 

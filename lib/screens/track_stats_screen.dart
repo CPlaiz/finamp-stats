@@ -3,9 +3,11 @@ import 'package:finamp/components/album_image.dart';
 import 'package:finamp/components/now_playing_bar.dart';
 import 'package:finamp/models/finamp_models.dart';
 import 'package:finamp/services/finamp_user_helper.dart';
+import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:logging/logging.dart';
+import 'package:intl/intl.dart';
 
 import '../models/jellyfin_models.dart';
 
@@ -23,6 +25,9 @@ class TrackStatsScreen extends ConsumerStatefulWidget {
 }
 
 class _TrackStatsScreenState extends ConsumerState<TrackStatsScreen> with TickerProviderStateMixin {
+  final dateTimeFormatter = DateFormat('EEE, MMM d, y, H:mm:ss');
+  final yearFormatter = DateFormat('y');
+
   @override
   Widget build(BuildContext context) {
     final (BaseItemDto, List<PlaybackEntry>) trackStatsData =
@@ -33,6 +38,18 @@ class _TrackStatsScreenState extends ConsumerState<TrackStatsScreen> with Ticker
     final playtime = _calculatePlaytime(playbackEntries);
     final firstPlay = _calculateFirstPlay(playbackEntries);
     final lastPlay = _calculateLastPlay(playbackEntries);
+    final playcountsPerDay = _calculatePlayCountPerDay(playbackEntries);
+    final playtimePerDay = _calculatePlaytimePerDay(playbackEntries);
+
+    final firstDayPlayed = DateTime(firstPlay.startTime.year, firstPlay.startTime.month, firstPlay.startTime.day);
+    final lastDayPlayed = DateTime(lastPlay.startTime.year, lastPlay.startTime.month, lastPlay.startTime.day);
+
+    final dayRange = List.generate(
+      lastDayPlayed.difference(firstDayPlayed).inDays + 1,
+      (i) => DateTime(firstPlay.startTime.year, firstPlay.startTime.month, firstPlay.startTime.day + i),
+    );
+
+    final colorScheme = Theme.of(context).colorScheme;
 
     ref.watch(FinampUserHelper.finampCurrentUserProvider);
 
@@ -68,7 +85,7 @@ class _TrackStatsScreenState extends ConsumerState<TrackStatsScreen> with Ticker
               ),
             ],
           ),
-          const SizedBox(height: 16),
+          const SizedBox(height: 32),
 
           // 3 rows of 2 buttons each
           LayoutBuilder(
@@ -81,18 +98,104 @@ class _TrackStatsScreenState extends ConsumerState<TrackStatsScreen> with Ticker
                   for (final item in [
                     _statsInfoBox("${playcount}x", 'times streamed', context),
                     _statsInfoBox(playtime.inMinutes.toString(), 'minutes streamed', context),
-                    _statsInfoBox(firstPlay.startTime.toIso8601String(), 'First Stream', context),
-                    _statsInfoBox(lastPlay.startTime.toIso8601String(), 'Last Stream', context),
+                    _statsInfoBox(dateTimeFormatter.format(firstPlay.startTime), 'First Stream', context),
+                    _statsInfoBox(dateTimeFormatter.format(lastPlay.startTime), 'Last Stream', context),
                   ])
-                    SizedBox(
-                      width: itemWidth,
-                      child: item,
-                    ),
+                    SizedBox(width: itemWidth, child: item),
                 ],
               );
             },
-          )
+          ),
 
+          const SizedBox(height: 32),
+
+          Row(
+            mainAxisSize: MainAxisSize.max,
+            mainAxisAlignment: MainAxisAlignment.spaceAround,
+            children: [
+              Row(
+                spacing: 8,
+                children: [
+                  Container(width: 12, height: 12, color: colorScheme.secondary),
+                  Text('Play count'),
+                ],
+              ),
+              Row(
+                spacing: 8,
+                children: [
+                  Container(width: 12, height: 12, color: colorScheme.tertiary),
+                  Text('Playtime (min)'),
+                ],
+              ),
+            ],
+          ),
+          Container(
+            height: 350,
+            padding: const EdgeInsets.all(20),
+            width: MediaQuery.of(context).size.width * 0.9,
+            decoration: BoxDecoration(color: colorScheme.surfaceContainerLow, borderRadius: BorderRadius.circular(12)),
+            child: BarChart(
+              BarChartData(
+                titlesData: FlTitlesData(
+                  bottomTitles: AxisTitles(
+                    sideTitles: SideTitles(
+                      showTitles: true,
+                      getTitlesWidget: (value, meta) {
+                        final date = dayRange[value.toInt()];
+                        return Padding(
+                          padding: const EdgeInsets.only(top: 8.0),
+                          child: Text(
+                            date.month == 1 && date.day == 1 ? yearFormatter.format(date) : "",
+                            style: const TextStyle(fontSize: 10),
+                          ),
+                        );
+                      },
+                    ),
+                  ),
+                  topTitles: AxisTitles(sideTitles: SideTitles(showTitles: false)),
+                ),
+
+                barGroups: [
+                  for (final (i, day) in dayRange.indexed)
+                    BarChartGroupData(
+                      x: i,
+                      groupVertically: false, // makes them side-by-side
+                      barRods: [
+                        BarChartRodData(
+                          toY: playcountsPerDay[day]?.toDouble() ?? 0,
+                          color: colorScheme.secondary,
+                          // change colors to differentiate
+                          width: 6,
+                          borderRadius: BorderRadius.circular(3),
+                        ),
+                        BarChartRodData(
+                          toY: playtimePerDay[day]?.inMinutes.toDouble() ?? 0,
+                          color: colorScheme.tertiary,
+                          width: 6,
+                          borderRadius: BorderRadius.circular(3),
+                        ),
+                      ],
+                    ),
+                ],
+
+                barTouchData: BarTouchData(
+                  enabled: true,
+                  touchTooltipData: BarTouchTooltipData(
+                    getTooltipItem: (group, groupIndex, rod, rodIndex) {
+                      final date = dayRange[group.x.toInt()];
+                      final label = rodIndex == 0 ? "plays" : "minutes";
+                      final value = rod.toY.toInt();
+
+                      return BarTooltipItem(
+                        '${date.day}.${date.month}.${date.year} - $value $label',
+                        const TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
+                      );
+                    },
+                  ),
+                ),
+              ),
+            ),
+          ),
         ],
       ),
     );
@@ -100,7 +203,7 @@ class _TrackStatsScreenState extends ConsumerState<TrackStatsScreen> with Ticker
 
   Widget _statsInfoBox(String title, String subtitle, BuildContext context) {
     return Card(
-      color: Theme.of(context).cardColor, // uses app theme card color
+      surfaceTintColor: Theme.of(context).colorScheme.primary, // uses app theme card color
       elevation: 2, // subtle shadow, can adjust
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(12), // matches modern material style
@@ -123,7 +226,6 @@ class _TrackStatsScreenState extends ConsumerState<TrackStatsScreen> with Ticker
         ),
       ),
     );
-
   }
 
   Duration _calculatePlaytime(List<PlaybackEntry> playbackEntries) =>
@@ -136,4 +238,22 @@ class _TrackStatsScreenState extends ConsumerState<TrackStatsScreen> with Ticker
 
   PlaybackEntry _calculateLastPlay(List<PlaybackEntry> playbackEntries) =>
       playbackEntries.reduce((a, b) => a.startTime.isAfter(b.startTime) ? a : b);
+
+  Map<DateTime, int> _calculatePlayCountPerDay(List<PlaybackEntry> entries) {
+    final Map<DateTime, int> playCounts = {};
+    for (final entry in entries) {
+      final date = DateTime(entry.startTime.year, entry.startTime.month, entry.startTime.day);
+      playCounts[date] = (playCounts[date] ?? 0) + 1;
+    }
+    return playCounts;
+  }
+
+  Map<DateTime, Duration> _calculatePlaytimePerDay(List<PlaybackEntry> entries) {
+    final Map<DateTime, Duration> playtime = {};
+    for (final entry in entries) {
+      final date = DateTime(entry.startTime.year, entry.startTime.month, entry.startTime.day);
+      playtime[date] = (playtime[date] ?? Duration.zero) + entry.duration;
+    }
+    return playtime;
+  }
 }

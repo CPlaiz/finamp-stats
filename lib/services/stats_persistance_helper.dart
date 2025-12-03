@@ -3,7 +3,7 @@ import 'package:hive_ce_flutter/adapters.dart';
 import '../models/finamp_models.dart';
 
 class StatsPersistanceHelper {
-  static PersistentStats get persistentStats => Hive.box<PersistentStats>("PersistentStats").get("PersistentStats") ?? PersistentStats();
+  static PersistentStats get persistentStats => Hive.box<PersistentStats>("PersistentStats").get("PersistentStats", defaultValue: PersistentStats())!;
 
   static void _updatePersistentStats(PersistentStats newPersistentStats) =>
       Hive.box<PersistentStats>("PersistentStats").put("PersistentStats", newPersistentStats);
