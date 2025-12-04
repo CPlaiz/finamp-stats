@@ -98,8 +98,8 @@ class _TrackStatsScreenState extends ConsumerState<TrackStatsScreen> with Ticker
                   for (final item in [
                     _statsInfoBox("${playcount}x", 'times streamed', context),
                     _statsInfoBox(playtime.inMinutes.toString(), 'minutes streamed', context),
-                    _statsInfoBox(dateTimeFormatter.format(firstPlay.startTime), 'First Stream', context),
-                    _statsInfoBox(dateTimeFormatter.format(lastPlay.startTime), 'Last Stream', context),
+                    _statsInfoBox(dateTimeFormatter.format(firstPlay.startTime.toLocal()), 'First Stream', context),
+                    _statsInfoBox(dateTimeFormatter.format(lastPlay.startTime.toLocal()), 'Last Stream', context),
                   ])
                     SizedBox(width: itemWidth, child: item),
                 ],

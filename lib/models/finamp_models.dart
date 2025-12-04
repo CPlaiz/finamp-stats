@@ -3792,7 +3792,7 @@ class PlaybackEntry {
   factory PlaybackEntry.fromJson(Map<String, dynamic> json) {
     return PlaybackEntry(
       trackId: json['trackId'] as String,
-      startTime: DateTime.fromMillisecondsSinceEpoch(json['startTime'] as int),
+      startTime: DateTime.fromMillisecondsSinceEpoch(json['startTime'] as int, isUtc: true),
       duration: Duration(milliseconds: json['duration'] as int),
       artistIds: (json['artistIds'] as List<dynamic>).map((e) => e as String).toList(),
     );
@@ -3813,7 +3813,8 @@ class PersistentStats {
   PersistentStats({
     this.consolidatedEntries = const <PlaybackEntry>[],
     this.consecutiveEntries = const <PlaybackEntry>[],
-    this.lastStatsSync,
+    this.lastStatsPull,
+    this.lastStatsPush,
   });
 
   @HiveField(0, defaultValue: <PlaybackEntry>[])
@@ -3823,6 +3824,9 @@ class PersistentStats {
   List<PlaybackEntry> consecutiveEntries;
 
   @HiveField(2, defaultValue: null)
-  DateTime? lastStatsSync;
+  DateTime? lastStatsPull;
+
+  @HiveField(3, defaultValue: null)
+  DateTime? lastStatsPush;
 
 }

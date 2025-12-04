@@ -3,7 +3,6 @@ import 'dart:async';
 import 'package:audio_service/audio_service.dart';
 import 'package:collection/collection.dart';
 import 'package:finamp/models/finamp_models.dart';
-import 'package:finamp/services/finamp_settings_helper.dart';
 import 'package:finamp/services/jellyfin_api_helper.dart';
 import 'package:finamp/services/music_player_background_task.dart';
 import 'package:finamp/services/stats_persistance_helper.dart';
@@ -49,18 +48,33 @@ class StatsService { // TODO: no stats recorded after fresh install
 
   static Future<void> syncWithServer() async {
     final persistentStats = StatsPersistanceHelper.persistentStats;
-    var lastStatsSync = persistentStats.lastStatsSync;
-    var newLastStatsSync = DateTime.timestamp();
+    var lastStatsPull = persistentStats.lastStatsPull;
+    var lastStatsPush = persistentStats.lastStatsPush;
+    var newLastStatsPull = DateTime.timestamp();
+    var entriesToPush = consolidatedPlaybackEntries;
     final results = await Future.wait([
-      getEntriesFromServer(lastStatsSync),
-      pushNewEntries(lastStatsSync, consolidatedPlaybackEntries),
+      getEntriesFromServer(lastStatsPull),
+      pushNewEntries(lastStatsPush, entriesToPush),
     ]);
 
     final newEntries = results[0] as List<PlaybackEntry>?;
-    final pushResult = results[1] as bool;
+    final pushSuccessful = results[1] as bool;
 
-    if (newEntries != null && pushResult) {
-      StatsPersistanceHelper.updateLastStatsSync(newLastStatsSync);
+    if (pushSuccessful) {
+      var newLastStatsPush = entriesToPush.fold<PlaybackEntry?>(
+          null, (prev, entry) {
+        if (prev == null || entry.startTime.isAfter(prev.startTime)) {
+          return entry;
+        }
+        return prev;
+      })?.startTime;
+      if (newLastStatsPush != null) {
+        StatsPersistanceHelper.updateLastStatsPush(newLastStatsPush);
+      }
+    }
+
+    if (newEntries != null) {
+      StatsPersistanceHelper.updateLastStatsPull(newLastStatsPull);
       consolidatedPlaybackEntries += newEntries;
       deduplicateEntries();
       writeEntriesToPersistence();
@@ -102,9 +116,7 @@ class StatsService { // TODO: no stats recorded after fresh install
     DateTime startTime,
   ) {
     Duration duration = endPosition - startPosition;
-    consecutivePlaybackEntries.add(
-      PlaybackEntry(trackId: id, artistIds: artistIds, startTime: startTime, duration: duration),
-    );
+    consecutivePlaybackEntries += [PlaybackEntry(trackId: id, artistIds: artistIds, startTime: startTime, duration: duration)];
     writeEntriesToPersistence();
     reset();
   }
@@ -123,9 +135,9 @@ class StatsService { // TODO: no stats recorded after fresh install
     // TODO: run on app exit
     final combined = combinePlaybackEntries(consecutivePlaybackEntries);
     if (combined != null) {
-      consolidatedPlaybackEntries.add(combined);
+      consolidatedPlaybackEntries += [combined];
     }
-    consecutivePlaybackEntries.clear();
+    consecutivePlaybackEntries = [];
     writeEntriesToPersistence();
   }
 

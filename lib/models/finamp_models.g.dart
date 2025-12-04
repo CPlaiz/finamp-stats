@@ -1585,22 +1585,29 @@ class PersistentStatsAdapter extends TypeAdapter<PersistentStats> {
       for (int i = 0; i < numOfFields; i++) reader.readByte(): reader.read(),
     };
     return PersistentStats(
-      consolidatedEntries: (fields[0] as List).cast<PlaybackEntry>(),
-      consecutiveEntries: (fields[1] as List).cast<PlaybackEntry>(),
-      lastStatsSync: fields[2] as DateTime?,
+      consolidatedEntries: fields[0] == null
+          ? []
+          : (fields[0] as List).cast<PlaybackEntry>(),
+      consecutiveEntries: fields[1] == null
+          ? []
+          : (fields[1] as List).cast<PlaybackEntry>(),
+      lastStatsPull: fields[2] as DateTime?,
+      lastStatsPush: fields[3] as DateTime?,
     );
   }
 
   @override
   void write(BinaryWriter writer, PersistentStats obj) {
     writer
-      ..writeByte(3)
+      ..writeByte(4)
       ..writeByte(0)
       ..write(obj.consolidatedEntries)
       ..writeByte(1)
       ..write(obj.consecutiveEntries)
       ..writeByte(2)
-      ..write(obj.lastStatsSync);
+      ..write(obj.lastStatsPull)
+      ..writeByte(3)
+      ..write(obj.lastStatsPush);
   }
 
   @override

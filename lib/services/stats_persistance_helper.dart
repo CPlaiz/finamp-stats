@@ -20,9 +20,15 @@ class StatsPersistanceHelper {
     _updatePersistentStats(persistentStatsTemp);
   }
 
-  static void updateLastStatsSync(DateTime newLastStatsSync) {
+  static void updateLastStatsPull(DateTime newLastStatsPull) {
     PersistentStats persistentStatsTemp = persistentStats;
-    persistentStatsTemp.lastStatsSync = newLastStatsSync;
+    persistentStatsTemp.lastStatsPull = newLastStatsPull;
+    _updatePersistentStats(persistentStatsTemp);
+  }
+
+  static void updateLastStatsPush(DateTime newLastStatsPush) {
+    PersistentStats persistentStatsTemp = persistentStats;
+    persistentStatsTemp.lastStatsPush = newLastStatsPush;
     _updatePersistentStats(persistentStatsTemp);
   }
 }
