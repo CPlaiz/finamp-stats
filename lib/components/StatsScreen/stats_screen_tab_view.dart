@@ -84,7 +84,7 @@ class _StatsScreenTabViewState extends ConsumerState<StatsScreenTabView>
 
   Map<String, int> rankingPlaycountForArtists = StatsService.calculatePlaycountRankingForArtists();
   Map<String, Duration> rankingPlaytimeForArtists = StatsService.calculatePlaytimeRankingForArtists();
-  
+
   Map<String, List<PlaybackEntry>> playbackEntriesForTracks = StatsService.playbackEntriesForTracks;
   Map<String, List<PlaybackEntry>> playbackEntriesForArtists = StatsService.playbackEntriesForArtists;
 
@@ -98,7 +98,9 @@ class _StatsScreenTabViewState extends ConsumerState<StatsScreenTabView>
   }
 
   Map<String, int> get rankingPlaycount => playbackData.$1;
+
   Map<String, Duration> get rankingPlaytime => playbackData.$2;
+
   Map<String, List<PlaybackEntry>> get playbackEntries => playbackData.$3;
 
   // This function just lets us easily set stuff to the getItems call we want.
@@ -115,36 +117,32 @@ class _StatsScreenTabViewState extends ConsumerState<StatsScreenTabView>
     }
     int localRefreshCount = refreshCount;
     try {
-      var sortBy = widget.sortByOverride ??
-          settings.statsTabSortBy[widget.statsTabContentType];
-      final sortOrder = widget.sortOrderOverride ??
-          settings.statsTabSortOrder[widget.statsTabContentType];
+      var sortBy = widget.sortByOverride ?? settings.statsTabSortBy[widget.statsTabContentType];
+      final sortOrder = widget.sortOrderOverride ?? settings.statsTabSortOrder[widget.statsTabContentType];
 
       List<BaseItemId> itemsToQuery = switch (sortBy) {
-        StatsSortBy.time => rankingPlaytime.keys,
-        StatsSortBy.count => rankingPlaycount.keys,
+        StatsSortBy.time => rankingPlaytime.entries.sortedBy((entry) => entry.value).map((entry) => entry.key),
+        StatsSortBy.count => rankingPlaycount.entries.sortedBy((entry) => entry.value).map((entry) => entry.key),
         StatsSortBy.defaultOrder => throw UnimplementedError(),
         null => throw UnimplementedError(),
       }.map((e) => BaseItemId(e)).toList();
 
-       if (sortOrder == SortOrder.ascending) {
-         itemsToQuery = itemsToQuery.reversed.toList(); // TODO: pagination
-       }
+      if (sortOrder == SortOrder.ascending) {
+        itemsToQuery = itemsToQuery.reversed.toList(); // TODO: pagination
+      }
+
+      itemsToQuery = itemsToQuery.sublist(pageKey, pageKey + _pageSize);
 
       final items =
           (await _jellyfinApiHelper.getItems(
             sortBy: null,
             sortOrder: null,
-            startIndex: pageKey,
             includeItemTypes: widget.statsTabContentType.itemType.idString,
             itemIds: itemsToQuery,
-            limit: _pageSize,
           )) ??
-              [];
+          [];
 
-
-      final newItems = sortItems(
-          items, sortBy, sortOrder, rankingPlaycount, rankingPlaytime);
+      final newItems = sortItems(items, sortBy, sortOrder, rankingPlaycount, rankingPlaytime);
 
       // Skip appending page if a refresh triggered while processing
       if (localRefreshCount == refreshCount && mounted) {
@@ -157,9 +155,7 @@ class _StatsScreenTabViewState extends ConsumerState<StatsScreenTabView>
       }
     } catch (e) {
       // Ignore errors when logging out
-      if (GetIt
-          .instance<FinampUserHelper>()
-          .currentUser != null) {
+      if (GetIt.instance<FinampUserHelper>().currentUser != null) {
         GlobalSnackbar.error(e);
       }
     }
@@ -168,8 +164,7 @@ class _StatsScreenTabViewState extends ConsumerState<StatsScreenTabView>
   Future<void> _getPageOffline() async {
     var settings = FinampSettingsHelper.finampSettings;
     int localRefreshCount = refreshCount;
-    var artistInfoForType = (settings.defaultArtistType ==
-        ArtistType.albumArtist)
+    var artistInfoForType = (settings.defaultArtistType == ArtistType.albumArtist)
         ? BaseItemDtoType.album
         : BaseItemDtoType.track;
 
@@ -182,10 +177,7 @@ class _StatsScreenTabViewState extends ConsumerState<StatsScreenTabView>
       genreFilter: null,
     );
 
-    var items = offlineItems
-        .map((e) => e.baseItem)
-        .nonNulls
-        .toList();
+    var items = offlineItems.map((e) => e.baseItem).nonNulls.toList();
     // PlayCount and Last Played are not representative in Offline Mode
     // so we disable it and overwrite it with the Sort Name if it was selected
 
@@ -209,20 +201,15 @@ class _StatsScreenTabViewState extends ConsumerState<StatsScreenTabView>
     });
     controller = AutoScrollController(
       suggestedRowHeight: 72,
-      viewportBoundaryGetter: () =>
-          Rect.fromLTRB(0, 0, 0, MediaQuery
-              .paddingOf(context)
-              .bottom),
+      viewportBoundaryGetter: () => Rect.fromLTRB(0, 0, 0, MediaQuery.paddingOf(context).bottom),
       axis: Axis.vertical,
     );
-    _statsScreenRefreshStreamSubscription =
-        statsScreenRefreshStream.stream.listen((_) {
-          _refresh();
-        });
-    _downloadsRefreshStreamSubscription =
-        _isarDownloader.offlineDeletesStream.listen((event) {
-          _refresh();
-        });
+    _statsScreenRefreshStreamSubscription = statsScreenRefreshStream.stream.listen((_) {
+      _refresh();
+    });
+    _downloadsRefreshStreamSubscription = _isarDownloader.offlineDeletesStream.listen((event) {
+      _refresh();
+    });
     updateRefreshHash();
 
     ref.listenManual(finampSettingsProvider, (_, __) {
@@ -243,10 +230,7 @@ class _StatsScreenTabViewState extends ConsumerState<StatsScreenTabView>
     if (renderedIndices.isEmpty) return Duration(milliseconds: 200);
     final medianIndex = renderedIndices.elementAt(renderedIndices.length ~/ 2);
 
-    final duration = Duration(
-        milliseconds: ((medianIndex - index).abs() / 50 * 300)
-            .clamp(200, 7500)
-            .round());
+    final duration = Duration(milliseconds: ((medianIndex - index).abs() / 50 * 300).clamp(200, 7500).round());
     return duration;
   }
 
@@ -315,10 +299,8 @@ class _StatsScreenTabViewState extends ConsumerState<StatsScreenTabView>
               icon: TablerIcons.filter_x,
               text: AppLocalizations.of(context)!.resetFiltersButton,
               onPressed: () {
-                FinampSetters.setOnlyShowFavorites(
-                    DefaultSettings.onlyShowFavorites);
-                FinampSetters.setOnlyShowFullyDownloaded(
-                    DefaultSettings.onlyShowFullyDownloaded);
+                FinampSetters.setOnlyShowFavorites(DefaultSettings.onlyShowFavorites);
+                FinampSetters.setOnlyShowFullyDownloaded(DefaultSettings.onlyShowFullyDownloaded);
               },
             ),
           ],
@@ -335,14 +317,11 @@ class _StatsScreenTabViewState extends ConsumerState<StatsScreenTabView>
           String id = item.id.raw;
           int playcount = rankingPlaycount[id] ?? 0;
           int playtime = rankingPlaytime[id]?.inMinutes ?? 0;
-          String trailing = !item.isArtist ? " • ${item
-              .nullsafeArtistsString()}" : "";
+          String trailing = !item.isArtist ? " • ${item.nullsafeArtistsString()}" : "";
           // Use right padding inherited from fast scroller minus
           // built-in icon padding
           return Padding(
-            padding: EdgeInsets.only(right: max(0, MediaQuery
-                .paddingOf(context)
-                .right - 20)),
+            padding: EdgeInsets.only(right: max(0, MediaQuery.paddingOf(context).right - 20)),
             child: CachedBuilder(
               key: ValueKey(item.id),
               cacheKey: (item.id, index),
@@ -352,14 +331,13 @@ class _StatsScreenTabViewState extends ConsumerState<StatsScreenTabView>
                   controller: controller,
                   index: index,
                   child: ListTile(
-                    leading: AlbumImage(
-                        item: item, borderRadius: BorderRadius.circular(8.0)),
+                    leading: AlbumImage(item: item, borderRadius: BorderRadius.circular(8.0)),
                     title: Text(item.name ?? "NULL"),
-                    subtitle: Text(
-                        "${playcount}x • $playtime Minuten$trailing"),
+                    subtitle: Text("${playcount}x • $playtime Minuten$trailing"),
                     onTap: () {
-                      Navigator.of(context).pushNamed(TrackStatsScreen
-                          .routeName, arguments: (item, playbackEntries[id]));
+                      Navigator.of(
+                        context,
+                      ).pushNamed(TrackStatsScreen.routeName, arguments: (item, playbackEntries[id]));
                     },
                   ),
                 );
@@ -367,17 +345,14 @@ class _StatsScreenTabViewState extends ConsumerState<StatsScreenTabView>
             ),
           );
         },
-        firstPageProgressIndicatorBuilder: (
-            _) => const FirstPageProgressIndicator(),
-        newPageProgressIndicatorBuilder: (
-            _) => const NewPageProgressIndicator(),
+        firstPageProgressIndicatorBuilder: (_) => const FirstPageProgressIndicator(),
+        newPageProgressIndicatorBuilder: (_) => const NewPageProgressIndicator(),
         noItemsFoundIndicatorBuilder: (_) => emptyListIndicator,
       ),
       separatorBuilder: (context, index) => const SizedBox.shrink(),
     );
 
-    return RefreshIndicator(
-        onRefresh: () async => _refresh(), child: tabContent);
+    return RefreshIndicator(onRefresh: () async => _refresh(), child: tabContent);
   }
 }
 
@@ -397,8 +372,7 @@ class SliverGridDelegateWithFixedSizeTiles extends SliverGridDelegate {
     // Ensure a minimum count of 1, can be zero and result in an infinite extent
     // below when the window size is 0.
     crossAxisCount = max(1, crossAxisCount);
-    final double crossAxisSpacing = (constraints.crossAxisExtent /
-        crossAxisCount);
+    final double crossAxisSpacing = (constraints.crossAxisExtent / crossAxisCount);
     return SliverGridRegularTileLayout(
       crossAxisCount: crossAxisCount,
       mainAxisStride: gridTileSize,
@@ -415,32 +389,29 @@ class SliverGridDelegateWithFixedSizeTiles extends SliverGridDelegate {
   }
 }
 
-class _DeferredLoadingAlwaysScrollableScrollPhysics
-    extends AlwaysScrollableScrollPhysics {
-  const _DeferredLoadingAlwaysScrollableScrollPhysics(
-      {super.parent, required this.tabState});
+class _DeferredLoadingAlwaysScrollableScrollPhysics extends AlwaysScrollableScrollPhysics {
+  const _DeferredLoadingAlwaysScrollableScrollPhysics({super.parent, required this.tabState});
 
   final _StatsScreenTabViewState tabState;
 
   @override
-  _DeferredLoadingAlwaysScrollableScrollPhysics applyTo(
-      ScrollPhysics? ancestor) {
-    return _DeferredLoadingAlwaysScrollableScrollPhysics(
-        parent: buildParent(ancestor), tabState: tabState);
+  _DeferredLoadingAlwaysScrollableScrollPhysics applyTo(ScrollPhysics? ancestor) {
+    return _DeferredLoadingAlwaysScrollableScrollPhysics(parent: buildParent(ancestor), tabState: tabState);
   }
 
   @override
-  bool recommendDeferredLoading(double velocity, ScrollMetrics metrics,
-      BuildContext context) {
+  bool recommendDeferredLoading(double velocity, ScrollMetrics metrics, BuildContext context) {
     return super.recommendDeferredLoading(velocity, metrics, context);
   }
 }
 
-List<BaseItemDto> sortItems(List<BaseItemDto> itemsToSort,
-    StatsSortBy? sortBy,
-    SortOrder? sortOrder,
-    Map<String, int> playcountRanking,
-    Map<String, Duration> playtimeRanking,) {
+List<BaseItemDto> sortItems(
+  List<BaseItemDto> itemsToSort,
+  StatsSortBy? sortBy,
+  SortOrder? sortOrder,
+  Map<String, int> playcountRanking,
+  Map<String, Duration> playtimeRanking,
+) {
   itemsToSort.sortBy((a) {
     String id = a.id.raw;
     switch (sortBy ?? StatsSortBy.count) {
@@ -453,17 +424,14 @@ List<BaseItemDto> sortItems(List<BaseItemDto> itemsToSort,
     }
   });
 
-  return sortOrder == SortOrder.ascending
-      ? itemsToSort.reversed.toList()
-      : itemsToSort;
+  return sortOrder == SortOrder.ascending ? itemsToSort.reversed.toList() : itemsToSort;
 }
 
 // This function helps to sort artist tracks in order they appear in the album list
 // There are scenarios where cached provider-data might return a shuffled resultset, I guess,
 // so this function should definitely sort all artist tracks always the same
 List<BaseItemDto> sortArtistTracks(List<BaseItemDto> items) {
-  int _compareNullable<T extends Comparable>(T? a, T? b,
-      {bool nullsFirst = false}) {
+  int _compareNullable<T extends Comparable>(T? a, T? b, {bool nullsFirst = false}) {
     if (a == null && b == null) return 0;
     if (a == null) return nullsFirst ? -1 : 1;
     if (b == null) return nullsFirst ? 1 : -1;
@@ -493,19 +461,15 @@ List<BaseItemDto> sortArtistTracks(List<BaseItemDto> items) {
 
   items.sort((a, b) {
     // 1. PremiereDate
-    final dateA = a.premiereDate == null ? null : DateTime.tryParse(
-        a.premiereDate!.trim());
-    final dateB = b.premiereDate == null ? null : DateTime.tryParse(
-        b.premiereDate!.trim());
-    final dateCompare = _compareNullable<DateTime>(
-        dateA, dateB, nullsFirst: true);
+    final dateA = a.premiereDate == null ? null : DateTime.tryParse(a.premiereDate!.trim());
+    final dateB = b.premiereDate == null ? null : DateTime.tryParse(b.premiereDate!.trim());
+    final dateCompare = _compareNullable<DateTime>(dateA, dateB, nullsFirst: true);
     if (dateCompare != 0) return dateCompare;
     // 2. Album (numbers first)
     final albumCompare = _compareAlbum(a.album, b.album);
     if (albumCompare != 0) return albumCompare;
     // 3. ParentIndexNumber
-    final parentIndexCompare = _compareNullable<int>(
-        a.parentIndexNumber, b.parentIndexNumber);
+    final parentIndexCompare = _compareNullable<int>(a.parentIndexNumber, b.parentIndexNumber);
     if (parentIndexCompare != 0) return parentIndexCompare;
     // 4. IndexNumber
     final indexCompare = _compareNullable<int>(a.indexNumber, b.indexNumber);
@@ -517,8 +481,7 @@ List<BaseItemDto> sortArtistTracks(List<BaseItemDto> items) {
   return items;
 }
 
-List<BaseItemDto> filterItemsByGenreName(List<BaseItemDto> items,
-    BaseItemDto genreFilter) {
+List<BaseItemDto> filterItemsByGenreName(List<BaseItemDto> items, BaseItemDto genreFilter) {
   if (genreFilter.name == null) return [];
 
   return items.where((item) {
@@ -530,8 +493,7 @@ List<BaseItemDto> filterItemsByGenreName(List<BaseItemDto> items,
 }
 
 class CachedBuilder<T> extends StatefulWidget {
-  const CachedBuilder(
-      {required this.builder, required this.cacheKey, super.key});
+  const CachedBuilder({required this.builder, required this.cacheKey, super.key});
 
   final Widget Function(BuildContext context) builder;
   final T cacheKey;
